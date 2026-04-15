@@ -1,6 +1,10 @@
-# 📊 Instagram 30-Day Analytics Report Skill
+---
+name: ig-analytics
+description: "Pulls the last 30 days of Instagram Reels data via Apify and generates a full performance report. Triggers: run ig analytics, pull my IG report, instagram analytics, IG report, how are my reels doing, reel performance, instagram stats."
+---
 
-## What This Does
+# Instagram 30-Day Analytics Report
+
 Pulls the last 30 days of Instagram Reels data via Apify and generates a full performance report saved to `analytics/`.
 
 ## How to Trigger
@@ -27,13 +31,13 @@ Use `mcp__apify__get-actor-output` with the returned `datasetId`:
 ### Step 4 — Generate Report
 Write a markdown report to `analytics/30-Day-Instagram-Report_YYYY-MM-DD.md` with these sections:
 
-1. **🔢 Overview** — Total reels, avg posts/week, total plays, total likes, total comments, averages per reel
-2. **📅 Posting Consistency** — Week-by-week breakdown, longest gap, consistency grade (A/B/C/D/F based on gaps and frequency)
-3. **🔥 Top 5 Reels by Plays** — Table with date, topic, plays, likes, comments, URL
-4. **🏆 Top 5 Reels by Likes** — Same format
-5. **💬 Top 5 Reels by Comments** — Same format
-6. **📋 All Reels (Chronological)** — Full table with plays, likes, comments, type
-7. **🧠 Key Insights** — What's working, what needs attention, 3-4 actionable recommendations
+1. **Overview** — Total reels, avg posts/week, total plays, total likes, total comments, averages per reel
+2. **Posting Consistency** — Week-by-week breakdown, longest gap, consistency grade (A/B/C/D/F based on gaps and frequency)
+3. **Top 5 Reels by Plays** — Table with date, topic, plays, likes, comments, URL
+4. **Top 5 Reels by Likes** — Same format
+5. **Top 5 Reels by Comments** — Same format
+6. **All Reels (Chronological)** — Full table with plays, likes, comments, type
+7. **Key Insights** — What's working, what needs attention, 3-4 actionable recommendations
 
 ### Consistency Grading Scale
 - **A** = 5+ posts/week avg, no gaps > 3 days

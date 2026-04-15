@@ -18,7 +18,7 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 
 | Folder | What's In It |
 |--------|-------------|
-| `skills/` | Claude `.skill` files -- the engines that generate scripts. IG reel writer, YT scriptwriter, YT ideator. |
+| `.claude/skills/` | Claude skill files -- the engines that power this workspace. IG reel writer, YT scriptwriter, YT ideator, IG analytics, Notion content pipeline. |
 | `reference/` | Strategy docs and training material -- Backbone Worksheet (ICP/offer), Instagram Deep Dive, YouTube Playbook, viral scripting methodology. |
 | `transcripts/` | Raw transcripts -- Jason's YouTube content and sales call recordings. Mine these for content ideas and audience pain points. |
 | `scripts/` | Generated script batches -- output from the skill files. |
@@ -27,10 +27,9 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 
 ## How the Scripting System Works
 
-1. **Skill files** (`skills/`) are the core engines. Each is a compressed Claude skill archive containing system prompts, templates, hook libraries, and methodology:
-   - `ig-reel-script-writer.skill` -- Instagram Reel scripts
-   - `yt-scriptwriter.skill` -- YouTube video scripts
-   - `yt-ideator.skill` -- YouTube video idea generation
+1. **Skill files** (`.claude/skills/`) are the core engines. Each has a `SKILL.md` with system prompts, templates, and methodology:
+   - `ig-analytics` -- 30-day Instagram performance reports
+   - `notion-content-pipeline` -- Notion content database management
 2. Scripts require **context** to be effective. Always read the Backbone Worksheet (`reference/Jason Cooperson Backbone Worksheet - Updated by Claude.txt`) first -- it has the ICP, offer, backstory, and proof. Then layer in transcripts, call recordings, or performance data as needed.
 3. Script structure: **Hook (0-3s) -> Content/Value -> CTA**
 4. Two script categories: **viral/broad** (reach-optimized) and **conversion** (offer-optimized)
