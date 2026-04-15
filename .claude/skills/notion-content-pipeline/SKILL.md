@@ -185,3 +185,4 @@ Stale items (no edits in 7+ days):
 - Keep confirmations short — one line, not a paragraph
 - If a search returns multiple possible matches, list them and ask which one
 - The query-data-source endpoint has issues — use `post-search` with page filter instead and filter by parent database_id client-side
+- **PAGINATION IS CRITICAL** — `post-search` returns max 100 results per call. ALWAYS check `has_more` in the response. If `true`, make another call with `start_cursor` set to `next_cursor` from the previous response. Repeat until `has_more` is `false`. Failing to paginate WILL cause missing pages.

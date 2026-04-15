@@ -30,10 +30,10 @@ Accounts in the same niche (personal branding / content creation / coaching) to 
 
 ## SooWei Goh (@sooweigoh)
 - **Followers**: 107K
-- **Posts**: 10
+- **Posts**: 26+ in last 30 days (posts nearly daily)
 - **Bio**: "Founder @gohconsulting"
 - **Verified**: Yes
-- **Notes**: Only 10 posts with 107K followers — extremely high virality per post. Worth studying every single reel to understand what's hitting. Consulting angle.
+- **Notes**: Posts daily — high volume. Runs a TOF/BOF split: cinematic lifestyle reels for reach + keyword CTA posts for lead gen. Pivoting away from coaching ("shutting down my company"). Money transparency content is his biggest outlier format.
 - **URL**: https://www.instagram.com/sooweigoh/
 
 ---

@@ -8,18 +8,21 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 
 ## Creator Profile
 
-- **Niche**: Helping beginners start coaching businesses using Instagram
-- **Audience**: People who want to monetize a skill via Instagram, escape 9-5, hit first $10k/mo
-- **Offer**: "The Instagram Accelerator" -- $4,000 90-day cohort program (20 spots)
-- **Proof**: 173k IG followers, 9k YouTube subs, ~$10k/mo MRR, worked with notable creators (Alex Eubank, Hoku Arnold, Prasad, Cole, etc.)
+- **Niche**: AI systems implementation for established business owners + content coaching for beginners
+- **Tier 1 Audience**: Business owners doing $10-40k/mo who need AI systems to scale without hiring
+- **Tier 1 Offer**: AI Systems Implementation -- $6-8K 1-on-1 done-with-you Claude Code builds (setter bots, content pipelines, dashboards, CRM automation)
+- **Tier 2 Audience**: Beginners who want to start a coaching business using Instagram
+- **Tier 2 Offer**: "The Instagram Accelerator" -- $4,000 90-day cohort (feeder into Tier 1)
+- **Proof**: 173k IG followers, 9k YouTube subs, ~$10k/mo MRR, production-grade AI systems built with Claude Code, worked with notable creators (Alex Eubank, Hoku Arnold, Prasad, Cole, etc.)
 - **Voice/Tone**: Casual, direct, no-BS, uses slang ("yo what up guys"), energetic, conversational. Speaks from lived experience (college dropout, started from $0). Anti-corporate, pro-shortcut, pro-AI.
+- **Full business context**: See `backbone.md` in project root
 
 ## Folder Structure
 
 | Folder | What's In It |
 |--------|-------------|
-| `.claude/skills/` | Claude skill files -- the engines that power this workspace. IG reel writer, YT scriptwriter, YT ideator, IG analytics, Notion content pipeline. |
-| `reference/` | Strategy docs and training material -- Backbone Worksheet (ICP/offer), Instagram Deep Dive, YouTube Playbook, viral scripting methodology. |
+| `.claude/skills/` | Claude skill files -- the engines that power this workspace. IG analytics, Notion content pipeline, competitor research. |
+| `backbone.md` | Business backbone -- ICP, offers (Tier 1 AI systems + Tier 2 coaching), proof, niche, backstory. READ THIS FIRST for any content or strategy work. |
 | `transcripts/` | Raw transcripts -- Jason's YouTube content and sales call recordings. Mine these for content ideas and audience pain points. |
 | `scripts/` | Generated script batches -- output from the skill files. |
 | `data/` | Performance analytics -- reel metrics, what's working and what's not. |
@@ -30,9 +33,13 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 1. **Skill files** (`.claude/skills/`) are the core engines. Each has a `SKILL.md` with system prompts, templates, and methodology:
    - `ig-analytics` -- 30-day Instagram performance reports
    - `notion-content-pipeline` -- Notion content database management
-2. Scripts require **context** to be effective. Always read the Backbone Worksheet (`reference/Jason Cooperson Backbone Worksheet - Updated by Claude.txt`) first -- it has the ICP, offer, backstory, and proof. Then layer in transcripts, call recordings, or performance data as needed.
+   - `competitor-research` -- Competitor scraping, outlier detection, trend analysis, content ideas
+   - `web-research` -- Parallel web research across 6 domains, trending news, viral hook generation
+   - `scriptwriter` -- Write IG Reel/YT scripts in Jason's voice with viral frameworks (fresh, ramble, batch, rewrite modes)
+   - `post-content` -- Post/schedule videos to IG, YouTube, TikTok, LinkedIn, Facebook via Buffer API
+2. Scripts require **context** to be effective. Always read `backbone.md` first -- it has the ICP (Tier 1 + Tier 2), offers, backstory, and proof. Then layer in transcripts, call recordings, or performance data as needed.
 3. Script structure: **Hook (0-3s) -> Content/Value -> CTA**
-4. Two script categories: **viral/broad** (reach-optimized) and **conversion** (offer-optimized)
+4. Three content categories: **TOF** (broad reach, new eyeballs), **MOF** (nurture, build trust, show expertise), **BOF** (convert, CTA, sell the offer)
 5. Check `data/Reel Performance Data` before writing new batches -- let the numbers inform angles and formats.
 
 ## Content Principles
