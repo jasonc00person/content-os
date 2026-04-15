@@ -1,6 +1,6 @@
 ---
 name: post-content
-description: "Post or schedule content to Instagram, YouTube, TikTok, LinkedIn, and Facebook via Buffer API. Can transcribe videos and generate captions automatically. Handles video upload, caption, scheduling, and multi-platform distribution. Triggers: post this, schedule this, publish reel, post to instagram, post to all platforms, schedule reel, queue this video, post content, transcribe and post."
+description: "Post or schedule content to Instagram, YouTube, and TikTok via Buffer API. Can transcribe videos and generate captions automatically. Handles video upload, caption, scheduling, and multi-platform distribution. LinkedIn and Facebook can be added by connecting them in Buffer. Triggers: post this, schedule this, publish reel, post to instagram, post to all platforms, schedule reel, queue this video, post content, transcribe and post."
 ---
 
 # Post Content — Multi-Platform Publisher
@@ -32,7 +32,7 @@ Transcribe a video, generate a caption, upload it, and post/schedule across all 
 
 **Refresh channels query:**
 ```bash
-export BUFFER_API_KEY=$(grep BUFFER_API_KEY /path/to/content-os/.env | cut -d= -f2) && curl -s -X POST https://api.buffer.com \
+export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/content-os/.env | cut -d= -f2) && curl -s -X POST https://api.buffer.com \
   -H "Authorization: Bearer $BUFFER_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"query": "query { channels(input: { organizationId: \"69d6fa971fcceb5bb1fab20a\" }) { id name service type } }"}' | python3 -m json.tool
@@ -105,7 +105,7 @@ Must show `content-length` > 0. If content-length is 0, the upload failed — tr
 **The proven method:**
 
 ```bash
-export BUFFER_API_KEY=$(grep BUFFER_API_KEY /path/to/content-os/.env | cut -d= -f2)
+export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/content-os/.env | cut -d= -f2)
 
 python3 -c "
 import json

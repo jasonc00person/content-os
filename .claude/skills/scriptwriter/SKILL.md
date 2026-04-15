@@ -1,6 +1,6 @@
 ---
 name: scriptwriter
-description: "Writes Instagram Reel and YouTube scripts in Jason's exact voice using proven viral frameworks. Handles fresh topics, ramble-to-script conversion, batch filming day prep, and rewrites. Triggers: write a script, script this, scriptwriter, write me a reel, script out, filming day, batch scripts, rewrite this hook, turn this into a script."
+description: "Writes short-form scripts (IG Reels, YouTube Shorts, TikTok) in Jason's exact voice using proven viral frameworks. Handles fresh topics, ramble-to-script conversion, batch filming day prep, and rewrites. Triggers: write a script, script this, scriptwriter, write me a reel, script out, filming day, batch scripts, rewrite this hook, turn this into a script."
 ---
 
 # Scriptwriter — Jason's Voice, Viral Frameworks

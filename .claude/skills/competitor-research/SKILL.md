@@ -203,7 +203,7 @@ Save to `research/Competitor-Research_YYYY-MM-DD.md` with this structure:
 ---
 
 ## Important Notes
-- Use `apify/instagram-scraper` (general-purpose) NOT `apify/instagram-reel-scraper` — we need carousels too, not just reels
+- Use TWO-SCRAPER approach: dedicated reel scraper as PRIMARY (with `skipPinnedPosts`), general scraper for carousels
 - Median is better than mean for baselines — one viral post shouldn't skew the average
 - If a competitor has < 5 posts in the window, note it but still analyze what's there
 - Don't manufacture trends — if there's no clear pattern, say so

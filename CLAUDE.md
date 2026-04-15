@@ -21,12 +21,15 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 
 | Folder | What's In It |
 |--------|-------------|
-| `.claude/skills/` | Claude skill files -- the engines that power this workspace. IG analytics, Notion content pipeline, competitor research. |
+| `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, notion-content-pipeline, competitor-research, web-research, post-content. |
 | `backbone.md` | Business backbone -- ICP, offers (Tier 1 AI systems + Tier 2 coaching), proof, niche, backstory. READ THIS FIRST for any content or strategy work. |
-| `transcripts/` | Raw transcripts -- Jason's YouTube content and sales call recordings. Mine these for content ideas and audience pain points. |
-| `scripts/` | Generated script batches -- output from the skill files. |
-| `data/` | Performance analytics -- reel metrics, what's working and what's not. |
-| `partnerships/` | Sponsored/collab content and invoices (e.g., Higgsfield). |
+| `voice-dna.md` | Jason's speech patterns, openers, closers, slang, energy -- extracted from top 10 reels. READ THIS before writing any script. |
+| `competitor-list.md` | Competitor accounts to study (Jun Yuh, Ava, Mino Lee, SooWei Goh). |
+| `viral-knowledge/` | Scripting methodology, viral frameworks, psychology tricks, hook analysis, Instagram/YouTube playbooks. |
+| `research/` | Competitor research reports and web research trend reports. |
+| `analytics/` | IG performance reports and reel metrics. |
+| `final-scripts/` | Generated script batches and sponsored content (e.g., Higgsfield). |
+| `transcripts/` | Raw transcripts -- Jason's YouTube content and sales call recordings. |
 
 ## How the Scripting System Works
 
