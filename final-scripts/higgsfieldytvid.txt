@@ -1,0 +1,196 @@
+00;00;00;03 - 00;00;14;28
+Unknown
+what is up guys? In this video I'm going to show you how to generate super dope cinematic shots just like this
+
+00;00;15;00 - 00;00;25;26
+Unknown
+for your Instagram, YouTube, whatever content you want to make. And we're going to be doing this with Higgs Field. So without further ado, let's get into
+
+00;00;25;26 - 00;00;26;25
+Unknown
+the tutorial.
+
+00;00;27;01 - 00;00;49;19
+Unknown
+All right, so here we are, guys on Higgs Field AI. And basically the very first step to creating videos, like with yourself in it, is that you have to create a character. So you just click on this tab right here and you create a character. At first when I first opened up the software, I was like, dang, there's so many tabs up here.
+
+00;00;49;19 - 00;01;15;19
+Unknown
+Like, I don't even know what. What right should I use cinema studio? Should I use this thing? Should I use this thing like, what's the best thing for what I want to do, right? This is the workflow that I found to be most helpful for what I want to do, which is put myself in cool shots, right? Generate cool B-roll so that maybe I can put it over my talking head videos to, you know, better, illustrate the story and do some like visual storytelling.
+
+00;01;15;19 - 00;01;30;16
+Unknown
+Right. So the workflow for this is going to be yeah, character. So ID character, you're just going to click this button right here and you want to upload about 20 photos. So let me see if I can find and show you what those photos look like.
+
+00;01;30;23 - 00;01;44;17
+Unknown
+pretty much I generated or, I didn't generate. I actually took these photos of myself, and then uploaded them in here. It only took 11. It might tell you, like, oh, you need more photos for it to generate, like, a better thing.
+
+00;01;44;17 - 00;01;55;03
+Unknown
+But honestly, like 11 photos was fine for me. I think that works perfectly fine. So 10 to 15 photos. Once you've done that, it'll take some time, but you'll be able to generate that character
+
+00;01;55;05 - 00;02;05;27
+Unknown
+And then from there, what you want to do is go to the image tab. Right. This is another thing I was confused about is the first step to making a video is actually creating the image.
+
+00;02;05;27 - 00;02;26;15
+Unknown
+Right. So first you make the image. Then you turn the image into the video. That's how to get really good videos. A big like beginner mistake is like going straight to the video and just trying to trying to, you know, like generate the video, right away. Right. But that's actually not good. We need to start with an image first, right.
+
+00;02;26;18 - 00;02;50;00
+Unknown
+So, there's a couple different options you here have here for models. So Soul cinema doesn't allow you to put a prompt in if you put a reference image in, which kind of sucks. But soul cinema, soul cinema and soul 2.2.0 are really I mean, sold 2.0 is more for like fashion, right? So it gets your face really accurately.
+
+00;02;50;00 - 00;03;07;29
+Unknown
+The soul models are Higgs fields, like proprietary models, and they will get your face like really, really accurate. The trade off with that is that it doesn't get the seen as accurate, or it doesn't have as many styles as something like nano banana. But some of these I used soul and some of them I use nano banana.
+
+00;03;08;04 - 00;03;41;20
+Unknown
+Probably this one was generated with soul cinema. Yeah, this one was soul cinema. You know, a couple others. This one was nano banana for sure. I because, you know, it wasn't working with soul, cinema, soul cinema was generating more accurate, but it was like slightly different. You can see the difference between like, this is nano banana. I don't know why my hands are black, but, this is nano banana, and this is like soul soul cinema, right?
+
+00;03;41;22 - 00;04;05;21
+Unknown
+Both of them are pretty cool. But anyways, so cool. I would probably for the most of you guys, nano banana two or sorry, nano Banana Pro is probably going to be the model that you want to go with, right. And so now, what you can do is tag your character. So you just say, Jason Cooper in and then you can describe any scene that you want.
+
+00;04;05;23 - 00;04;37;18
+Unknown
+Or if you have a reference image that's like even better, right? Like let's say I want to put myself in kill Bill. Maybe if I take a screenshot like this. Wait. Hold on. I don't want to get that. So open this image up. Okay. Perfect. Open this image up. I'll save this image. Okay. Save that. And then I'm going to upload that as a reference.
+
+00;04;37;21 - 00;05;01;12
+Unknown
+And then I'll say something like Jason Cooper stand holds the sword. And looks intensely, to the right. That should be good. And we're going to click generate. And so now like when you're trying to get the image right, you need to do a bunch of different variations, right. Many many many generations so that you finally get a good one.
+
+00;05;01;12 - 00;05;21;19
+Unknown
+Because that's the thing about AI is like, you know, if you type it out and go with the first one, it gives you, it's obviously going to be shit you need to go through like probably ten to 15 or 20 different generations and choose the best one. That's how you get the best images that actually look good, because a lot of them, it'll mess up or it'll do something weird, right?
+
+00;05;21;21 - 00;05;40;22
+Unknown
+So that's why actually why I have my batch size by default it's set to one. But you definitely want to set your batch size to like four. But yeah. See, like this one didn't make any sense. This one, kind of got it, but it put me, like, back in my room because I think the reference images that I uploaded to Nano Banana were in my room.
+
+00;05;40;25 - 00;05;50;24
+Unknown
+Okay, this one's not bad. Well, it's got something messed up in here, though.
+
+00;05;50;27 - 00;05;56;04
+Unknown
+Yeah. So.
+
+00;05;56;07 - 00;06;05;25
+Unknown
+Jason Cooper's in holding. Oh, wow. This one's actually not bad. I mean, it's like, obviously it could be better, but, you know.
+
+00;06;05;27 - 00;06;31;23
+Unknown
+I think it would do better if I specified in the prompt better. And typically what I'll even do is I'll like go to Gemini and I will upload the image like this one and then be like describe this shot. Exactly. And then I'll use that and kind of plug it back into the prompt here on Higgs Field. But I digress.
+
+00;06;31;25 - 00;06;44;13
+Unknown
+what once you've generated your image and you have the image, right. Which that could take a long time. Right. But you know, you got to keep messing with the prompt. Do some more things, generate some variations until you come to an image that you like, right.
+
+00;06;44;13 - 00;07;02;27
+Unknown
+Once you have an image that you like, then, you're going to go to create video. So you just go to the video tab and create video. Honestly guys, the only two real things you can ignore, ignore all of this other stuff like I just do create image, create video. That's like the most common ones, right? These are just all the models that you can use.
+
+00;07;02;29 - 00;07;20;18
+Unknown
+So that's that. And then they have a couple different workflows here. But I really just do create image and create video. So now we're going to move to create video. I think they have comments 2.0. That's like a new model that they just released for everyone. So I'm actually kind of excited to try that. Let's try and upload.
+
+00;07;20;18 - 00;07;42;26
+Unknown
+So you obviously upload the image that you just generated. And that's going to be like the starting frame right. Oh you don't even need to upload it. You can just go click Image Generations right here and then choose it from there. So I'll choose this one. And I guess you have to check eligibility now. I guess you know it doesn't want to be like stealing any copyright or protected media I guess.
+
+00;07;42;26 - 00;07;45;09
+Unknown
+So we're going to have to wait for that to go.
+
+00;07;45;12 - 00;08;09;21
+Unknown
+Oh, wow. It's actually not eligible because it's probably knows it's from kill Bill. Maybe. That's crazy. This one was eligible, even though it's like from Wolf of Wall Street. Damn. It really says not eligible. All right. I guess if your thing is an eligible, then you can't use dream or can't see dance 2.0, but let's instead use, clang.
+
+00;08;09;24 - 00;08;31;25
+Unknown
+So I'm just going to use clang 3.0. And if you can, you can go change and look at all the models they have here. They have this isn't really useful. Let's just go. Clang 3.0. Clang 3.0. And we're going to choose the start frame. And that's going to be this guy right here. And then we're just going to say
+
+00;08;31;27 - 00;08;37;11
+Unknown
+Jason's.
+
+00;08;37;14 - 00;08;46;17
+Unknown
+Slowly lower. Is this or.
+
+00;08;46;20 - 00;08;51;17
+Unknown
+Jason.
+
+00;08;51;19 - 00;09;00;21
+Unknown
+Slowly walks from side to side, staring.
+
+00;09;00;23 - 00;09;14;24
+Unknown
+Tensely at to the left. Okay. Probably gonna do something like that. And then we'll click generate. And then that should be good to go.
+
+00;09;14;27 - 00;09;23;04
+Unknown
+All right, it looks like we got a result back and. Yeah. Not bad, not bad.
+
+00;09;23;07 - 00;09;26;22
+Unknown
+Not bad. I probably use the second half right here.
+
+00;09;26;25 - 00;09;29;10
+Unknown
+yeah, that's pretty much how I made all of these videos.
+
+00;09;29;10 - 00;09;55;14
+Unknown
+I mean, from here you can just download it. I will go through. Let's do one last step. Okay. So once you have the video, the raw video, you want to go and bring it into your editor. So I downloaded the video. Bring it in here. And what you want to do is toss on a color grade, color grade and film grain.
+
+00;09;55;17 - 00;10;13;08
+Unknown
+Some sort of cinematic overlay because that always makes everything look better. And as you can see, you know, here is without here is the color grade. And then here is like cinematic film layer. And you can see that looks a lot better.
+
+00;10;13;10 - 00;10;32;00
+Unknown
+And what I have here is just a LUT, so I just have a basic LUT down there. And honestly you guys, if you want the Luts for free, my LUT pack, that'll be down below my cinematic LUT pack that I probably paid money for, but I will give it to you for free. That'll be linked down below in the description.
+
+00;10;32;02 - 00;10;57;04
+Unknown
+And then just so throw the LUT on there, right. Increase the saturation to about 115 intensity of the LUT. You can leave that at 100, but maybe I'll tone it down to like 90. And then what else are we doing. So I made this a lot warmer. I think it's already pretty warm, so I'm probably just going to leave this back at zero contrast.
+
+00;10;57;07 - 00;11;18;27
+Unknown
+Let's also tone that down. I think everything else is good. And so now you can see before, after, before, after. And then the oh the film grain heavy grain overlay. Before. After before. After. Right. So that definitely makes it look a lot more cinematic.
+
+00;11;19;00 - 00;11;25;27
+Unknown
+But yeah, that's pretty much end to end workflow for creating these super cinematic, cool videos of yourself with AI
+
+00;11;26;02 - 00;11;43;22
+Unknown
+if you are a content creator coach, someone in the online space that wants to grow your business, create more content, create better content, and attract more dream clients to ultimately increase your revenue and make more money. Then go down and click the first link down in the description below to book a call with me.
+
+00;11;44;00 - 00;11;48;26
+Unknown
+I have a couple different offers that I can help you out with if you're a more advanced business owner, we have something for you.
+
+00;11;48;26 - 00;11;59;17
+Unknown
+If you're a beginner just starting out with content, I also have stuff that will definitely help you out. So go ahead and buckle down below. If you want to speak with me about how we can scale your personal brand,
+
+00;11;59;19 - 00;12;15;01
+Unknown
+if you want the entire workflow, and all of my other resources and a community of thriving content creators to get you started on your journey, and a little bit of group support from yours truly, you can also join my school community down below.
+
+00;12;15;03 - 00;12;16;23
+Unknown
+That'll be the second link down in the description.
+
+00;12;16;29 - 00;12;25;15
+Unknown
+Let me know if you guys have any more questions about Higgs Field or any other AI workflows down in the comments and I'll try to answer. I will see you guys in the next one. Peace.
+

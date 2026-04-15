@@ -1,0 +1,9 @@
+# MCP config (contains API tokens)
+.mcp.json
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
