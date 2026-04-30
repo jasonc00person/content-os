@@ -26,7 +26,7 @@ Manages Jason's Notion Content Database — view the pipeline, move content betw
 | Property | Type | Options |
 |----------|------|---------|
 | **Title** | title | — |
-| **Status** | status | Idea, Scripting/Filming, To Edit, Editing, To Review, Scheduled, Posted, Archived |
+| **Status** | status | Idea, Scripting/Filming, To Edit, Editing, To Review, Posted, Archived |
 | **Format** | select | Short-form, Long-form |
 | **Type** | select | Conversion, Viral |
 | **Post Date** | date | YYYY-MM-DD |
@@ -35,12 +35,14 @@ Manages Jason's Notion Content Database — view the pipeline, move content betw
 
 ### Pipeline Flow
 ```
-Idea → Scripting/Filming → To Edit → Editing → To Review → Scheduled → Posted → Archived
+Idea → Scripting/Filming → To Edit → Editing → To Review → Posted → Archived
 ```
+
+There is intentionally **no "Scheduled" status**. Once a piece of content is handed off to Buffer (whether posting now, queued, or scheduled for a future date), it moves straight to **Posted** with `Post Date` set to the actual publish date Buffer assigned. Buffer is the source of truth for publishing — duplicating that state in Notion creates a sync problem with no upside. If a scheduled post ever gets cancelled in Buffer, manually flip the Notion row back.
 
 ### Status Groups (Notion Kanban)
 - **To-do:** Idea
-- **In progress:** Scripting/Filming, To Edit, Editing, To Review, Scheduled
+- **In progress:** Scripting/Filming, To Edit, Editing, To Review
 - **Complete:** Posted, Archived
 
 ---
@@ -77,9 +79,6 @@ Editing (X)
 
 To Review (X)
   - Title 1
-
-Scheduled (X)
-  - (none)
 
 Posted (X total)
 Archived (X total)

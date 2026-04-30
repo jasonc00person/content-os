@@ -7,3 +7,10 @@
 
 # OS files
 .DS_Store
+
+# Dependencies
+**/node_modules/
+
+# Video editor binaries (raw clips and rendered outputs)
+video-editor/inbox/
+video-editor/outputs/
