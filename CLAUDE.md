@@ -8,25 +8,37 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
 
 ## Creator Profile
 
-- **Niche**: Content coaching for established creators/operators who want to scale their personal brand and organic revenue
-- **ICP**: Established $10-40k/mo creators (traders, Amazon FBA, ads agencies, etc.) — good at what they do, but stuck in 200-view jail, no organic revenue, over-reliant on ads, inconsistent with content, no clear brand direction
-- **Core Offer**: **Creator Accelerator** -- $6,000 / 3-month cohort. Locked in on this ONE offer for the next 18 months. No flip-flopping.
-- **Outcome (guaranteed)**: +$10k/mo organic revenue OR 10k followers in 90 days, or money back. +$12k CC money-back guarantee with stipulations.
-- **Unique Mechanism**: AI content scraping/research method that produces weekly DFY viral content ideas. Best price-to-value in the content coaching space.
-- **Deliverables**: 1-1 onboarding call, 3x/week group calls, DFY weekly content ideas, DFY editor placement. Month 1 = warmup + viral momentum, Month 2 = launch sequence ($$$), Month 3 = scaling + fulfillment systems.
-- **Scarcity**: Only 10 spots per cohort (real scarcity — Jason wants to be hands-on with each client).
-- **Who Jason does NOT serve**: Complete beginners, anyone under $10k/mo, anyone giving dispute-risk vibes.
-- **Proof**: 173k IG followers, 9k YouTube subs, ~$15-20k/mo. Client wins: Albert, Ayden. Worked with notable creators (Alex Eubank, Prasad, Cole, Cynthia, Seth Capehart).
+- **Niche**: AI content systems + creator economy education. Anti-LARP, anti-gatekeep — quality online education that doesn't cost $5–50K.
 - **Voice/Tone**: Casual, direct, no-BS, uses slang ("yo what up guys"), energetic, conversational. Speaks from lived experience (college dropout, started from $0). Anti-corporate, pro-shortcut, pro-AI.
-- **Full business context**: See `CA Backbone Apr 26 2026.md` in project root
+- **Proof**: 173k IG · 9k YT · 173 paying Skool members · $7,410 MRR. Poppy video (~700K views, fully AI-scripted). Member wins: Albert (200 → 5–10K views in 7 weeks, 4× community growth), Ayden ($2K → $10K/mo). Worked with: Alex Eubank, Prasad, Cole, Cynthia, Seth Capehart.
+
+### One Offer, Two Tiers (Skool — Creator Accelerator)
+
+As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old high-ticket plays (CA $6K cohort, DFY $10–15K install) are dead. Skool is the main thing now.
+
+**TIER 1 — Standard ($75/mo until May 17 → $97/mo)** *(MAIN MONEY MAKER)*
+- ICP: Anyone trying to make more, better, or more viral content — beginners through $20–100K/mo operators
+- Aspirational outcome: First viral video + 10x views (NOT a guarantee)
+- Deliverables: Plug n' play AI content system, 2× weekly content review calls w/ Jason, onboarding + custom AI research, all automation templates + resources, 2026 content course
+- Urgency: $75 grandfathered for life until May 17, then $97/mo (the price flip IS the launch trigger)
+
+**TIER 2 — Inner Circle ($4K/yr)** *(upsell, capacity-limited)*
+- ICP: $10–40K/mo creators with PMF, stuck in 200-view jail
+- Outcome: 10x views in 90 days, guaranteed (or we work for free until)
+- Deliverables: 1-1 onboarding, 2× weekly Inner Circle calls, 3-month INSTALL → MONETIZE → SCALE roadmap, DFY editor placement
+- Scarcity: 5 new clients/month max
+
+**Full backbone:** `backbone/{vision,icp,offer,messaging}.md` — read these for any content/strategy work.
+
+**Who Inner Circle does NOT serve**: Complete beginners, anyone under ~$10K/mo, dispute-risk vibes. Standard is open to beginners.
 
 ## Folder Structure
 
 | Folder | What's In It |
 |--------|-------------|
 | `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, notion-content-pipeline, competitor-research, post-content, video-editor. |
+| `backbone/` | **Locked offer backbone — load these on demand for content/strategy work.** `vision.md` (mission, MRR ladder, backstory), `icp.md` (Standard + Premium ICPs, competitor breakdown, USP), `offer.md` (offer stack, pricing, deliverables), `messaging.md` (headlines, 5 belief shifts, proof bank, anti-LARP positioning). |
 | `video-editor/` | Video editing workspace. Drop raw clips in `inbox/<job-name>/`, final MP4s land in `outputs/<job-name>.mp4`. Intermediates (transcript, cuts) live in `/tmp/video-editor/<job>/`. |
-| `CA Backbone Apr 26 2026.md` | Business backbone -- vision, ICP, Creator Accelerator offer, proof, niche, backstory. READ THIS FIRST for any content or strategy work. |
 | `voice-dna.md` | Jason's speech patterns, openers, closers, slang, energy -- extracted from top 10 reels. READ THIS before writing any script. |
 | `competitor-list.md` | Competitor accounts to study (Jun Yuh, Ava, Mino Lee, SooWei Goh). |
 | `viral-knowledge/` | Scripting methodology, viral frameworks, psychology tricks, hook analysis, Instagram/YouTube playbooks. |
@@ -44,18 +56,22 @@ This is Jason Cooperson's content creation workspace for Instagram and YouTube. 
    - `scriptwriter` -- Write IG Reel/YT scripts in Jason's voice with viral frameworks (fresh, ramble, batch, rewrite modes)
    - `post-content` -- Post/schedule videos to IG, YouTube, TikTok, LinkedIn, Facebook via Buffer API
    - `video-editor` -- Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, word-aware silence snap, FFmpeg splice. No captions/B-roll -- just tight rough cuts.
-2. Scripts require **context** to be effective. Always read `CA Backbone Apr 26 2026.md` first -- it has the ICP, Creator Accelerator offer, backstory, and proof. Then layer in transcripts, call recordings, or performance data as needed.
+2. Scripts require **context** to be effective. Load the relevant backbone files on demand:
+   - **Default for any script:** `backbone/icp.md` + `backbone/messaging.md` (audience + how we talk about it)
+   - **Pricing / offer mechanics:** `backbone/offer.md`
+   - **Strategic / mission-driven content:** `backbone/vision.md`
+   - Layer in transcripts, call recordings, or performance data as needed.
 3. Script structure: **Hook (0-3s) -> Content/Value -> CTA**
 4. Three content categories: **TOF** (broad reach, new eyeballs), **MOF** (nurture, build trust, show expertise), **BOF** (convert, CTA, sell the offer)
-5. Check `data/Reel Performance Data` before writing new batches -- let the numbers inform angles and formats.
+5. Check `analytics/` reports before writing new batches -- let the numbers inform angles and formats.
 
 ## Content Principles
 
 - Value delivery falls into 3 categories: Documentation, Opening Someone's Eyes, Education
 - Hooks must be scroll-stopping (dream outcomes, contrarian takes, curiosity gaps, pain points)
-- Every piece of content ties back to the offer funnel: content -> DMs -> call booking
+- Every piece of content ties back to the offer funnel: content → Skool join (Standard) or DM / Inner Circle apply (Premium)
 - Scripts must sound like Jason wrote them -- paraphrased and personalized, never robotic
-- Conversion scripts should reference ICP pain points (stuck in 200-view jail, no organic revenue, ad-cost reliant, no editor, burnt out on content, no brand direction, no content strategy)
+- Every piece should reinforce at least one of the 5 belief shifts in `backbone/messaging.md`
 - Don't manufacture content -- document what's already happening. Authenticity outperforms.
 
 ## Integrations

@@ -14,3 +14,6 @@
 # Video editor binaries (raw clips and rendered outputs)
 video-editor/inbox/
 video-editor/outputs/
+
+# Claude Code worktrees
+.claude/worktrees/
