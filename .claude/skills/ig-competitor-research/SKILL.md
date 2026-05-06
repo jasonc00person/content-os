@@ -3,7 +3,7 @@ name: ig-competitor-research
 description: "Scans Instagram competitors serially via Chrome — orchestrator opens a fresh tab and hands the ID to a Sonnet scraper that loops every account in that single tab, picks the top 3 reels by views per handle (excluding pinned), then visits only those 3 to capture caption + engagement + date. The orchestrator then sorts all 3 × N reels by views and writes the report directly. Triggers: content research, competitor research, what's trending, niche research, research competitors, find outliers, trending content, what's working in my niche."
 ---
 
-# Competitor Research — Top 3 by Views Per Handle
+# IG Competitor Research — Top 3 by Views Per Handle
 
 The orchestrator opens a fresh Chrome tab and hands the tab ID to a Sonnet scraper. The scraper works through every competitor in sequence using that single tab. For each account, navigate to the reels grid, filter pinned posts via aria-label, identify the top 3 non-pinned reels by view count, and visit only those 3 to capture caption + engagement + date. The scraper closes the tab when done. The orchestrator takes the returned JSON, sorts the pooled 3 × N reels by views high-to-low across all accounts, tags topic + CTA, and writes the report directly — no second subagent needed.
 
