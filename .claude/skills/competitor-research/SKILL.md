@@ -204,10 +204,12 @@ After saving, return the file path.
 
 1. **Resolve handles.** Read `competitor-list.md` from the project root and extract every handle listed (or use handles the user named inline). If both are missing, ask the user.
 2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/Competitor-Research_<DATE>.md`. Create `research/` if missing.
-3. **Allocate exactly ONE tab:**
+3. **Allocate exactly ONE tab in a foreground Chrome window.** Order matters — IG throttles hidden tabs and the scrape silently fails if Chrome isn't the focused app.
    - Load `tabs_context_mcp`, `tabs_create_mcp`, `tabs_close_mcp` via ToolSearch.
    - Call `tabs_context_mcp`. If extension isn't connected, launch Chrome (`open -a "Google Chrome"` on macOS; OS equivalent elsewhere), then call `tabs_context_mcp` with `createIfEmpty: true`.
-   - Claim one tab. Close any other MCP tabs so the final state is exactly 1 tab.
+   - **Force a fresh window.** Close every tab in the existing MCP group via `tabs_close_mcp` — when the last one closes, Chrome auto-removes the group. Then call `tabs_context_mcp` with `createIfEmpty: true` again to spawn a brand-new tab in a brand-new window (new windows always open frontmost). This sidesteps stale hidden windows from prior sessions.
+   - **Bring Chrome to the front.** Run `osascript -e 'tell application "Google Chrome" to activate'` (macOS). On Linux/Windows, swap for the OS equivalent (`wmctrl -a "Google Chrome"` / `powershell -Command "(New-Object -ComObject WScript.Shell).AppActivate('Chrome')"`). Without this, Chrome can be open behind the terminal and IG still throttles.
+   - Final state: exactly 1 tab in 1 frontmost Chrome window.
 4. Spawn the scraper subagent (`subagent_type: general-purpose`, `model: sonnet`) with the brief above. Inject `{TAB_ID}` and `{HANDLES_JSON}`. The scraper closes its own tab as its final step before returning the JSON.
 5. When the scraper returns, spawn the synthesizer subagent (`subagent_type: general-purpose`, `model: sonnet`) with the JSON + brief above. Inject `{OUTPUT_PATH}` from step 2. The synthesizer never touches the browser.
 6. Report the file path back to the user.
@@ -216,7 +218,7 @@ After saving, return the file path.
 
 ## Rules of Thumb
 - Single tab, single agent — no parallelism. Foreground render is the whole point.
-- **Keep the Chrome tab visible.** IG throttles hidden tabs and grids fail to hydrate. If a grid returns empty, check the tab isn't backgrounded before assuming a real failure.
+- **Chrome must be the frontmost app for the entire run.** IG throttles hidden tabs AND tabs in non-focused apps. The orchestrator forces this at start (fresh window + `osascript activate`), but if the user clicks away mid-run the scrape can degrade. If a grid returns empty, check Chrome is still focused before assuming a real failure.
 - NO scrolling. NO window resize. The default loads what we need.
 - Pinned detection is `svg[aria-label="Pinned post icon"]` — never the innerText regex.
 - Scraper closes its own tab before returning. Synthesizer never sees the browser.
