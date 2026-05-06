@@ -36,7 +36,7 @@ As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old
 
 | Folder | What's In It |
 |--------|-------------|
-| `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, notion-content-pipeline, competitor-research, post-content, video-editor. |
+| `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, notion-content-pipeline, ig-competitor-research, post-content, video-editor. |
 | `backbone/` | **Locked offer backbone — load these on demand for content/strategy work.** `vision.md` (mission, MRR ladder, backstory), `icp.md` (Standard + Premium ICPs, competitor breakdown, USP), `offer.md` (offer stack, pricing, deliverables), `messaging.md` (headlines, 5 belief shifts, proof bank, anti-LARP positioning). |
 | `video-editor/` | Video editing workspace. Drop raw clips in `inbox/<job-name>/`, final MP4s land in `outputs/<job-name>.mp4`. Intermediates (transcript, cuts) live in `/tmp/video-editor/<job>/`. |
 | `voice-dna.md` | Jason's speech patterns, openers, closers, slang, energy -- extracted from top 10 reels. READ THIS before writing any script. |
@@ -52,7 +52,7 @@ As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old
 1. **Skill files** (`.claude/skills/`) are the core engines. Each has a `SKILL.md` with system prompts, templates, and methodology:
    - `ig-analytics` -- 30-day Instagram performance reports
    - `notion-content-pipeline` -- Notion content database management
-   - `competitor-research` -- Competitor scraping, outlier detection, trend analysis, content ideas
+   - `ig-competitor-research` -- Competitor scraping, outlier detection, trend analysis, content ideas
    - `scriptwriter` -- Write IG Reel/YT scripts in Jason's voice with viral frameworks (fresh, ramble, batch, rewrite modes)
    - `post-content` -- Post/schedule videos to IG, YouTube, TikTok, LinkedIn, Facebook via Buffer API
    - `video-editor` -- Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, word-aware silence snap, FFmpeg splice. No captions/B-roll -- just tight rough cuts.

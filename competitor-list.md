@@ -1,6 +1,6 @@
 # Competitor List
 
-Accounts in the same niche (personal branding / AI content / creator economy) to study for hooks, formats, and trends. Used by the `competitor-research` skill.
+Accounts in the same niche (personal branding / AI content / creator economy) to study for hooks, formats, and trends. Used by the `ig-competitor-research` skill.
 
 ---
 

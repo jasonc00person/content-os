@@ -276,6 +276,6 @@ These checks happen before output. Don't lecture Jason — just fix it or flag i
 
 - Generate hashtags (caption includes 3-5 max if relevant)
 - Schedule or post content (use post-content skill)
-- Research trends (use competitor-research skill first, then feed findings here)
+- Research trends (use ig-competitor-research skill first, then feed findings here)
 - Write YouTube long-form scripts (this is optimized for short-form — Reels/Shorts/TikTok)
 - Ask 10 clarifying questions before starting — make a call and go
