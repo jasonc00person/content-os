@@ -1,43 +1,50 @@
 ---
 name: competitor-research
-description: "Scans Instagram competitors serially via Chrome — one Sonnet agent loops through every account in a single tab, picks the top 3 reels by views per handle (excluding pinned), then visits only those 3 to capture caption + engagement + date. An Opus synthesizer ranks all 3 × N reels by views and writes the report. Triggers: content research, competitor research, what's trending, niche research, research competitors, find outliers, trending content, what's working in my niche."
+description: "Scans Instagram competitors serially via Chrome — one Sonnet agent loops through every account in a single tab, picks the top 3 reels by views per handle (excluding pinned), then visits only those 3 to capture caption + engagement + date. A second Sonnet agent ranks all 3 × N reels by views and writes the report. Triggers: content research, competitor research, what's trending, niche research, research competitors, find outliers, trending content, what's working in my niche."
 ---
 
 # Competitor Research — Top 3 by Views Per Handle
 
-One Sonnet agent works through every competitor in sequence using a single Chrome tab. For each account, navigate to the reels grid, filter pinned posts via aria-label, identify the top 3 non-pinned reels by view count, and visit only those 3 to capture caption + engagement + date. An Opus synthesizer takes the pooled 3 × N reels, sorts them by views high-to-low across all accounts, and formats the report.
+One Sonnet agent works through every competitor in sequence using a single Chrome tab. For each account, navigate to the reels grid, filter pinned posts via aria-label, identify the top 3 non-pinned reels by view count, and visit only those 3 to capture caption + engagement + date. A second Sonnet agent takes the pooled 3 × N reels, sorts them by views high-to-low across all accounts, and formats the report.
 
 ## How to Trigger
 - "research competitors" / "run content research"
 - "what's trending in my niche"
 - "find outliers on @handle, @handle, @handle"
 
+## Prerequisites
+
+- **Claude in Chrome extension** installed and connected (https://claude.ai/chrome). The skill drives a real Chrome window via the `mcp__claude-in-chrome__*` tools.
+- **A `competitor-list.md` file** in the project root listing IG handles to scrape (any format that lists `@handle` or `instagram.com/handle/`). The orchestrator just needs to extract handles from it. If the file is missing, the user must name handles inline.
+- **macOS launch command**: the skill uses `open -a "Google Chrome"` to launch Chrome if the extension isn't connected. On Linux/Windows, swap that for the OS-appropriate launcher.
+- **A `research/` directory** at the project root. The skill creates it if missing.
+
 ## Inputs
 
 ### Competitor handles
 Default: read `competitor-list.md` and use every account listed.
-Override: user can name specific handles ("research minolee, nick_saraev, nateherkai").
+Override: user can name specific handles ("research creator_one, creator_two, creator_three").
 
 ---
 
 ## Architecture
 
 ```
-Sonnet scraper (one tab, serial loop) → Opus synthesizer → research/Competitor-Research_YYYY-MM-DD.md
+Sonnet scraper (one tab, serial loop) → Sonnet synthesizer → research/Competitor-Research_YYYY-MM-DD.md
 ```
 
 **Why this design:**
 - **One tab, foreground.** Serial avoids Chrome's background-tab throttling and IG's anti-bot quirks (intersection observers don't fire on hidden tabs, IG soft-blocks parallel sessions). Slower than parallel but bulletproof.
 - **No scrolling.** IG's reels grid renders ~12 thumbnails on initial load — typically 3 pinned + 9 non-pinned. View counts are visible on every grid thumbnail, so we can pre-filter to top 3 without visiting any reel pages.
 - **No window resize.** Default size loads enough thumbnails. Larger window loads more, smaller loads the same; either way we have ≥3 non-pinned without scrolling.
-- **Top 3 by views, not by recency.** Every grid load is bounded to recent posts anyway (~9 most recent non-pinned), so view-sort surfaces the strongest of those without arbitrarily cutting fresh content. Cuts reel visits from 7 → 3 per handle (~57% faster than the old flow).
-- **Sonnet end-to-end.** Both scraping and synthesis are mechanical now (navigate → extract for the first; sort + format + light tagging for the second). With every reel making it into the report and view-sort doing the ranking, there's no editorial picking left for Opus to add value on.
+- **Top 3 by views, not by recency.** Every grid load is bounded to recent posts anyway (~9 most recent non-pinned), so view-sort surfaces the strongest of those without arbitrarily cutting fresh content. Cuts reel visits from 7 → 3 per handle (~57% faster than a "newest 7" approach).
+- **Sonnet end-to-end.** Both scraping and synthesis are mechanical (navigate → extract for the first; sort + format + light tagging for the second). With every reel making it into the report and view-sort doing the ranking, there's no editorial picking left for a larger model to add value on.
 
 ---
 
 ## Scraper Agent Brief
 
-Spawn with `subagent_type: general-purpose`, `model: sonnet`. Substitute `{TAB_ID}` and `{HANDLES_JSON}` (e.g. `["minolee.mp4","nateherkai","nick_saraev"]`):
+Spawn with `subagent_type: general-purpose`, `model: sonnet`. Substitute `{TAB_ID}` and `{HANDLES_JSON}` (e.g. `["creator_one","creator_two","creator_three"]`) and `{OUTPUT_PATH}` (the absolute path the synthesizer should write to — see Main Skill Flow):
 
 ```
 You are scraping Instagram competitor reels for content research. You have ONE tab and a list of handles. Loop through every handle serially in that tab. Return one combined JSON.
@@ -46,7 +53,7 @@ ASSIGNED TAB: {TAB_ID}
 HANDLES: {HANDLES_JSON}
 
 STEP 0 — Load Chrome tools.
-Call ToolSearch with query: select:mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__browser_batch
+Call ToolSearch with query: select:mcp__claude-in-chrome__navigate,mcp__claude-in-chrome__javascript_tool,mcp__claude-in-chrome__browser_batch,mcp__claude-in-chrome__tabs_close_mcp
 
 STEP 1 (per handle) — Navigate to the reels grid and grab the top 3 non-pinned URLs by views.
 DO NOT scroll. DO NOT resize the window. The default browser size already loads enough thumbnails.
@@ -98,15 +105,17 @@ For each reel:
 STEP 3 — Build per-handle result objects.
 Combine each handle's 3 metadata results with their views from STEP 1, sorted by views (highest first within the handle).
 
-After all handles processed, RETURN ONE combined JSON block (no other prose):
+STEP 4 — Close the assigned tab via `tabs_close_mcp` with `tabId: {TAB_ID}`. Do this BEFORE returning the JSON — your job owns the browser lifecycle for this run.
+
+After the tab is closed, RETURN ONE combined JSON block (no other prose):
 
 {
   "handles": [
     {
-      "handle": "minolee.mp4",
+      "handle": "creator_one",
       "reels": [
         {
-          "url": "https://www.instagram.com/minolee.mp4/reel/.../",
+          "url": "https://www.instagram.com/creator_one/reel/.../",
           "views": 178000,
           "likes": "6,338",
           "comments": "94",
@@ -118,7 +127,7 @@ After all handles processed, RETURN ONE combined JSON block (no other prose):
       ]
     },
     {
-      "handle": "nateherkai",
+      "handle": "creator_two",
       "error": "<short reason if applicable>"
     }
   ]
@@ -129,7 +138,7 @@ After all handles processed, RETURN ONE combined JSON block (no other prose):
 
 ## Synthesizer Brief
 
-Spawn with `subagent_type: general-purpose`, `model: sonnet`:
+Spawn with `subagent_type: general-purpose`, `model: sonnet`. Substitute `{OUTPUT_PATH}` (the absolute path computed by the orchestrator, e.g. `<project_root>/research/Competitor-Research_YYYY-MM-DD.md`):
 
 ```
 You are formatting a competitor research report from a multi-account pool of top-performing reels.
@@ -149,7 +158,7 @@ For each reel, add:
 
 If a handle had a scrape error, omit it from the body but call it out in the Pattern line.
 
-OUTPUT — write to /Users/jasoncooperson/Projects/content-os/research/Competitor-Research_YYYY-MM-DD.md (today's date).
+OUTPUT — write to: {OUTPUT_PATH}
 
 Format EXACTLY:
 
@@ -193,15 +202,15 @@ After saving, return the file path.
 
 ## Main Skill Flow (what YOU do, the orchestrator)
 
-1. Read `competitor-list.md` to get handles (or use user-specified handles).
-2. **Allocate exactly ONE tab:**
+1. **Resolve handles.** Read `competitor-list.md` from the project root and extract every handle listed (or use handles the user named inline). If both are missing, ask the user.
+2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/Competitor-Research_<DATE>.md`. Create `research/` if missing.
+3. **Allocate exactly ONE tab:**
    - Load `tabs_context_mcp`, `tabs_create_mcp`, `tabs_close_mcp` via ToolSearch.
-   - Call `tabs_context_mcp`. If extension isn't connected, launch Chrome via `open -a "Google Chrome"`, then call `tabs_context_mcp` with `createIfEmpty: true`.
+   - Call `tabs_context_mcp`. If extension isn't connected, launch Chrome (`open -a "Google Chrome"` on macOS; OS equivalent elsewhere), then call `tabs_context_mcp` with `createIfEmpty: true`.
    - Claim one tab. Close any other MCP tabs so the final state is exactly 1 tab.
-3. Spawn the scraper subagent (`subagent_type: general-purpose`, `model: sonnet`) with the brief above. Inject `{TAB_ID}` and `{HANDLES_JSON}`.
-4. When the scraper returns, spawn the synthesizer subagent (`subagent_type: general-purpose`, `model: sonnet`) with the JSON + brief above.
-5. After the synthesizer returns the file path, close the scraper tab via `tabs_close_mcp`.
-6. Report the file path back to Jason.
+4. Spawn the scraper subagent (`subagent_type: general-purpose`, `model: sonnet`) with the brief above. Inject `{TAB_ID}` and `{HANDLES_JSON}`. The scraper closes its own tab as its final step before returning the JSON.
+5. When the scraper returns, spawn the synthesizer subagent (`subagent_type: general-purpose`, `model: sonnet`) with the JSON + brief above. Inject `{OUTPUT_PATH}` from step 2. The synthesizer never touches the browser.
+6. Report the file path back to the user.
 
 ---
 
@@ -210,7 +219,7 @@ After saving, return the file path.
 - **Keep the Chrome tab visible.** IG throttles hidden tabs and grids fail to hydrate. If a grid returns empty, check the tab isn't backgrounded before assuming a real failure.
 - NO scrolling. NO window resize. The default loads what we need.
 - Pinned detection is `svg[aria-label="Pinned post icon"]` — never the innerText regex.
-- Orchestrator closes the tab as the final step, after both scraper and synthesizer are done.
+- Scraper closes its own tab before returning. Synthesizer never sees the browser.
 - If the scraper errors out on one handle, it should record the error and continue. Synthesizer works with what made it through.
 - Create `research/` if missing.
 - Report contains every reel scraped (3 × N). No padding, no editorial cuts.
