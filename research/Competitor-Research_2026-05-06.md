@@ -2,174 +2,153 @@
 
 **Generated:** 2026-05-06 | **Accounts scraped:** 3 | **Reels in report:** 9 (top 3 by views per handle)
 
-> **Pattern:** Comment-keyword bait dominates the volume tier — Nick Saraev's entire top 3 are "Comment WORD to get the guide" plays attached to AI/coding tutorials, with comment counts ranging 5,666 → 15K. The format printing right now is: pain-point or tool-announcement hook → tight 5–8 step tactical breakdown → keyword CTA tied to a lead magnet. Nate Herk's two highest comment-rate reels are the same play with the shortest possible keyword ("10"), pushing comment rate to 4.8–6.8% — proof that keyword length is the friction lever. Mino is the outlier — pure hot-take / shitpost / identity hooks with zero CTA, riding hook strength alone (3.5–3.7% like rate but near-zero comment rate, meaning the hooks pull views but the asset isn't monetizing comments).
+> **Pattern:** Comment-keyword DM funnels dominate the ICP-match accounts — 5 of 9 reels use a literal "Comment X for Y" mechanic (RECOMP, NUTRITION, GOAT, plus a DM 'LIFESTYLE' variant), all driving to lead magnets or 1:1 calls. The biggest outlier (zeemallick's 1.2M) flips the playbook: a curiosity-question hook ("why do I do it?") about a personal lifestyle habit with no CTA — proof that broad-reach TOF beats funnel-style content for raw views. Topic-wise the skinny-fat/recomp/"you're soft" pain-point angle is the spine of this niche, paired with hot-take hooks ("X is making you soft", "too busy is the worst excuse").
 
 ---
 
-### 1. [Comment "CODING" to get the full guide on how Build Stunning Animated websites Using Claude Code](https://www.instagram.com/nick_saraev/reel/DXqzDc6j-H_/) — @nick_saraev
+### 1. [Going to bed at the same time every night - why do I do it?](https://www.instagram.com/zeemallick/reel/DXzPJlpurxu/) — @zeemallick
 
-`530K views · 18K likes · 15K comments` · 3.4% like rate · 2.8% comment rate · posted April 28, 2026
+`1.2M views · 87K likes · 143 comments` · 7.3% like rate · 0.0% comment rate · posted May 1, 2026
 
-**Topic:** Tutorial · **CTA:** Comment-bait
+**Topic:** Lifestyle · **CTA:** None
 
-**Why it worked:** Specific AI stack name-drop in the hook ("Claude Code + Google Stitch + MotionSites") = three curiosity gaps in one line; the comment-keyword unlocks a guide so the comment count compounds the algo distribution.
+**Why it worked:** Curiosity-question hook on a relatable personal habit — pulls broad TOF audience beyond the fitness niche. No CTA = no friction = max share/save velocity.
 
-> Comment "CODING" to get the full guide on how Build Stunning Animated websites Using Claude Code + Google Stitch + MotionSites. 
->
-> Claude Code is amazing at coding. But it struggles at frontend design.
->
-> Here's a simple fix. Pair it with Google Stitch. This free AI tool builds pretty UI for apps and sites.
->
-> First, head to Stitch. Describe your app idea. Use plain words. Like "a clean task app for phones."
->
-> Add pics from Pinterest. Or grab some from Dribbble. Stitch spits out full screens.
->
-> You get a design system too. Colors. Fonts. All parts match.
->
-> Like magic. Your rough idea turns pro. Tweak it fast. Say what you want. It listens.
->
-> Next, love the look? Hit Export. Pick MCP. Set it up quick.
->
-> Choose Claude Code as your brain. Copy that link.
->
-> Paste it right into Claude Code. Boom. Claude sees your full design. No guesswork.
->
-> Now drop in this prompt. "Turn these Stitch designs into code.
->
-> Make all screens. Link them up. Add smooth moves. Use React and Tailwind. Get it launch-ready."
+> Going to bed at the same time every night - why do I do it?
 
 ---
 
-### 2. [Comment "CLAUDE" to get the Advanced Claude Code Guide to learn more such tricks and tips.](https://www.instagram.com/nick_saraev/reel/DXMtRJOj-M-/) — @nick_saraev
+### 2. [Save this video for the best way to actually shed the fat off your belly and tone your abs](https://www.instagram.com/zeemallick/reel/DX4Ry3IOnMl/) — @zeemallick
 
-`459K views · 15K likes · 5,666 comments` · 3.3% like rate · 1.2% comment rate · posted April 16, 2026
+`71.3K views · 1,426 likes · 22 comments` · 2.0% like rate · 0.0% comment rate · posted May 3, 2026
 
-**Topic:** Tutorial · **CTA:** Comment-bait
+**Topic:** Education · **CTA:** Save-bait
 
-**Why it worked:** Pain-point hook ("If your Claude Code keeps hitting usage limits") pre-qualifies paying Claude users; numbered 3-trick framework is screenshot-able and saveable, which IG's algo treats as a strong signal.
+**Why it worked:** Direct save-bait command in the hook + universal pain point (belly fat). Tells the algorithm "this is reference content" by structuring the open as an instruction.
 
-> Comment "CLAUDE" to get the Advanced Claude Code Guide to learn more such tricks and tips. 
->
-> If your Claude Code keeps hitting usage limits, then here are three tricks to make it run way more efficiently.
->
-> First, always use /model OpusPlan. It makes sure Claude uses Opus 4.6 for planning.
->
-> Sonnet handles everything else. Think of it like this. Opus plans the big picture. Sonnet does the work.
->
-> Opus burns tokens fast. Sonnet saves them. I tried it last week. My token use dropped by half.
->
-> Second, use /compact when chats get too long. Claude re-reads your whole chat each time.
->
-> That wastes tokens. Run /compact. It squeezes everything into a short summary.
->
-> You keep the key points. No lost context. Like packing a suitcase tight.
->
-> I used it on a big project. We coded for hours more.
->
-> And finally, add "ultrathink" at the end of prompts for tough tasks.
->
-> It forces Claude to think first. No code until the plan is set. Fewer mistakes. Less back and forth.
+> Save this video for the best way to actually shed the fat off your belly and tone your abs
 
 ---
 
-### 3. [Comment "GOOGLE" to these new Vibe Design and Vibe-Coding tools from Google.](https://www.instagram.com/nick_saraev/reel/DXWCgXvj2AR/) — @nick_saraev
+### 3. [Copy my transformation](https://www.instagram.com/zeemallick/reel/DXwrknOubrX/) — @zeemallick
 
-`422K views · 13K likes · 7,808 comments` · 3.1% like rate · 1.8% comment rate · posted April 20, 2026
+`62.9K views · 998 likes · 39 comments` · 1.6% like rate · 0.1% comment rate · posted April 30, 2026
 
-**Topic:** Tutorial · **CTA:** Comment-bait
+**Topic:** Journey · **CTA:** Follow-bait (implicit)
 
-**Why it worked:** News-hook framing ("Google is now coming after every vibe coding tool") + "completely free" + stacked tool reveal (Stitch → AI Studio → Antigravity → Firebase) = bookmark + comment combo across multiple buyer-intent groups in one reel.
+**Why it worked:** 3-word imperative hook with proof-of-outcome baked in. Tease format — implies a system without revealing it, forcing viewers to follow/dig for more.
 
-> Comment "GOOGLE" to these new Vibe Design and Vibe-Coding tools from Google. 
->
-> Google is now coming after every vibe coding tool out there. They just dropped two new AI tools.
->
-> These let anyone build a complete app using just text prompts. And both are completely free.
->
-> First is Google Stitch. You just describe your idea in plain English.
->
-> It instantly generates stunning frontend designs for your app or website.
->
-> Think of it like telling a smart friend what you want. They draw it perfectly right away.
->
-> From there you can make precise edits. Tweak elements with simple words. Prototype instantly.
->
-> See exactly how your design looks. It's fast. Like sketching on paper but better.
->
-> Then you import it directly into Google AI Studio. This is their vibe coding platform.
->
-> It turns your entire design system into actual production-ready code. No hassle.
->
-> It now comes integrated with Antigravity as your coding agent. And Firebase for your backend.
+> Copy my transformation
 
 ---
 
-### 4. [how blackpill/redpill changed my life](https://www.instagram.com/minolee.mp4/reel/DXYbxw_jYFe/) — @minolee.mp4
+### 4. [Comment 'GOAT' for my full U/L x PP split](https://www.instagram.com/tma_fit/reel/DXbxoFCk1Ho/) — @tma_fit
 
-`179K views · 6,339 likes · 94 comments` · 3.5% like rate · 0.1% comment rate · posted April 20, 2026
+`48.3K views · 1,955 likes · 455 comments` · 4.0% like rate · 0.9% comment rate · posted April 22, 2026
 
-**Topic:** Hot take · **CTA:** None
+**Topic:** Education · **CTA:** Comment-bait
 
-**Why it worked:** Identity/transformation hook tied to a polarizing internet subculture — pulls in both adherents and haters. Low comment rate suggests it's a "stitch-style" watch-and-leave reel, not a debate magnet — the views are high but the engagement asset is unmonetized.
+**Why it worked:** Highest comment rate in the pool (0.9%) — comment-keyword for a free training split is the proven niche play. Inspired-by tag credits a bigger account, suggesting this format was poached from a viral template.
 
-> how blackpill/redpill changed my life
-
----
-
-### 5. [99% of gamblers quit before their first big win](https://www.instagram.com/minolee.mp4/reel/DX8OoaDv-vA/) — @minolee.mp4
-
-`149K views · 5,366 likes · 48 comments` · 3.6% like rate · 0.0% comment rate · posted May 4, 2026
-
-**Topic:** Hot take · **CTA:** None
-
-**Why it worked:** Inversion of a familiar statistic — "gamblers" is bait, but the punchline retargets it at builders/quitters. Pure motivational screenshot fuel; engagement is all save/share, not comment, which is why comment count is functionally zero.
-
-> 99% of gamblers quit before their first big win
+> Comment 'GOAT' for my full U/L x PP split
+>
+> Content inspired by @minfvng
+>
+> #gym #fitness #bodybuilding #fitnessmotivation #gymmotivation
 
 ---
 
-### 6. [Ooga booga most optimal posting time ooga](https://www.instagram.com/minolee.mp4/reel/DXK2AqwlkWl/) — @minolee.mp4
+### 5. [a calorie deficit without lifting is making you soft.](https://www.instagram.com/alexdeajue/reel/DX2g2cwJY0F/) — @alexdeajue
 
-`133K views · 4,889 likes · 136 comments` · 3.7% like rate · 0.1% comment rate · posted April 15, 2026
+`24.4K views · 126 likes · 5 comments` · 0.5% like rate · 0.0% comment rate · posted May 2, 2026
 
-**Topic:** Behind-the-scenes · **CTA:** None
+**Topic:** Hot take · **CTA:** Comment-bait
 
-**Why it worked:** Shitpost framing of an evergreen creator question ("when's the best time to post?") — absurdist caption signals "this is the meme version of the take," which lands with creator audiences sick of the serious version. Highest like rate in the pool (3.7%).
+**Why it worked:** Contrarian "you're doing it wrong" hook directly attacking the default belief (cut calories = lose fat). Reframes the problem as body composition vs. weight loss — nails the skinny-fat ICP belief shift, then funnels to RECOMP keyword.
 
-> Ooga booga most optimal posting time ooga
-
----
-
-### 7. [Ranking AI Tools](https://www.instagram.com/nateherkai/reel/DX7KYw0gG9M/) — @nateherkai
-
-`76.5K views · 1,360 likes · 100 comments` · 1.8% like rate · 0.1% comment rate · posted May 4, 2026
-
-**Topic:** Education · **CTA:** None
-
-**Why it worked:** Tier-list format has built-in agree/disagree friction, and "Ranking AI Tools" is a low-friction watch-through. But no CTA = comment volume left on the table; this format paired with a "Comment YOUR pick" prompt would likely 5–10× engagement.
-
-> Ranking AI Tools
+> a calorie deficit without lifting is making you soft.
+>
+> here's why — muscle and metabolism are the foundation for what your body actually looks like. not your weight. not your calories.
+>
+> your muscle. when you cut calories without a real lifting program, your body doesn't just burn fat. it burns muscle too. and when you lose muscle, your metabolism slows down to match.
+>
+> now you're eating less, moving less, and your body is holding onto fat harder than ever. you grind for months. the scale drops. and you still look soft. same problem. smaller package. that's what happens when you treat this like a weight loss problem instead of a body composition problem.
+>
+> skinny fat isn't about weighing too much, it's about carrying too little muscle. the fix isn't eating less. it's recomping, building muscle while losing fat at the same time. scale barely moves. mirror tells a completely different story. if you're stuck in that cycle and don't know how to break it, drop "RECOMP" in the comments and...
 
 ---
 
-### 8. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXzb81WgtVu/) — @nateherkai
+### 6. [Comment "NUTRITION" for a free guide on how to structure your nutrition for your goal.](https://www.instagram.com/alexdeajue/reel/DXxHgXMJHn4/) — @alexdeajue
 
-`37.5K views · 1,000 likes · 1,813 comments` · 2.7% like rate · 4.8% comment rate · posted May 1, 2026
+`22K views · 218 likes · 7 comments` · 1.0% like rate · 0.0% comment rate · posted April 30, 2026
 
-**Topic:** Tutorial · **CTA:** Comment-bait
+**Topic:** Education · **CTA:** Comment-bait
 
-**Why it worked:** "10" is the shortest possible comment-keyword (literally 2 characters) — friction is at floor, so comment rate spikes to 4.8% (vs Nick's 1.2–2.8% on longer keywords). The view-to-comment ratio inversion proves keyword length is the lever.
+**Why it worked:** "Health foods are fat loss traps" reframe — names specific examples (Açaí bowls, oat milk) that feel virtuous but aren't. Curiosity gap + "fighter look" aesthetic outcome wired to a comment-keyword DM funnel.
 
-> Comment '10' and I'll send it over
+> Comment "NUTRITION" for a free guide on how to structure your nutrition for your goal.
+>
+> Some "health foods" are actually fat loss traps. 🛑
+>
+> I see so many people getting their beginner gains, then hitting a wall because they're unknowingly stacking up calories from things like Açaí bowls and Oat milk.
+> If you want to stop guessing and start seeing that "fighter look" in the mirror, you need a framework that actually works.
+>
+> Comment "NUTRITION" below and I'll send you my full step-by-step guide to structuring your plan for a recomp. 📈
 
 ---
 
-### 9. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXuSeeVG1gj/) — @nateherkai
+### 7. [Comment "RECOMP" for a free copy of my body recomposition guide](https://www.instagram.com/alexdeajue/reel/DXrzY8TAhPk/) — @alexdeajue
 
-`36.5K views · 1,058 likes · 2,472 comments` · 2.9% like rate · 6.8% comment rate · posted April 29, 2026
+`20.1K views · 96 likes · 19 comments` · 0.5% like rate · 0.1% comment rate · posted April 28, 2026
 
-**Topic:** Tutorial · **CTA:** Comment-bait
+**Topic:** Education · **CTA:** Comment-bait
 
-**Why it worked:** Same "Comment '10'" play repeated 2 days earlier — 6.8% comment rate is the highest in the pool by ~2× and proves the format isn't fatigued on this audience. Lesson: short-keyword bait can be re-run on the same audience without burning out.
+**Why it worked:** 5-step blueprint format (numbered list with emojis) makes it skim-friendly. Belief shift ("can't food-swap your way to a new physique") followed by tactical steps — feels like real value, not just a tease. Closes with "simple, but not easy" honesty hook.
 
-> Comment '10' and I'll send it over
+> Comment "RECOMP" for a free copy of my body recomposition guide
+>
+> You can't just "food swap" your way to a new physique. 🙅‍♂️
+>
+> Most people get stuck because they're chasing a lower number on the scale instead of a better composition. If you want to lose fat and build muscle simultaneously, you need a Recomp.
+>
+> It's not just about what you eat—it's about how your nutrients align with your output. Here's the 5-step blueprint:
+>
+> 1️⃣ Eat at Maintenance: The sweet spot for body recomposition.
+> 2️⃣ Protein is King: 1g per lb of body weight. Period.
+> 3️⃣ Lift Heavy: Give your body a reason to keep the muscle.
+> 4️⃣ Prioritize Recovery: You grow while you sleep, not while you train.
+> 5️⃣ Diversify Micro-nutrients: Give your system the resources to be efficient.
+>
+> It's simple, but it's not easy.
+
+---
+
+### 8. [Being "too busy" or not having "enough time" for your fitness goals is the worst excuse you could make.](https://www.instagram.com/tma_fit/reel/DXg7wmYEyq7/) — @tma_fit
+
+`19.5K views · 1,021 likes · 3 comments` · 5.2% like rate · 0.0% comment rate · posted April 24, 2026
+
+**Topic:** Hot take · **CTA:** DM
+
+**Why it worked:** Direct attack on the busy-pro target's #1 self-justification ("I'm too busy"). Highest like-rate in the pool (5.2%) — confrontational hooks polarize, which lifts engagement signal even when comments are low. DM 'LIFESTYLE' funnel for 1:1 leads.
+
+> Being "too busy" or not having "enough time" for your fitness goals is the worst excuse you could make for yourself.
+>
+> Having a structure that is built around your life rather than trying to build your life around fitness is the key to success.
+>
+> DM me 'LIFESTYLE' if you need 1-1 guidance finding a structure that fits your lifestyle.
+>
+> #gym #fitness #motivation #gymmotivation #lifestyle
+
+---
+
+### 9. [The key to becoming the best version of yourself is doing the things that make your life worth living](https://www.instagram.com/tma_fit/reel/DX6pg19zAJb/) — @tma_fit
+
+`18.2K views · 887 likes · 15 comments` · 4.9% like rate · 0.1% comment rate · posted May 4, 2026
+
+**Topic:** Lifestyle · **CTA:** None
+
+**Why it worked:** Inspirational one-liner that reads as a journal entry. No CTA = pure save/share play. 4.9% like rate confirms emotionally resonant statements outperform tactical content for shareability — even with no funnel attached.
+
+> The key to becoming the best version of yourself is doing the things that make your life worth living :)
+>
+> #motivation #selfimprovement #lifestyle #fitness #gym
