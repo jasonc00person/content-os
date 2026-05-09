@@ -1,8 +1,8 @@
 # YT Competitor Research — Top Long-Form Videos
 
-**Generated:** 2026-05-09 | **Channels scraped:** 2 | **Videos in report:** 6 (top 3 by views per channel)
+**Generated:** 2026-05-09 | **Channels scraped:** 3 | **Videos in report:** 9 (top 3 by views per channel)
 
-> **Pattern:** Both channels are riding the Claude wave but from opposite hook archetypes — Nick reacts to fresh Anthropic launches with "X Just Dropped, And It [Kills Y / Is Perfect]" launch-jacking titles aimed at builders, while Patrick repeats one templated outcome-first formula ("How I'd Start a 1-Person Business With Claude AI in N Days") and rotates the day count. Patrick's like rates (3.4–4.3%) crush Nick's (2.2–2.8%) because his audience is beginners chasing a roadmap, not operators evaluating tools — and his CTA stack funnels every viewer into a free live training + Claude skill-file install. Nick's longer-form play is a 3-hour Claude Code course that pulls almost the same views as a launch reaction, suggesting deep-dive courses still work as anchor uploads.
+> **Pattern:** Two distinct hook strategies dominate. Patrick + Nate run **outcome-first / big-number titles** ("In 30 Days", "I Tried 100+", "32 Tricks", "Build & Sell") — these print the highest like rates (3.4–4.3%) because the promise is concrete. Chase runs **tool-newsjacking** ("Just Cloned X", "Stop Using Y Without Z") — clicks fine but engages less per view. Every video is Claude Code adjacent, every video is a tutorial-with-timestamps, and Patrick's "1-person business" angle is the closest format-fit to Jason's offer (highest like rates, ICP-aligned audience).
 
 ---
 
@@ -12,7 +12,7 @@
 
 **Topic:** Tutorial · **CTA:** Link-in-desc
 
-**Why it worked:** Outcome-first roadmap title ("How I'd Start... in 30 Days") sells a complete prescribed path, not a tool review — hits the beginner's exact mental query.
+**Why it worked:** "How I'd start..." is the highest-converting outcome hook on YouTube — viewer self-inserts as "the 1-person." Specific timeframe (30 days) makes it concrete. Highest like rate in the pool (4.3%) because the audience pre-qualifies as your exact ICP.
 
 > 💻 Join my FREE LIVE training where I reveal how you can build your profitable 1-Person Business + Personal Brand with AI in the next 30 days - [LINK]
 >
@@ -27,197 +27,93 @@
 
 ---
 
-### 2. [Claude Routines Just Dropped, And It's Perfect](https://www.youtube.com/watch?v=j3aXJNu9804) — @nicksaraev
+### 2. [I Tried 100+ Claude Code Skills. These 6 Are The Best](https://www.youtube.com/watch?v=eRS3CmvrOvA) — @nateherk
 
-`199K views · 4.5K likes` · 2.2% like rate · posted 2026-04-14
+`207K views · 7.7K likes` · 3.7% like rate · posted 2026-05-03
 
-**Topic:** Hot take · **CTA:** Link-in-desc
+**Topic:** Tutorial · **CTA:** Link-in-desc
 
-**Why it worked:** Launch-reaction title within hours of an Anthropic feature drop — "Just Dropped" + "Perfect" verdict captures the "is this worth my time?" search intent immediately.
+**Why it worked:** Big-number filter hook ("100+ → 6") signals heavy curation work — viewer offloads decision fatigue. The "These 6 Are The Best" reveal structure is a guaranteed watch-through driver. Bonus skill at 11:52 keeps retention.
 
-> 🔥 Join Maker School & get customer #1 guaranteed: [LINK]
-> 📚 Watch my NEW 2026 Claude Code course: [LINK]
-> 💎 Get the SKILL.md: [LINK]
+> Full courses + unlimited support: [LINK]
+> All my FREE resources: [LINK]
 >
-> 📚 Free multi-hour courses
-> → Claude Code (4hr full course): [LINK]
-> → Vibe Coding w/ Antigravity (6hr full course): [LINK]
-> → Agentic Workflows (6hr full course): [LINK]
-> → N8N (6hr full course, 890K+ views): [LINK]
+> After 400 hours in Claude Code, I noticed that businesses keep paying for the same six types of skills. In this video, I break down each one, what it does, and why these simple, boring skills are the ones that actually sell.
 >
-> Summary ⤵️
-> Wow. Claude routines change.. pretty much everything. You can now schedule, set webhooks up, and trigger cloud AI agent flows using API calls.
+> Whether you're brand new to AI automations or already building for clients, these are the skills worth learning first.
 >
-> My software, tools, & deals (some give me kickbacks—thank you!)
-> 🚀 Instantly: [LINK]
-> 📧 Anymailfinder: [LINK]
-> 🤖 Apify: [LINK] (30% off with code 30NICKSARAEV)
-> 🧑🏽‍💻 n8n: [LINK]
-> 📈 Rize: [LINK] (25% off with promo code NICK)
+> SKILLS:
+> /plugin install skill-creator@claude-plugins-official
+> /plugin install superpowers@claude-plugins-official
+> npx get-shit-done-cc --claude --global
+> /plugin marketplace add mksglu/context-mode
+> /plugin install context-mode@context-mode
+> /plugin marketplace add thedotmack/claude-mem
+> /plugin install claude-mem
+> /plugin install frontend-design@claude-plugins-official
 >
-> Follow me on other platforms 😈
-> 📸 Instagram: [LINK]
-> 🕊️ Twitter/X: [LINK]
-> 🤙 Blog: [LINK]
->
-> Why watch?
-> If this is your first view—hi, I'm Nick! TLDR: I spent six years building automated businesses with Make.com (most notably 1SecondCopy, a content company that hit 7 figures). Today a lot of people talk about automation, but I've noticed that very few have practical, real world success making money with it. So this channel is me chiming in and showing you what *real* systems that make *real* revenue look like.
->
-> Hopefully I can help you improve your business, and in doing so, the rest of your life 🙏
->
-> Like, subscribe, and leave me a comment if you have a specific request! Thanks.
->
-> Chapters
-> 00:00 Introduction
-> 00:24 Mailbox drafter routine demo
-> 04:29 Transcript to proposal routine demo
-> 13:46 Turning automations (on n8n) into routines
-
----
-
-### 3. [Claude Managed Agents Just Dropped, And It Kills n8n](https://www.youtube.com/watch?v=Ob5Vu-gD3mo) — @nicksaraev
-
-`171K views · 4.6K likes` · 2.7% like rate · posted 2026-04-08
-
-**Topic:** Hot take · **CTA:** Link-in-desc
-
-**Why it worked:** "X kills Y" enemy-framing — naming n8n as the loser triggers comment debate from both camps and bumps engagement signal.
-
-> 💼 Work with my AI consulting team: [LINK]
-> 📚 Watch my NEW 2026 Claude Code course: [LINK]
-> 🎙️ Listen to my silly podcast: www.youtube.com/@stackedpod
->
-> 📚 Free multi-hour courses
-> → Claude Code (4hr full course): [LINK]
-> → Vibe Coding w/ Antigravity (6hr full course): [LINK]
-> → Agentic Workflows (6hr full course): [LINK]
-> → N8N (6hr full course, 890K+ views): [LINK]
->
-> Summary ⤵️
-> Things are moving pretty quickly now that Anthropic has access to Mythos. They just dropped Claude Managed Agents, which is meant to replace no-code builders for automation.
->
-> My software, tools, & deals (some give me kickbacks—thank you!)
-> 🚀 Instantly: [LINK]
-> 📧 Anymailfinder: [LINK]
-> 🤖 Apify: [LINK] (30% off with code 30NICKSARAEV)
-> 🧑🏽‍💻 n8n: [LINK]
-> 📈 Rize: [LINK] (25% off with promo code NICK)
->
-> Follow me on other platforms 😈
-> 📸 Instagram: [LINK]
-> 🕊️ Twitter/X: [LINK]
-> 🤙 Blog: [LINK]
->
-> Why watch?
-> If this is your first view—hi, I'm Nick! TLDR: I spent six years building automated businesses with Make.com (most notably 1SecondCopy, a content company that hit 7 figures). Today a lot of people talk about automation, but I've noticed that very few have practical, real world success making money with it. So this channel is me chiming in and showing you what *real* systems that make *real* revenue look like.
->
-> Hopefully I can help you improve your business, and in doing so, the rest of your life 🙏
->
-> Like, subscribe, and leave me a comment if you have a specific request! Thanks.
->
-> Chapters
+> Timestamps:
 > 0:00 Intro
-> 0:24 Building The Transcript-To-ClickUp Agent
-> 1:18 Connecting ClickUp Without API Keys
-> 2:37 Test Run: Watching It Work
-> 4:47 Refining The Agent Config
-> 5:24 Spinning Up A Front-End App
-> 7:42 End-To-End Demo With ClickUp
-> 9:10 Touring The Managed Agents Dashboard
-> 10:08 Sessions, Debugging & Visual Timeline
-> 11:20 Environments, Vaults & Security
-> 13:46 Analytics, Costs & Access Logs
-> 14:48 Where This Is Headed
-> 16:04 Final Thoughts & Outro
+> 0:42 Skill #1
+> 2:57 Skill #2
+> 4:37 Skill #3
+> 6:17 Skill #4
+> 8:06 Skill #5
+> 9:44 Skill #6
+> 11:52 Bonus
+> 12:25 How to Sell These Skills
 
 ---
 
-### 4. [CLAUDE CODE ADVANCED FULL COURSE (3 HOURS)](https://www.youtube.com/watch?v=UPtmKh1vMN8) — @nicksaraev
+### 3. [32 Tricks to Level Up Claude Code in 16 Mins](https://www.youtube.com/watch?v=jqoFP9QapXI) — @nateherk
 
-`166K views · 4.7K likes` · 2.8% like rate · posted 2026-03-28
+`168K views · 5.7K likes` · 3.4% like rate · posted 2026-04-27
 
-**Topic:** Tutorial · **CTA:** Watch-next
+**Topic:** Tutorial · **CTA:** Link-in-desc
 
-**Why it worked:** ALL-CAPS "FULL COURSE (3 HOURS)" promises depth and replaces a paid product — viewers save it, ratchet watch time, and the chapter list does the SEO heavy lifting.
+**Why it worked:** Two big numbers in the title (32 + 16) = high density promise per minute. The "saved best for last" callout in the description is a classic retention bait. Three-tier sectioning (Beginner / Intermediate / Pro) lets every viewer find their entry point.
 
-> 🔥 New? Watch the beginner course first: [LINK]
-> 💎 Join Maker School & get customer #1 guaranteed: [LINK]
-> 💼 Work with my team: [LINK]
+> I went from complete beginner to mass-producing workflows, websites, and AI agents in real time. This video covers 32 Claude Code hacks I actually use, sorted from beginner to pro. The best ones are saved for the end.
 >
-> 🎙️ Listen to my silly podcast: www.youtube.com/@stackedpod
+> TIMESTAMPS
+> 0:00 Intro
+> 0:14 Beginner Hacks
+> 4:53 Intermediate Hacks
+> 10:29 Pro Hacks
+> 15:53 Final Thoughts
+
+---
+
+### 4. [Build & Sell Claude Code Operating Systems (2+ Hour Course)](https://www.youtube.com/watch?v=bCljOfCH8Ms) — @nateherk
+
+`143K views · 4.2K likes` · 2.9% like rate · posted 2026-05-01
+
+**Topic:** Tutorial · **CTA:** Link-in-desc
+
+**Why it worked:** "Build & Sell" — outcome verb pair = capability + monetization in 3 words. "2+ Hour Course" in the title signals comprehensiveness; viewers save these even without watching. Lowest like rate of Nate's 3 because long-form courses skew toward saves over likes.
+
+> This is the full walkthrough of how I build my AI Operating System inside Claude Code, from the frameworks I use to think about it (the Three Ms and the Four Cs) to the actual setup, connections, skills, and routines that run while I sleep.
 >
-> 📚 Other free multi-hour courses
-> → Vibe Coding w/ Antigravity (6hr full course): [LINK]
-> → Agentic Workflows (6hr full course): [LINK]
-> → N8N (6hr full course, 890K+ views): [LINK]
+> By the end you'll know exactly how to set up your own AIOS, even if you've never opened Claude Code before. The full template, docs, and resources are free in my school community linked below.
 >
-> Summary ⤵️
-> This is it! Welcome to the definitive Claude Code Advanced Course for users that understand the foundations and want to take their knowledge a little bit further.
->
-> Here's what you're going to learn!
-> - We'll start with an advanced look at CLAUDE.md and system prompts.
-> - How to optimize these to actually improve quality, which is simpler than you think.
-> - Agent harnesses and how to build larger projects with Claude Code.
-> - Agent teams and other examples of extreme task parallelization.
-> - Skills, Subagents, and other forms of organization
-> - Karpathy's autoresearch approach for improving stuff progressively over time, and a few actual use cases you can apply this to.
-> - Browser automation, the major players, Computer Use, Browser Use, which tools to apply to different use cases.
-> - How to deal with performance fluctuations in Claude Code and some alternatives you can use.
-> - Workspace organization for personal, business, and client projects.
-> - Security for larger projects, stuff like the recent auto-mode, as well as OAuth.
-> - Finally, rounding it out with a discussion all about where Claude Code is going.
->
-> Enjoy!
->
-> My software, tools, & deals (some give me kickbacks—thank you!)
-> 🚀 Instantly: [LINK]
-> 📧 Anymailfinder: [LINK]
-> 🤖 Apify: [LINK] (30% off with code 30NICKSARAEV)
-> 🧑🏽‍💻 n8n: [LINK]
-> 📈 Rize: [LINK] (25% off with promo code NICK)
->
-> Follow me on other platforms 😈
-> 📸 Instagram: [LINK]
-> 🕊️ Twitter/X: [LINK]
-> 🤙 Blog: [LINK]
->
-> Why watch?
-> If this is your first view—hi, I'm Nick! TLDR: I spent six years building automated businesses with Make.com (most notably 1SecondCopy, a content company that hit 7 figures). Today a lot of people talk about automation, but I've noticed that very few have practical, real world success making money with it. So this channel is me chiming in and showing you what *real* systems that make *real* revenue look like.
->
-> Hopefully I can help you improve your business, and in doing so, the rest of your life 🙏
->
-> Like, subscribe, and leave me a comment if you have a specific request! Thanks.
->
-> Chapters
-> 0:00 Introduction to the Claude Code Advanced Course
-> 0:57 Advanced System Prompts and Claude.md
-> 9:03 Optimizing Workspace Organization
-> 13:57 Planning Features with Claude Code
-> 17:30 Workflow Management and Learning Loop
-> 17:53 Starting a New Project
-> 26:47 Utilizing Agent Harnesses
-> 34:28 Understanding Parallelization Techniques
-> 42:07 Exploring Stochastic Consensus and Debate
-> 58:09 Multi-Agent Consensus for Problem Solving
-> 1:06:12 AI-Powered Cooking Innovations
-> 1:07:32 Model-Chat: A New Approach
-> 1:09:17 Exploring Algorithmic Art
-> 1:11:35 Streamlining Agent Teams
-> 1:16:58 The Pipeline Concept
-> 1:21:36 Skills vs. Subagents
-> 1:22:58 Organizational Hierarchies in AI
-> 1:29:26 Introduction to Auto-Research
-> 1:32:03 Setting Up Auto-Research
-> 1:42:45 Key Components for Auto-Research
-> 1:48:43 Applications of Auto-Research
-> 1:53:35 HTTP Requests and Internet Automation
-> 1:55:29 Browser Automation Explained
-> 2:00:10 Advanced Browser Automation Techniques
-> 2:07:51 Navigating CloudCode Performance Fluctuations
-> 2:12:54 Diversifying Your Models
-> 2:24:17 Organizing Your Workspace
-> 2:39:16 Understanding Security Concerns
-> 3:00:28 The Future of Claude and Agentic Engineering
+> TIMESTAMPS
+> 0:00 Intro
+> 3:30 The Three Ms of AI
+> 11:30 The Four Cs of an AIOS
+> 15:00 Mapping Your Tools
+> 20:30 Cloning the Repo & VS Code Setup
+> 29:00 The Onboarding Skill
+> 36:30 Connecting ClickUp
+> 47:30 Audit & Level Up Skills
+> 51:30 Google Workspace CLI
+> 1:06:00 Capabilities & Building Skills
+> 1:25:30 Live Skill Build
+> 1:35:30 Cadence & Cloud Routines
+> 1:56:30 Loop & Reminders
+> 2:05:00 Karpathy's LLM Wiki
+> 2:23:30 Dashboards with Artifacts
+> 2:27:30 Daily Loop & Success Criteria
+> 2:32:00 Final Thoughts
 
 ---
 
@@ -227,7 +123,7 @@
 
 **Topic:** Tutorial · **CTA:** Link-in-desc
 
-**Why it worked:** Same template as his #1 hit but tightened to 21 days and added "+ Personal Brand" — proves Patrick is iterating on a winning title pattern, not chasing fresh angles.
+**Why it worked:** Same template as #1 with a tighter timeframe (30 → 21 days) and a wider topic surface ("+ Personal Brand"). 4.1% like rate confirms the format isn't a fluke — the outcome-first hook is reliably his best engagement driver. Description heavily cross-links to his other 1-person business videos.
 
 > 💻 Join my FREE LIVE training where I reveal how you can build your profitable 1-Person Business + Personal Brand with AI in the next 30 days - [LINK]
 >
@@ -239,7 +135,6 @@
 >
 > How I'd Start a 1-Person Business With Claude AI in 30 Days: [LINK]
 >
->
 > IG: [LINK]
 > LinkedIn: [LINK]
 
@@ -249,9 +144,9 @@
 
 `111K views · 3.8K likes` · 3.4% like rate · posted 2026-04-27
 
-**Topic:** Hot take · **CTA:** Link-in-desc
+**Topic:** Tutorial · **CTA:** Link-in-desc
 
-**Why it worked:** "#1 X Nobody Is Talking About" curiosity-gap hook — implies hidden alpha, broader audience pull than his templated roadmap titles.
+**Why it worked:** "Nobody Is Talking About" is the curiosity-gap heuristic in its purest form — implies asymmetric info. "Side hustle" frames it as low-commitment vs. his main "1-person business" videos. Lower like rate than his 30/21-day videos because side-hustle audience is less qualified than full-business audience.
 
 > 💻 Join my FREE LIVE training where I reveal how you can build your profitable 1-Person Business + Personal Brand with AI in the next 30 days - [LINK]
 >
@@ -265,3 +160,99 @@
 >
 > IG: [LINK]
 > LinkedIn: [LINK]
+
+---
+
+### 7. [This Open Source Repo Just Cloned Claude Design (It's GOOD)](https://www.youtube.com/watch?v=Nmk1wxoi6ys) — @Chase-H-AI
+
+`74.6K views · 2.3K likes` · 3.0% like rate · posted 2026-04-26
+
+**Topic:** Tutorial · **CTA:** Link-in-desc
+
+**Why it worked:** "Just [Verb]ed [Big Tool] (Verdict In Caps)" template — "(It's GOOD)" parenthetical is doing more clickwork than the title proper. Three-test structure is a satisfying watch unit.
+
+> ⚡Master Claude Code, Build Your Agency, Land Your First Client⚡
+> [LINK]
+>
+> 🔥FREE community with the prompts🔥
+> [LINK]
+>
+> 💻 Need custom work? Book a consult 💻
+> [LINK]
+>
+> Claude Design is amazing.
+>
+> Its limits aren't.
+>
+> But with the brand new Huashu Design repo, there is hope as the skill, built on the same system prompts Claude Design uses, gives us the ability to match Claude Design's outputs while drawing on our normal subscription usage.
+>
+> ⏰TIMESTAMPS:
+>
+> 0:00 - Intro
+> 0:45 -  Huashu Design
+> 2:14 - Test 1
+> 8:59 - Test 2
+> 12:25 - Test 3
+> 13:44 - Results
+
+---
+
+### 8. [Stop Using Claude Code Without an Agentic OS](https://www.youtube.com/watch?v=Bgxsx8slDEA) — @Chase-H-AI
+
+`68.9K views · 2.2K likes` · 3.2% like rate · posted 2026-05-05
+
+**Topic:** Tutorial · **CTA:** Link-in-desc
+
+**Why it worked:** "Stop X Without Y" identity-tax framing — implies the viewer is already doing it wrong. Three-step structure (Architecture → Memory → Observability) is the clearest format mechanic of Chase's pool.
+
+> ⚡Master Claude Code, Build Your Agency, Land Your First Client⚡
+> [LINK]
+>
+> 🔥FREE community with the prompts🔥
+> [LINK]
+>
+> 💻 Need custom work? Book a consult 💻
+> [LINK]
+>
+> Your custom Claude Code Agentic OS can be yours in just three simple steps.
+>
+> In this video I breakdown how to setup the architecture, memory, and observability pieces of your Claude Code Agentic OS, giving you the ability to push your Claude Code efficiency to the limit.
+>
+> ⏰TIMESTAMPS:
+>
+> 0:00 - Intro
+> 0:37 - Step 1: Architecture
+> 7:31 - Step 2: Memory
+> 12:53 - Step 3: Observability
+> 16:14 - Overview
+
+---
+
+### 9. [I Tested DeepSeek V4 vs Opus 4.7 vs GPT 5.5](https://www.youtube.com/watch?v=uT2m7VD99qA) — @Chase-H-AI
+
+`64.8K views · 1.2K likes` · 1.9% like rate · posted 2026-04-24
+
+**Topic:** Hot take · **CTA:** Link-in-desc
+
+**Why it worked:** Three-way model showdown the week of fresh launches. Lowest like rate in the pool (1.9%) — comparison content draws clicks but doesn't convert engagement. Viewers come to validate their pre-existing model preference, not to celebrate the verdict.
+
+> ⚡Master Claude Code, Build Your Agency, Land Your First Client⚡
+> [LINK]
+>
+> 🔥FREE community with the prompts🔥
+> [LINK]
+>
+> 💻 Need custom work? Book a consult 💻
+> [LINK]
+>
+> I wake up. A new model comes out.
+>
+> This time is GPT 5.5 and Deepseek v4 so I put them in a head to head to head test alongside Opus 4/7 to see who comes out on top.
+>
+> ⏰TIMESTAMPS:
+>
+> 0:00 - Intro
+> 0:39 -  Model Costs + Benchmarks
+> 4:56 - Test 1
+> 17:07 - Test 2
+> 23:12 - Results

@@ -22,8 +22,8 @@ The orchestrator pulls each competitor's recent uploads via `yt-dlp --flat-playl
 ## Inputs
 
 ### Competitor handles
-Default: read `competitor-list.md`, find the `## YouTube` section, extract every `@handle` from `youtube.com/@handle` URLs in that section.
-Override: user can name specific handles inline ("just nick and patrick", "research @creator_one and @creator_two").
+Default: read `competitor-list.md`, find the `## YouTube` section, extract `@handle`s from `youtube.com/@handle` URLs in that section, and use the **first 3 listed** (top of the list = highest priority). Don't ask — just take the top 3.
+Override: user can name specific handles inline ("just nick and patrick", "research @creator_one and @creator_two") or say "all" to scrape every channel listed.
 
 ---
 
@@ -50,7 +50,7 @@ Orchestrator → yt-dlp --flat-playlist (per channel, get newest 10 URLs)
 ## Main Skill Flow
 
 ### 1. Resolve handles
-Read `competitor-list.md` from the project root. Find the `## YouTube` section and extract every `@handle` from `youtube.com/@handle` URLs in that section (or use handles the user named inline). If section is missing/empty and no inline handles, ask the user.
+Read `competitor-list.md` from the project root. Find the `## YouTube` section, extract `@handle`s from `youtube.com/@handle` URLs in that section, and **default to the first 3** (top of the list = highest priority — don't ask). If the user named specific handles inline, use those. If the user explicitly said "all", use every handle in the section. If the section is missing/empty and no inline handles, ask the user.
 
 ### 2. Compute paths
 - Today's date: `YYYY-MM-DD`

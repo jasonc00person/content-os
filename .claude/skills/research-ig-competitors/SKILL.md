@@ -22,8 +22,8 @@ The orchestrator opens a fresh Chrome tab and hands the tab ID to a Sonnet scrap
 ## Inputs
 
 ### Competitor handles
-Default: read `competitor-list.md` and use every account listed.
-Override: user can name specific handles ("research creator_one, creator_two, creator_three").
+Default: read `competitor-list.md`, find the `## Instagram` section, extract handles from `instagram.com/handle/` URLs, and use the **first 3 listed** (top of the list = highest priority). Don't ask — just take the top 3.
+Override: user can name specific handles inline ("research creator_one, creator_two, creator_three") or say "all" to scrape every account listed.
 
 ---
 
@@ -195,7 +195,7 @@ RULES:
 
 ## Main Skill Flow (what YOU do, the orchestrator)
 
-1. **Resolve handles.** Read `competitor-list.md` from the project root and extract every handle listed (or use handles the user named inline). If both are missing, ask the user.
+1. **Resolve handles.** Read `competitor-list.md` from the project root, find the `## Instagram` section, extract handles from `instagram.com/handle/` URLs, and **default to the first 3** (top of the list = highest priority — don't ask). If the user named specific handles inline, use those. If the user explicitly said "all", use every handle in the section. If the section is missing/empty and no inline handles, ask the user.
 2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/IG-Competitor-Research_<DATE>.md`. Create `research/` if missing. Don't inspect or clean up prior reports — every run just writes a new report. A same-day rerun will overwrite that day's file via Write; that's fine.
 3. **Open the Chrome tab.** Load Chrome tab tools via `ToolSearch` with query `select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__tabs_create_mcp`. Then:
    - Call `tabs_context_mcp`. If it returns "No MCP tab groups found" AND Chrome isn't running (`pgrep -x "Google Chrome"` via Bash), launch Chrome (`open -a "Google Chrome"` on macOS), wait ~2s, then call `tabs_context_mcp` with `createIfEmpty: true`. If Chrome is already running but the group is empty, call `tabs_context_mcp` with `createIfEmpty: true`. If the group already exists, call `tabs_create_mcp` to add a fresh tab.
