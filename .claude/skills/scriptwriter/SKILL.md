@@ -272,7 +272,7 @@ The `mcp__notion__API-post-page` tool's JSON schema declares `children: { items:
 | **Title** | The script title — punchy, ~6–10 words, hook-flavored. Not the source video's title. |
 | **Status** | `Scripted` (TWIST/FRESH/RAMBLE create new in this status; PIPELINE flips Idea → this) |
 | **Format** | `Short-form` by default. `Long-form` only if user says YouTube long-form. |
-| **Type** | Multi-select. Always include exactly one funnel tag (`TOF` / `MOF` / `BOF`) — see decision rule below. Optionally add `Viral` or `Conversion` when the angle clearly fits. |
+| **Type** | **Leave blank.** Jason tags this himself after reviewing the script. Never write to this field. |
 | **Source URL** | TWIST mode: the source video URL goes here (including `/ideate` batch handoffs that supply a URL). Leave blank for FRESH / RAMBLE / `MODE: original`. |
 | **Raw Footage** | Leave blank. This is for Jason's own raw clips later — `post-content` and `video-editor` fill it. |
 
@@ -293,24 +293,6 @@ Pick the emoji from what the video is actually about, not the funnel tag or form
 - Anti-guru / call-out → 🚫 · 👀
 
 If nothing obvious fits, pick the closest match — never default to a generic 📝 or skip the field. One emoji only.
-
-#### Type tag decision rule — tag by *who the video is for*, not surface format
-
-Don't read the format ("case study", "tutorial", "rant") and pattern-match a tag. Ask: **what is the video asking the viewer to do, and how warm is that viewer?**
-
-| Tag | Audience temperature | What the video is doing | Examples |
-|-----|---------------------|------------------------|----------|
-| **TOF** | Cold — stranger scrolling | Stop the scroll, plant a belief shift, no offer mention | Contrarian hooks, "everyone at 200 views thinks X", broad-niche pain points |
-| **MOF** | Warm — already follows | Deepen trust, show how you think, raise perceived expertise — no proof-of-offer | Framework explainers, behind-the-scenes systems, "how I think about X", build-in-public demos with no member wins involved |
-| **BOF** | Hot — considering the offer | Convert via proof + offer-adjacent CTA. Even with a give-first keyword mid-roll, the *whole video* is a sales proof point | **Case studies, member wins, before/afters, "I 6x'd this stranger's business", "what working with me looks like", testimonial breakdowns** |
-
-**Heuristic shortcut:** if the video features *the result of working with you* (member name, member numbers, transformation), it's BOF — even if the mid-roll CTA is soft. The proof IS the sell.
-
-**Modifiers (optional, additive):**
-- `Viral` — pure reach play, hook-flavored, designed to break out of the niche. Pairs naturally with TOF.
-- `Conversion` — actively qualifies/sells the offer in the body, not just the CTA. Pairs naturally with BOF.
-
-**Common miss to avoid:** tagging case studies as MOF because they "teach" something. The teaching is the wrapper; the proof is the payload. Case studies are BOF + Conversion. 
 
 ### YouTube thumbnail (long-form sources only)
 
@@ -389,7 +371,6 @@ If a written line could come from any other creator in the niche, anchor it to a
 5. **Beats are scannable.** A reader scrolling on a phone in 5 seconds can see the script's shape (whatever the source's shape is) and know what each section does. Headings in CAPS, dividers between beats, intent line under each heading.
 6. **Conciseness check.** Every bullet readable in <2s. No bullet over ~10 words. Fragments, not sentences. No meta-commentary. No quoted spoken lines unless load-bearing. If a bullet has an em-dash with a sub-clause hanging off it, split or cut.
 7. **CTA is give-first.** No begging. Comment-for-resource or DM-keyword preferred.
-8. **Type tag matches the angle.** TOF for cold-reach hooks, BOF when there's offer mention or qualified ICP filter.
 
 ---
 
