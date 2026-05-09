@@ -44,7 +44,9 @@ Orchestrator (opens tab, assigns ID) → Sonnet scraper (uses assigned tab, clos
 
 ## Scraper Agent Brief
 
-Spawn with `subagent_type: general-purpose`, `model: sonnet`. Substitute `{HANDLES_JSON}` (e.g. `["creator_one","creator_two","creator_three"]`) and `{TAB_ID}` (the tab ID the orchestrator already opened):
+> **🚨 MANDATORY: pass `model: "sonnet"` on the Agent call.** Without it the scraper inherits the orchestrator's model (often Opus) and burns ~10× the budget for no quality gain. The scrape is a long, mechanical browser loop — Sonnet handles it fine.
+
+Spawn with `subagent_type: general-purpose`, `model: "sonnet"`. Substitute `{HANDLES_JSON}` (e.g. `["creator_one","creator_two","creator_three"]`) and `{TAB_ID}` (the tab ID the orchestrator already opened):
 
 ```
 You are scraping Instagram competitor reels for content research. The orchestrator has already opened a fresh Chrome tab for you. Use that tab end-to-end, then close it before returning.
@@ -199,7 +201,8 @@ RULES:
    - Call `tabs_context_mcp`. If it returns "No MCP tab groups found" AND Chrome isn't running (`pgrep -x "Google Chrome"` via Bash), launch Chrome (`open -a "Google Chrome"` on macOS), wait ~2s, then call `tabs_context_mcp` with `createIfEmpty: true`. If Chrome is already running but the group is empty, call `tabs_context_mcp` with `createIfEmpty: true`. If the group already exists, call `tabs_create_mcp` to add a fresh tab.
    - Capture the new tab's ID. This is `{TAB_ID}` for step 4.
    - If `tabs_context_mcp` returns "Browser extension is not connected" (or anything similar), STOP and ask the user to verify the Claude in Chrome extension is connected at https://claude.ai/chrome and that the MCP tab is visible on their screen — IG won't hydrate reliably if the tab is hidden behind another window or in a backgrounded space. Wait for the user to confirm before retrying. Don't force-focus Chrome yourself; the user has to do this.
-4. Spawn the scraper subagent (`subagent_type: general-purpose`, `model: sonnet`) with the brief above. Inject `{HANDLES_JSON}` and `{TAB_ID}`. The scraper uses the assigned tab, scrapes, then closes it before returning.
+4. Spawn the scraper subagent with the brief above. Inject `{HANDLES_JSON}` and `{TAB_ID}`. The scraper uses the assigned tab, scrapes, then closes it before returning.
+   - **🚨 MANDATORY Agent call params:** `subagent_type: "general-purpose"` AND `model: "sonnet"`. The `model` param is NOT optional — omitting it inherits the orchestrator's model (often Opus) and burns ~10× the budget. Sonnet handles the scrape fine; this is a mechanical browser loop, not a reasoning task.
 5. **Write the report yourself** using the format above and the scraper's returned JSON. One Write call to the path from step 2.
 6. Report the file path back to the user.
 

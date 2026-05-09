@@ -259,7 +259,7 @@ If validation fails, stop and report. Either re-export the video, drop the offen
 
 ### Step 4 — Transcribe video (if no caption provided)
 
-Use `faster-whisper` via `uv` — same setup the `video-editor` skill uses. **Run in the background** alongside the upload in Step 5 — they take 1-3 min on a typical clip and there's no reason to wait sequentially.
+Use `faster-whisper` via `uv` — same setup the `rough-cut` skill uses. **Run in the background** alongside the upload in Step 5 — they take 1-3 min on a typical clip and there's no reason to wait sequentially.
 
 ```bash
 export UV_PROJECT_ENVIRONMENT="$HOME/.cache/video-editor-venv"
@@ -599,7 +599,7 @@ When generating captions from transcripts:
 
 10. **Curly quotes in filenames break paths** — Chat clients render `'` as `'` (U+2019) but the file uses straight `'` (U+0027). Always `ls` first; if it fails, `ls` the parent dir, grep for distinctive keywords, and copy the real filename into a `$VIDEO` shell variable. Don't retype filenames.
 
-11. **`openai-whisper` is not installed; use `faster-whisper` via `uv`** — The `video-editor` skill's `uv run --with "faster-whisper" --with "onnxruntime"` pattern auto-installs into a cached venv. Reuse it.
+11. **`openai-whisper` is not installed; use `faster-whisper` via `uv`** — The `rough-cut` skill's `uv run --with "faster-whisper" --with "onnxruntime"` pattern auto-installs into a cached venv. Reuse it.
 
 12. **Run upload + transcription in parallel as background tasks** — Both take 30s-3min on 100-400MB clips. Kick them off with `run_in_background: true`. Sequential = 2x wall-clock for no reason.
 

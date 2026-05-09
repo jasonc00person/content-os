@@ -1,102 +1,48 @@
 ---
 name: ideate
-description: "Runs a timed ideation block that ships beat sheets, not just ideas. Starts a visual countdown timer, asks platform + goal count, pulls research (auto-runs the matching research skill if no report exists), then runs a per-pair pick loop where the user picks a winning video to recreate. Each pick gets handed to the scriptwriter skill, which owns the twist conversation, transcription, format decomposition, and the Notion write. Original-idea path: ramble it (voice-to-text fine) and scriptwriter packages it fresh. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas, batch scripts."
+description: "Runs an ideation block that ships beat sheets, not just ideas. Asks platform + goal count, pulls research (auto-runs the matching research skill if no report exists), then runs a per-pair pick loop where the user picks a winning video to recreate. Each pick gets handed to the scriptwriter skill, which owns the twist conversation, transcription, format decomposition, and the Notion write. Original-idea path: ramble it (voice-to-text fine) and scriptwriter packages it fresh. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas, batch scripts."
 ---
 
-# Ideate — Timed Batch Wrapper
+# Ideate — Batch Wrapper
 
-A focused ideation block that produces **N beat sheets in Notion as `Scripted`** by the end of the timer. Default flow: pull research, user picks a winning video to recreate, hand the URL to `scriptwriter`. Rare path: user has an original idea instead — they ramble, scriptwriter packages it fresh.
+A focused ideation block that produces **N beat sheets in Notion as `Scripted`** by the end of the session. Default flow: pull research, user picks a winning video to recreate, hand the URL to `scriptwriter`. Rare path: user has an original idea instead — they ramble, scriptwriter packages it fresh.
 
-Ideate is the **timed batch wrapper**. Scriptwriter does all the per-video work — twist-asking, transcription, decomposition, beat sheet, Notion write. If ideate finds itself transcribing, reading backbone files, or asking for a twist, it's reaching into scriptwriter's lane.
+Ideate is the **batch wrapper**. Scriptwriter does all the per-video work — twist-asking, transcription, decomposition, beat sheet, Notion write. If ideate finds itself transcribing, reading backbone files, or asking for a twist, it's reaching into scriptwriter's lane.
 
 ## How to Trigger
 - **"/ideate"** — start a new ideation block
 - **"ideate for IG"** / **"ideate for YT"** — skip platform question, set goal next
-- **"ideate 5 reels"** / **"ideate 1 YouTube video"** — skip both questions, start the timer
+- **"ideate 5 reels"** / **"ideate 1 YouTube video"** — skip both questions, jump straight to research
 
 ---
 
 ## The Flow
 
 ```
-Step 1 → Start timer                                (~30s)
-Step 2 → Ask platform                               (~30s)
-Step 3 → Ask goal count                             (~30s)
-Step 4 → Pull research (or run research skill)      (~3–5 min)
-Step 5 → Per-pair pick loop                         (~30s/pair)
-Step 6 → Hand off each pick to scriptwriter         (~5 min/pair, scriptwriter handles)
-Step 7 → Stop timer + report duration
+Step 1 → Stamp start time                        (~1s)
+Step 2 → Ask platform                            (~30s)
+Step 3 → Ask goal count                          (~30s)
+Step 4 → Pull research (or run research skill)   (~3–5 min)
+Step 5 → Per-pair pick loop                      (~30s/pair)
+Step 6 → Hand off each pick to scriptwriter      (~5 min/pair, scriptwriter handles)
+Step 7 → Report session duration
 ```
 
-The timer is a budget, not a quota. If the goal is hit early, finalize immediately — don't wait out the clock.
+If the goal is hit early, finalize immediately — don't pad with weak picks.
 
 **Step 5 and Step 6 can interleave.** As soon as the user picks, fire its handoff and start the next pick while scriptwriter runs. (Sequential handoffs only — see Step 6 sequencing rule.)
 
 ---
 
-## Step 1 — Start the Timer
+## Step 1 — Stamp Start Time
 
-Spin up the timer FIRST, before the platform/goal questions. Keep momentum.
+Single bash command. No server, no Chrome tab, no countdown UI — just record when the session began so Step 7 can report duration.
 
-The timer is a self-contained HTML page (`timer.html`) served by a tiny Python HTTP server (`server.py`) and opened in a Chrome tab. **Fully portable across macOS, Linux, and Windows** — only requirements are Python 3.7+ and Chrome.
-
-### Files in this skill folder
-- `timer.html` — the visible countdown page (HTML + CSS + JS, no deps)
-- `server.py` — starts http server on a free port, writes `pid + port + start_ts` to `.runtime.json`
-- `stop.py` — reads `.runtime.json`, kills the server, removes the file
-- `.runtime.json` — runtime state (gitignored; only exists while a block is active)
-
-### Spin up the server (cross-platform)
-The skill base directory is in the slash-command prompt — call it `$SKILL_DIR`. Pick the right launcher for the OS:
-
-**macOS / Linux:**
 ```bash
-SKILL_DIR="<base dir>"
-(python3 "$SKILL_DIR/server.py" >/dev/null 2>&1) &
-disown
-sleep 1
+date +%s > /tmp/ideate-start
 ```
 
-**Windows (PowerShell):**
-```powershell
-$SkillDir = "<base dir>"
-Start-Process -FilePath python -ArgumentList "$SkillDir\server.py" -WindowStyle Hidden
-Start-Sleep -Seconds 1
-```
-
-**Windows (cmd):**
-```cmd
-start /B python "%SKILL_DIR%\server.py" >NUL 2>&1
-timeout /T 1 /NOBREAK >NUL
-```
-
-### Read the runtime port
-After ~1s, read `$SKILL_DIR/.runtime.json` to get the port the server claimed (it tries 8765 first, falls back to 8766–8799 if busy):
-```
-python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['port'])" "$SKILL_DIR/.runtime.json"
-```
-(Use `python` instead of `python3` on Windows.)
-
-### Open the timer tab in Chrome
-1. `mcp__claude-in-chrome__tabs_context_mcp` with `createIfEmpty: true`
-2. `mcp__claude-in-chrome__tabs_create_mcp` — fresh tab (or reuse the empty tab from context)
-3. `mcp__claude-in-chrome__navigate` to `http://localhost:<port>/timer.html?s=1800` (use `?s=<seconds>` for testing — e.g. `?s=30`)
-4. Remember the tab ID in conversation context for cleanup at Step 7
-
-The HTML handles everything end-to-end:
-- Big responsive countdown (16vw font)
-- Live tab title: `HH:MM:SS · Ideation` (visible from tab bar even when in background)
-- Red flash + "TIME" at zero (silent — no sound, no browser notification)
-
-### Step transitions
-At each step transition (Step 4 → 5 → 6), print elapsed/remaining via:
-```
-python3 -c "import json,time,sys; r=json.load(open(sys.argv[1])); e=int(time.time())-r['start']; print(f'[{e//60} min in — {(1800-e)//60} min left]')" "$SKILL_DIR/.runtime.json"
-```
-Print once per transition. Don't spam.
-
-### Stopping early
-If the user bails or hits the goal early, run the cleanup block from Step 7 (kills server via `stop.py` + closes Chrome tab + reports session duration).
+Done. Move on.
 
 ---
 
@@ -120,7 +66,7 @@ Use `AskUserQuestion`:
 Skip if specified in the trigger phrase.
 
 Output one line confirming:
-> **Block plan:** [N] [platform] ideas in 30 min.
+> **Block plan:** [N] [platform] ideas.
 
 ---
 
@@ -230,25 +176,16 @@ Run handoffs **sequentially**, not in parallel. Scriptwriter writes to Notion an
 
 You can fire each handoff inline as soon as the user picks — but still one at a time. If a handoff is mid-flight when the next pick lands, queue it and fire when the previous finishes.
 
-### Step transition print
-Print elapsed/remaining once before the loop starts and once after it finishes. Don't spam between picks.
-
 ---
 
-## Step 7 — Stop Timer + Report Duration
+## Step 7 — Report Session Duration
 
-When all picks are scripted (or the user calls it), compute the session duration and stop the timer.
+When all picks are scripted (or the user calls it), compute the session duration from the start stamp.
 
-### Compute duration
+```bash
+echo "$(( ($(date +%s) - $(cat /tmp/ideate-start)) / 60 )) min $(( ($(date +%s) - $(cat /tmp/ideate-start)) % 60 )) sec"
+rm -f /tmp/ideate-start
 ```
-python3 -c "import json,time,sys; r=json.load(open(sys.argv[1])); e=int(time.time())-r['start']; print(f'{e//60} min {e%60} sec')" "$SKILL_DIR/.runtime.json"
-```
-
-### Cleanup (always run, even on early bail) — cross-platform
-```
-python3 "$SKILL_DIR/stop.py"
-```
-(Use `python` on Windows.) `stop.py` kills the server process and removes `.runtime.json`. Then close the timer tab via `mcp__claude-in-chrome__tabs_close_mcp` with the tab ID you saved at Step 1.
 
 ### Final output
 ```
@@ -275,16 +212,16 @@ If under goal: be honest. Don't pad with weak picks.
 - **Original ideas are the escape hatch, not the default.** Mention it once in the loop prompt, then move on.
 - **Ideate does not transcribe, decompose, ask for twists, or load backbone files.** Every per-video concern lives in scriptwriter. If you're reaching for `transcribe-url` or `Read backbone/`, stop — you're in scriptwriter's lane.
 - **Scriptwriter is the engine.** Ideate is a thin batch wrapper around it.
-- **The timer is a budget, not a quota.** Fire handoffs inline as picks land; don't wait until all N are picked.
+- **Fire handoffs inline as picks land.** Don't wait until all N are picked.
 - **Top 10 cap, hyperlinked titles, every time.** No exceptions in Step 5.
 - **Auto-run research only if no matching report exists.** Don't re-run if a recent report exists — just use it.
-- **Always run the cleanup block** when ending the session. Don't leave the http server or Chrome tab orphaned.
 - **Always report session duration** in the final output.
 
 ---
 
 ## What This Skill Does NOT Do
 
+- **Run a visual countdown timer.** No HTML page, no http server, no Chrome tab — just a start stamp + final duration line.
 - **Transcribe, decompose, or write beats.** That's scriptwriter's job. Hand off in Step 6.
 - **Ask for the twist or propose one.** Scriptwriter Step 1 owns the twist conversation.
 - **Load backbone files.** Scriptwriter loads them as it needs them.

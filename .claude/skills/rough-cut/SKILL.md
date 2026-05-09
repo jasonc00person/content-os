@@ -1,9 +1,9 @@
 ---
-name: video-editor
-description: "Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the inbox, trim this, chop this up, video-editor, make a rough cut."
+name: rough-cut
+description: "Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the inbox, trim this, chop this up, rough-cut, make a rough cut."
 ---
 
-# Video Editor — Transcript-Driven Rough Cuts
+# Rough Cut — Transcript-Driven Edits
 
 Turns raw talking-head clips into a tight rough cut. You transcribe, you decide the cuts, FFmpeg stitches. The goal: **shortest possible reel that still delivers the value.** Respect the viewer's time.
 
@@ -73,7 +73,7 @@ When building `cuts.json`, automatically remove:
 Find the job folder. Run:
 
 ```bash
-bash .claude/skills/video-editor/scripts/transcribe.sh <job_dir>
+bash .claude/skills/rough-cut/scripts/transcribe.sh <job_dir>
 ```
 
 This runs faster-whisper large-v3 with word-level timestamps and writes `/tmp/video-editor/<job-name>/words.json`.
@@ -110,7 +110,7 @@ Include the `transcript` field for each segment so the creator can read the cut 
 ### Step 3 — Splice
 
 ```bash
-bash .claude/skills/video-editor/scripts/splice.sh <job_dir>
+bash .claude/skills/rough-cut/scripts/splice.sh <job_dir>
 ```
 
 Writes `video-editor/outputs/<job-name>.mp4`. Runs silence-snap on `cuts.json` first (FFmpeg silencedetect → `cuts_snapped.json`) so every cut lands in silence, not mid-word. Uses h264_videotoolbox (hardware accel on Apple Silicon) for the encode, loudnorm for audio levels.

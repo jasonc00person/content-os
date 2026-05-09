@@ -72,7 +72,7 @@ After it completes:
 
 - **`small.en`** (default) — ~5-10x realtime on M-series, good enough for most spoken content. Quick research lookups, competitor reels, captioned content.
 - **`medium.en`** — better with mumbling, music-heavy backgrounds, accents. Override: `WHISPER_MODEL=medium.en bash .../transcribe-url.sh <url>`
-- **`large-v3`** — best quality, slowest. Use only when small/medium got it wrong. The `video-editor` skill uses this because cuts depend on word-level precision.
+- **`large-v3`** — best quality, slowest. Use only when small/medium got it wrong. The `rough-cut` skill uses this because cuts depend on word-level precision.
 
 First run downloads the model (~250MB for small, ~1.5GB for medium, ~3GB for large) and caches it under `~/.cache/`. Subsequent runs are instant.
 
@@ -90,4 +90,4 @@ First run downloads the model (~250MB for small, ~1.5GB for medium, ~3GB for lar
 This skill produces transcripts. It does NOT summarize, pull viral hooks, or write scripts. After transcribing:
 - For script ideas → invoke `scriptwriter` with the transcript as raw input
 - For competitor analysis at scale → use `research-ig-competitors` instead (handles many accounts at once)
-- For raw clips already on disk → use `video-editor` (different pipeline, word-level precision)
+- For raw clips already on disk → use `rough-cut` (different pipeline, word-level precision)

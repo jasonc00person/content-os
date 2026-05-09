@@ -274,7 +274,7 @@ The `mcp__notion__API-post-page` tool's JSON schema declares `children: { items:
 | **Format** | `Short-form` by default. `Long-form` only if user says YouTube long-form. |
 | **Type** | **Leave blank.** Jason tags this himself after reviewing the script. Never write to this field. |
 | **Source URL** | TWIST mode: the source video URL goes here (including `/ideate` batch handoffs that supply a URL). Leave blank for FRESH / RAMBLE / `MODE: original`. |
-| **Raw Footage** | Leave blank. This is for Jason's own raw clips later — `post-content` and `video-editor` fill it. |
+| **Raw Footage** | Leave blank. This is for Jason's own raw clips later — `post-content` and `rough-cut` fill it. |
 
 #### Page icon — always set on create
 

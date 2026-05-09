@@ -8,10 +8,10 @@
       "Bash(ffmpeg:*)",
       "Bash(ffprobe:*)",
       "Bash(uv run:*)",
-      "Bash(bash .claude/skills/video-editor/scripts/transcribe.sh:*)",
-      "Bash(bash .claude/skills/video-editor/scripts/splice.sh:*)",
+      "Bash(bash .claude/skills/rough-cut/scripts/transcribe.sh:*)",
+      "Bash(bash .claude/skills/rough-cut/scripts/splice.sh:*)",
       "Bash(mkdir -p video-editor/inbox/*)",
-      "Bash(chmod +x .claude/skills/video-editor/scripts/*)"
+      "Bash(chmod +x .claude/skills/rough-cut/scripts/*)"
     ]
   }
 }
