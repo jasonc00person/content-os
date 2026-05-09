@@ -22,16 +22,20 @@ bash .claude/skills/transcribe-url/scripts/transcribe-url.sh "<url>"
 
 Optional second arg: output directory (defaults to `transcripts/url/`).
 
-The script:
-1. **Downloads audio only** via `yt-dlp -x --audio-format mp3` — much faster than pulling video
-2. **Transcribes** with faster-whisper `small.en` (override with `WHISPER_MODEL=medium.en` env var if accuracy matters more than speed)
-3. **Writes** `transcripts/url/<slug>_<date>.md` with metadata + plain transcript + timestamped lines
+The script picks one of two paths automatically:
+
+**Fast path (YouTube only):** Pulls YouTube's auto-generated captions via `yt-dlp --write-auto-sub --skip-download`. No audio download, no whisper. Finishes in ~2s regardless of video length.
+
+**Fallback (everything else, or YouTube without captions):**
+1. Downloads audio only via `yt-dlp -x --audio-format mp3`
+2. Transcribes with faster-whisper `small.en` (override with `WHISPER_MODEL=medium.en` env var)
+3. Writes `transcripts/url/<slug>_<date>.md`
 
 Returns the output path on stdout.
 
 ## Run It
 
-For most reels (<3 min), run synchronously — total wall time is ~10-30s including download. For long videos (10+ min), run in background and poll.
+YouTube URLs finish in ~2s — always synchronous. For non-YouTube short reels (<3 min), still synchronous (~10-30s). For long non-YouTube videos (10+ min), run in background.
 
 After it completes:
 1. Read the output file
@@ -47,8 +51,9 @@ After it completes:
 - **Uploader:** <handle>
 - **Uploaded:** YYYY-MM-DD
 - **Duration:** M:SS
-- **Detected language:** en (p=0.99)
-- **Model:** small.en
+- **Detected language:** en (p=0.99)   # whisper path only
+- **Model:** small.en                   # whisper path only
+- **Method:** YouTube captions ...      # fast path only
 
 ## Transcript
 
@@ -63,6 +68,8 @@ After it completes:
 
 ## Model Choice
 
+(Only relevant for the whisper fallback. The YouTube fast path doesn't run whisper.)
+
 - **`small.en`** (default) — ~5-10x realtime on M-series, good enough for most spoken content. Quick research lookups, competitor reels, captioned content.
 - **`medium.en`** — better with mumbling, music-heavy backgrounds, accents. Override: `WHISPER_MODEL=medium.en bash .../transcribe-url.sh <url>`
 - **`large-v3`** — best quality, slowest. Use only when small/medium got it wrong. The `video-editor` skill uses this because cuts depend on word-level precision.
@@ -71,6 +78,7 @@ First run downloads the model (~250MB for small, ~1.5GB for medium, ~3GB for lar
 
 ## Gotchas
 
+- **YouTube without auto-captions** — extremely rare (YouTube auto-generates for almost everything), but if no `.vtt` is published we fall back to whisper automatically. No action needed.
 - **Login-walled content** (private IG, restricted YouTube, TikTok login walls) — yt-dlp will error out. If it fails, try with browser cookies: edit the script to add `--cookies-from-browser chrome`. Don't do this by default — it's slower and unnecessary for public content.
 - **Music-heavy or no-speech videos** — Whisper may hallucinate lyrics. If the transcript looks like nonsense, that's why. Note it in the report rather than passing the garbage along.
 - **Title is used for the filename slug** — exotic Unicode titles get stripped to `transcript_<date>.md`. That's fine.

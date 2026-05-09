@@ -1,8 +1,8 @@
 # Competitor Research — Top Reels
 
-**Generated:** 2026-05-08 | **Accounts scraped:** 3 | **Reels in report:** 9 (top 3 by views per handle)
+**Generated:** 2026-05-08 | **Accounts scraped:** 4 | **Reels in report:** 12 (top 3 by views per handle)
 
-> **Pattern:** Comment-bait tutorials are dominating reach in the AI niche — Nick Saraev's three top reels are all keyword-comment CTAs ("CODING", "CLAUDE", "GOOGLE") on Claude Code / Stitch / vibe-coding tools, pulling 430K–576K views with 1–3% comment rates. Mino Lee runs the opposite play: ultra-short 5-word hooks, no CTA, personal/contrarian angles ("blackpill changed my life", "99% of gamblers quit") landing 135K–179K with near-zero comment rates but solid 3.5%+ like rates — pure scroll-stop hooks. Nate Herk's two "Comment '10'" reels show that even at lower reach (~40K), comment-bait can pull insane 5–7% comment rates — proving the format works at every scale, but his ceiling without it is around 91K (Ranking AI Tools).
+> **Pattern:** Comment-bait tutorials are dominating reach in the Claude Code / AI niche — Nick Saraev's three top reels are all keyword-comment CTAs ("CODING", "CLAUDE", "GOOGLE") on Claude Code / Stitch / vibe-coding tools, pulling 430K–576K views with 1–3% comment rates. Chase H runs the same playbook at a smaller scale (47K–51K views) — every one of his top reels is a "comment 'agent' / 'agency'" CTA on Claude Code guides, proving the format compounds even pre-scale. Mino Lee runs the opposite play: ultra-short 5-word hooks, no CTA, personal/contrarian angles ("blackpill changed my life", "99% of gamblers quit") landing 135K–179K with near-zero comment rates but solid 3.5%+ like rates — pure scroll-stop hooks. Nate Herk's two "Comment '10'" reels show that even at lower reach (~40K), comment-bait can pull insane 5–7% comment rates — proving the format works at every scale.
 
 ---
 
@@ -150,7 +150,43 @@
 
 ---
 
-### 8. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXzb81WgtVu/) — @nateherkai
+### 8. [Comment "agent" to get access to all of my Claude Code guides](https://www.instagram.com/chase.h.ai/reel/DX2ubACJYRN/) — @chase.h.ai
+
+`50.8K views · 1,280 likes · 334 comments` · 2.5% like rate · 0.7% comment rate · posted May 2, 2026
+
+**Topic:** Tutorial · **CTA:** Comment-bait
+
+**Why it worked:** Saraev's exact template at sub-Saraev scale — single keyword + "Claude Code guides" lead-magnet. 0.7% comment rate proves the format pulls action even when reach is 10× lower than the OG.
+
+> Comment "agent" to get access to all of my Claude Code guides
+
+---
+
+### 9. [Comment "agency" to get my Claude code agentic OS](https://www.instagram.com/chase.h.ai/reel/DX8W-VIJVip/) — @chase.h.ai
+
+`47.8K views · 965 likes · 1,867 comments` · 2.0% like rate · 3.9% comment rate · posted May 4, 2026
+
+**Topic:** Tutorial · **CTA:** Comment-bait
+
+**Why it worked:** Sharper deliverable framing ("agentic OS") inverts the like-to-comment ratio — fewer likes than reel #8, but ~6× the comments. The packaged-system promise pulls more action than a generic "guides" CTA.
+
+> Comment "agency" to get my Claude code agentic OS
+
+---
+
+### 10. [Comment "agent" to get my Claude code guides](https://www.instagram.com/chase.h.ai/reel/DX7oRT3J1Hq/) — @chase.h.ai
+
+`47K views · 717 likes · 64 comments` · 1.5% like rate · 0.1% comment rate · posted May 4, 2026
+
+**Topic:** Tutorial · **CTA:** Comment-bait
+
+**Why it worked:** Same template as reel #8 reused 2 days later — reach holds (~47K) but engagement collapses (0.1% comments). Suggests the in-video execution didn't match the hook this round; the format alone isn't enough without a fresh deliverable angle.
+
+> Comment "agent" to get my Claude code guides
+
+---
+
+### 11. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXzb81WgtVu/) — @nateherkai
 
 `40.2K views · 1,084 likes · 1,958 comments` · 2.7% like rate · 4.9% comment rate · posted May 1, 2026
 
@@ -162,12 +198,12 @@
 
 ---
 
-### 9. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXuSeeVG1gj/) — @nateherkai
+### 12. [Comment '10' and I'll send it over](https://www.instagram.com/nateherkai/reel/DXuSeeVG1gj/) — @nateherkai
 
 `38.1K views · 1,102 likes · 2,573 comments` · 2.9% like rate · 6.8% comment rate · posted April 29, 2026
 
 **Topic:** Education · **CTA:** Comment-bait
 
-**Why it worked:** Same template as #8, posted 3 days earlier — 6.8% comment rate is the highest in the entire pool. Repeat-use comment-bait pattern is clearly his lead-gen workhorse, even if total reach trails Saraev's keyword variants.
+**Why it worked:** Same template as #11, posted 3 days earlier — 6.8% comment rate is the highest in the entire pool. Repeat-use comment-bait pattern is clearly his lead-gen workhorse, even if total reach trails Saraev's keyword variants.
 
 > Comment '10' and I'll send it over

@@ -284,8 +284,6 @@
   let pausedAt = null;
   let totalPaused = 0;
   let done = false;
-  let audioReady = false;
-  let audioCtx = null;
 
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -303,31 +301,6 @@
       ss.textContent = pad(s);
       document.title = `${pad(m)}:${pad(s)} · Ideation`;
     }
-  };
-
-  const beep = () => {
-    if (!audioCtx) return;
-    const seq = [880, 880, 880, 880, 1320, 1320];
-    seq.forEach((freq, i) => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      const t = audioCtx.currentTime + i * 0.45;
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
-      gain.gain.linearRampToValueAtTime(0, t + 0.32);
-      osc.start(t); osc.stop(t + 0.4);
-    });
-  };
-
-  const enableAudio = () => {
-    if (audioReady) return;
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      audioReady = true;
-    } catch (e) {}
   };
 
   const togglePause = () => {
@@ -352,29 +325,20 @@
     document.title = 'Ended · Ideation';
   };
 
-  document.body.addEventListener('click', enableAudio);
-  document.body.addEventListener('keydown', enableAudio);
   toggle.addEventListener('click', (e) => {
     e.stopPropagation();
-    enableAudio();
     togglePause();
   });
   cancel.addEventListener('click', (e) => {
     e.stopPropagation();
-    enableAudio();
     cancelTimer();
   });
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.key === ' ') {
       e.preventDefault();
-      enableAudio();
       togglePause();
     }
   });
-
-  if ('Notification' in window && Notification.permission === 'default') {
-    try { Notification.requestPermission(); } catch (e) {}
-  }
 
   // Auto-hide cursor after 2s of no movement (video-player style)
   let cursorTimer;
@@ -401,12 +365,6 @@
       cd.innerHTML = '<span class="num">TIME</span>';
       document.title = 'TIME · Ideation';
       ring.style.strokeDashoffset = 0;
-      try { beep(); } catch (e) {}
-      try {
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('/ideate', { body: 'Block done — time to package what you have' });
-        }
-      } catch (e) {}
       return;
     }
     setTimeout(tick, 200);

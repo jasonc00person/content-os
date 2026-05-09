@@ -18,6 +18,10 @@ Accounts in the same niche (personal branding / AI content / creator economy) to
 - **URL**: https://www.instagram.com/nick_saraev/
 - **Notes**: AI automation agency operator. Build-in-public, money/business transparency, automation tutorials.
 
+### Chase H (@chase.h.ai)
+- **URL**: https://www.instagram.com/chase.h.ai/
+- **Notes**: AI content / agency niche. Cross-posts with YouTube channel.
+
 ---
 
 ## YouTube

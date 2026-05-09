@@ -78,14 +78,15 @@ As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old
 - Every piece should reinforce at least one of the 5 belief shifts in `backbone/messaging.md`
 - Don't manufacture content -- document what's already happening. Authenticity outperforms.
 
-## Integrations
+## Research
 
-**Apify MCP** is configured for Instagram research. Three actors available:
+**All competitor/niche research runs through the research skills in `.claude/skills/`.** No exceptions — no Apify, no third-party scrapers, no ad-hoc API calls.
 
-| Actor | Use Case |
-|-------|----------|
-| `apify/instagram-reel-scraper` | Pull reel data (captions, transcripts, hashtags, views, likes, duration, comments). **Primary tool** for analyzing viral content in the niche. |
-| `apify/instagram-profile-scraper` | Pull profile info (bio, follower count, post count, latest posts). Use for competitor analysis. |
-| `apify/instagram-scraper` | General-purpose scraper for posts, profiles, hashtags, places. Use when the other two don't cover the need. |
+| Skill | Use For |
+|-------|---------|
+| `research-ig-competitors` | Instagram — scrape named handles, top 3 reels each by views |
+| `research-yt-competitors` | YouTube — scrape named channels, top 3 long-form each by views |
+| `research-yt-search` | YouTube — keyword/niche exploration via search bar |
+| `research-tt-search` | TikTok — keyword/niche exploration via search bar |
 
-All three are free, official Apify actors with 99%+ success rates.
+If a request needs research data, invoke the matching skill. Reports land in `research/` as `*-Research_YYYY-MM-DD.md` and are never deleted.

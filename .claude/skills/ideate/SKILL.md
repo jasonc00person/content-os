@@ -1,13 +1,13 @@
 ---
 name: ideate
-description: "Runs a timed ideation block that ships beat sheets, not just ideas. Starts a visual countdown timer, asks platform + goal count, pulls research (auto-runs the matching research skill if no report exists), then runs a per-pair loop where the user picks a winning video to recreate and names a twist. If the user blanks on a twist, ideate reads the backbone and proposes one. Each locked pair (source URL + twist) goes to the scriptwriter skill, which transcribes the source, keeps the format, swaps in the new concept, and drops a beat sheet into Notion as `Scripted`. Rare path: user has an original idea instead — ramble it (voice-to-text fine) and scriptwriter packages it fresh. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas, batch scripts."
+description: "Runs a timed ideation block that ships beat sheets, not just ideas. Starts a visual countdown timer, asks platform + goal count, pulls research (auto-runs the matching research skill if no report exists), then runs a per-pair pick loop where the user picks a winning video to recreate. Each pick gets handed to the scriptwriter skill, which owns the twist conversation, transcription, format decomposition, and the Notion write. Original-idea path: ramble it (voice-to-text fine) and scriptwriter packages it fresh. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas, batch scripts."
 ---
 
-# Ideate — Timed Batch Scriptwriter
+# Ideate — Timed Batch Wrapper
 
-A focused ideation block that produces **N beat sheets in Notion as `Scripted`** by the end of the timer. Default flow is **format-first**: pull research, user picks a winning video to recreate, user names a twist (or ideate proposes one from backbone if they blank), pair gets handed off to `scriptwriter`. Rare path: user has an original idea instead — they ramble, scriptwriter packages it fresh.
+A focused ideation block that produces **N beat sheets in Notion as `Scripted`** by the end of the timer. Default flow: pull research, user picks a winning video to recreate, hand the URL to `scriptwriter`. Rare path: user has an original idea instead — they ramble, scriptwriter packages it fresh.
 
-Ideate is the batch wrapper; scriptwriter is the engine.
+Ideate is the **timed batch wrapper**. Scriptwriter does all the per-video work — twist-asking, transcription, decomposition, beat sheet, Notion write. If ideate finds itself transcribing, reading backbone files, or asking for a twist, it's reaching into scriptwriter's lane.
 
 ## How to Trigger
 - **"/ideate"** — start a new ideation block
@@ -23,14 +23,14 @@ Step 1 → Start timer                                (~30s)
 Step 2 → Ask platform                               (~30s)
 Step 3 → Ask goal count                             (~30s)
 Step 4 → Pull research (or run research skill)      (~3–5 min)
-Step 5 → Per-pair loop: pick video → name twist     (~3–5 min/pair)
-Step 6 → Hand off each pair to scriptwriter         (~5 min/pair)
+Step 5 → Per-pair pick loop                         (~30s/pair)
+Step 6 → Hand off each pick to scriptwriter         (~5 min/pair, scriptwriter handles)
 Step 7 → Stop timer + report duration
 ```
 
 The timer is a budget, not a quota. If the goal is hit early, finalize immediately — don't wait out the clock.
 
-**Step 5 and Step 6 can interleave.** As soon as a pair locks in Step 5, fire its handoff and start the next pair while scriptwriter runs. (Sequential handoffs only — see Step 6 sequencing rule.)
+**Step 5 and Step 6 can interleave.** As soon as the user picks, fire its handoff and start the next pick while scriptwriter runs. (Sequential handoffs only — see Step 6 sequencing rule.)
 
 ---
 
@@ -86,9 +86,7 @@ python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['port'])" "$SKIL
 The HTML handles everything end-to-end:
 - Big responsive countdown (16vw font)
 - Live tab title: `HH:MM:SS · Ideation` (visible from tab bar even when in background)
-- Red flash + "TIME" + audio beep + browser notification at zero
-
-**Important:** Chrome blocks audio until the user clicks the page once. When the tab opens, tell the user: *"Click the timer page once to unlock the alarm sound."*
+- Red flash + "TIME" at zero (silent — no sound, no browser notification)
 
 ### Step transitions
 At each step transition (Step 4 → 5 → 6), print elapsed/remaining via:
@@ -146,13 +144,15 @@ Run the appropriate research skill before proceeding. Match platform → skill:
 Tell the user one line: *"No [platform] research on file. Running `/research-[skill]` now — give it ~3–5 min."* Then invoke the skill via `Skill` tool. When it finishes, re-scan the `research/` folder and continue.
 
 ### Read the reports
-Read the selected report files in parallel. **Do NOT load the backbone yet** — it only loads in Step 5 if the user blanks on a twist.
+Read the selected report files in parallel. **Do NOT load backbone files, transcribe anything, or decompose formats** — those are scriptwriter's responsibilities. Ideate stops at "user can see the table."
 
 ---
 
-## Step 5 — Per-Pair Loop (~3–5 min/pair)
+## Step 5 — Per-Pair Pick Loop (~30s/pair)
 
-This is the core. Pull all videos from the loaded reports into one ranked table, **sorted by views descending**, **top 10 cap**. Show it once at the start of the loop.
+This is a thin loop: show the table, get the pick, fire the handoff. **No transcription, no format breakdown, no twist conversation here** — all of that lives in scriptwriter.
+
+Pull all videos from the loaded reports into one ranked table, **sorted by views descending**, **top 10 cap**. Show it once at the start of the loop.
 
 ### The format table
 
@@ -165,89 +165,79 @@ This is the core. Pull all videos from the loaded reports into one ranked table,
 | ... (up to 10)
 ```
 
-### The default loop (format-first — repeat N times until pairs locked == goal count)
+### Loop (repeat N times until picks made == goal count)
 
 Each round, ask:
 
 > **Pair [X/N]** — which video # are we recreating? *(Or if you've got an original idea instead, just ramble it — voice-to-text fine.)*
 
-**Default branch (format-first):**
-1. User picks `format #3` from the table.
-2. **Transcribe the source first.** Invoke `transcribe-url` (or call its bash entrypoint directly: `bash .claude/skills/transcribe-url/scripts/transcribe-url.sh "<URL>"`) and read the resulting markdown file from `transcripts/url/`. **Captions lie about what made the video work** — the spoken content reveals the real hook mechanism, beat count, and pacing. Save the transcript path; you'll pass it to scriptwriter in Step 6 so it doesn't re-transcribe.
-3. **Post a 3-line format breakdown** of the actual transcript: hook mechanism (one line), structural beats in order (one line), the psych trick that did the heavy lifting (one line). Keep it terse. This grounds the twist conversation in reality, not caption guesses.
-4. Prompt: *"What's the twist? How are we making it our own?"*
-5. **If the user names a twist** → lock pair → fire Step 6 handoff (or queue it).
-6. **If the user blanks** ("got nothing", "you tell me", "I'm stuck") → load backbone:
-   - Read `backbone/icp.md` and `backbone/messaging.md` (default).
-   - If the source video is offer/pricing-related, also read `backbone/offer.md`. If mission/strategy-leaning, also read `backbone/vision.md`.
-   - Propose **one** twist in plain English: a fresh original concept the user can speak from, dressed in the source's winning format (use the actual transcript-derived beats, not the caption). One sentence, no ladders or alternatives — pick the strongest angle and commit.
-   - User accepts → lock pair. User refines → use their refinement, lock pair.
+Two paths:
 
-**Escape hatch (original idea — rare):**
-1. User has a concept that isn't a recreation. Capture it verbatim — voice-to-text rambles welcome.
-2. No source URL, no transcribe step. Format type comes from the platform (Short-form for IG/TT, Long-form for YT).
-3. Lock the pair → fire Step 6 handoff in `original` mode (no URL, scriptwriter writes fresh from the ramble).
+**A. Recreation pick (default):**
+1. User picks `#3` (may or may not name a twist alongside — doesn't matter to ideate either way).
+2. Resolve the URL from the ranked table row.
+3. Fire Step 6 handoff immediately, forwarding the user's verbatim pick message so scriptwriter can detect any inline twist.
+
+**B. Original-idea ramble (rare):**
+1. User has a concept that isn't a recreation. Capture it verbatim.
+2. No URL to resolve.
+3. Fire Step 6 handoff with `MODE: original` and the verbatim ramble.
 
 ### Rules
 - **Top 10 only.** Sort by views, top 10 — never more.
 - **Always hyperlink the title** to the source URL using `[title](url)` form.
 - **Don't pre-filter for "on-brand."** The user knows their voice.
-- **Default is recreation.** Original ideas are the rare path, not the lead.
-- **Don't pitch a twist unless the user blanks.** Wait for them to ask or clearly say they're stuck. Don't volunteer alternatives, don't list options — give them the floor first.
-- **When you do propose a twist, propose ONE.** No ladders, no "or you could do X." Pick the strongest angle from backbone, state it, ship it.
-- **Many-to-many is fine.** Same source can be reused with different twists; same twist can be paired with multiple sources.
-- **One round of clarification max** per pair before locking.
+- **Don't transcribe, decompose, or ask for the twist.** Scriptwriter owns those. Pass the URL + the user's verbatim pick message and let it work.
+- **Don't load backbone files.** Scriptwriter loads them itself. Ideate stays out of concept-level work entirely.
+- **Many-to-many is fine.** Same source URL can be picked by multiple pairs (different twists) — no dedup.
 
 ### Track each pair
-For each locked pair, capture:
-- **Source URL** — from the picked format row (or `null` for original-idea path)
-- **Transcript path** — path to the markdown file written by `transcribe-url` (or `null` for original-idea path)
-- **Concept/twist** — verbatim from user (or your backbone-derived proposal if they blanked)
-- **Format type** — Short-form for IG/TT, Long-form for YT
+For each handoff fired, capture:
+- Source URL (or `null` for original-idea path)
+- The user's verbatim pick message
+- Format type (Short-form for IG/TT, Long-form for YT)
+- Notion URL once scriptwriter returns
 
-When `pairs locked == goal count`, exit the loop. Move to Step 6 (or finalize if you've been firing handoffs inline).
+When `picks made == goal count`, exit the loop. Move to Step 7 (or finalize if you've been firing handoffs inline).
 
 ---
 
-## Step 6 — Hand Off Each Pair To Scriptwriter
+## Step 6 — Hand Off Each Pick To Scriptwriter
 
-For each locked pair, invoke the `scriptwriter` skill via the `Skill` tool in **IDEATE-HANDOFF** mode. Scriptwriter does all the heavy lifting — transcribe the source via `transcribe-url`, decompose format vs concept, run the anti-slop check, write the beat sheet, and create a new Notion page in `Scripted` status.
+For each pick, invoke the `scriptwriter` skill via the `Skill` tool with the minimal payload below. **Scriptwriter does everything else** — asks for the twist (or detects it inline from USER PICK), transcribes via subagent, decomposes format, writes the beat sheet, creates the Notion page in `Scripted` status.
 
-### Handoff payload (per pair)
+### Handoff payload
 
 **Recreation pair (default):**
 ```
-IDEATE HANDOFF
-URL: <source URL from the format pick>
-TRANSCRIPT: <path to the markdown file from transcribe-url, e.g. transcripts/url/video-by-creator_2026-05-08.md>
-CONCEPT: <user's twist — verbatim, or backbone-derived if user blanked>
+URL: <source URL from the picked row>
 FORMAT: Short-form | Long-form
+USER PICK: <user's verbatim pick message — may contain a twist, may not>
 ```
 
 **Original-idea pair (rare):**
 ```
-IDEATE HANDOFF
 URL: none
-CONCEPT: <user's ramble — verbatim>
 FORMAT: Short-form | Long-form
+USER PICK: <user's verbatim ramble>
 MODE: original
 ```
 
-Scriptwriter recognizes the `IDEATE HANDOFF` header. For recreation pairs, it reads the supplied `TRANSCRIPT` path directly (skips re-transcription — ideate already did that in Step 5) and decomposes format vs concept. For `MODE: original`, it skips transcription and writes a fresh beat sheet directly from the ramble. Both paths still run the source-creator test and anti-slop check.
+That's the entire payload. No CONCEPT field, no TRANSCRIPT field. Scriptwriter is responsible for everything downstream.
 
 ### Sequencing
 Run handoffs **sequentially**, not in parallel. Scriptwriter writes to Notion and uses the Chrome tab via transcribe-url; parallel calls would race. After each pair completes, capture the resulting Notion URL.
 
-You can fire each handoff inline as soon as a pair locks in Step 5 — but still one at a time. If a handoff is mid-flight when the next pair locks, queue it and fire when the previous finishes.
+You can fire each handoff inline as soon as the user picks — but still one at a time. If a handoff is mid-flight when the next pick lands, queue it and fire when the previous finishes.
 
 ### Step transition print
-Print elapsed/remaining once before the loop starts and once after it finishes. Don't spam between pairs.
+Print elapsed/remaining once before the loop starts and once after it finishes. Don't spam between picks.
 
 ---
 
 ## Step 7 — Stop Timer + Report Duration
 
-When all pairs are scripted (or the user calls it), compute the session duration and stop the timer.
+When all picks are scripted (or the user calls it), compute the session duration and stop the timer.
 
 ### Compute duration
 ```
@@ -268,25 +258,24 @@ Session: [XX min YY sec]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Dropped into Notion as Scripted:
-  1. <Notion URL> — <concept> × format from <source URL>
-  2. <Notion URL> — <concept> × format from <source URL>
+  1. <Notion URL> — from <source URL>
+  2. <Notion URL> — from <source URL>
   ...
 
 Next: open Notion → Scripted column → film.
 ```
 
-If under goal: be honest. Don't pad with weak pairs.
+If under goal: be honest. Don't pad with weak picks.
 
 ---
 
 ## Important Notes
 
-- **Default = format-first recreation.** User picks a winning video → names a twist → handoff. Don't ask "concept-first or format-first?" — just lead with the table.
+- **Default = format-first recreation.** User picks a winning video → handoff. The twist conversation happens in scriptwriter, not here.
 - **Original ideas are the escape hatch, not the default.** Mention it once in the loop prompt, then move on.
-- **Backbone loads ONLY if the user blanks on a twist.** Otherwise the user owns the concept. When you do propose, propose ONE twist — no menus.
-- **Ideate transcribes at pick-time so the twist is grounded in the actual video, not the caption.** Captions usually misrepresent what made a video work. The transcript is what surfaces the real hook mechanism + beat structure — both for the user and (when proposing) for ideate. Then hand the transcript path forward so scriptwriter doesn't re-pull it.
-- **Scriptwriter is still the engine.** Don't duplicate decompose / beat-sheet / Notion-write logic here. Hand off in Step 6 and trust it.
-- **The timer is a budget, not a quota.** Fire handoffs inline as pairs lock; don't wait until all N are paired.
+- **Ideate does not transcribe, decompose, ask for twists, or load backbone files.** Every per-video concern lives in scriptwriter. If you're reaching for `transcribe-url` or `Read backbone/`, stop — you're in scriptwriter's lane.
+- **Scriptwriter is the engine.** Ideate is a thin batch wrapper around it.
+- **The timer is a budget, not a quota.** Fire handoffs inline as picks land; don't wait until all N are picked.
 - **Top 10 cap, hyperlinked titles, every time.** No exceptions in Step 5.
 - **Auto-run research only if no matching report exists.** Don't re-run if a recent report exists — just use it.
 - **Always run the cleanup block** when ending the session. Don't leave the http server or Chrome tab orphaned.
@@ -297,7 +286,8 @@ If under goal: be honest. Don't pad with weak pairs.
 ## What This Skill Does NOT Do
 
 - **Transcribe, decompose, or write beats.** That's scriptwriter's job. Hand off in Step 6.
-- **Brainstorm twists upfront.** Let the user name the twist first. Only propose one (from backbone) if they explicitly blank.
+- **Ask for the twist or propose one.** Scriptwriter Step 1 owns the twist conversation.
+- **Load backbone files.** Scriptwriter loads them as it needs them.
 - **Ask "concept-first or format-first?"** Default is format-first. Just show the table.
 - **Drop pages in `Idea` status.** Pairs go straight to `Scripted` via scriptwriter.
 - **Filter for "on-brand."** The user picks. They know their voice.

@@ -2,7 +2,7 @@
 
 Live schema for the Notion content database. **Pure reference — no execution logic.** Skills that read/write the pipeline (scriptwriter, post-content, ideate) load this file for IDs and property shapes.
 
-> Last verified against live Notion: **2026-05-09** via `mcp__notion__API-retrieve-a-database`. If something feels off, re-fetch the database and update this file.
+> Last verified against live Notion: **2026-05-08** via `mcp__notion__API-retrieve-a-database`. If something feels off, re-fetch the database and update this file.
 
 ---
 
@@ -26,7 +26,8 @@ Live schema for the Notion content database. **Pure reference — no execution l
 | **Format** | `select` | `Short-form` · `Long-form` |
 | **Type** | `multi_select` | `TOF` · `MOF` · `BOF` · `Brainrot` · `Viral` · `Conversion` (multiple allowed) |
 | **Post Date** | `date` | YYYY-MM-DD — set when status flips to Posted |
-| **Raw Footage** | `url` | Link to raw clips (Drive, Frame.io, etc) |
+| **Source URL** | `url` | Link to the source video being recreated/twisted (the format model). Set by `ideate` and `scriptwriter` for TWIST/recreation pairs. Distinct from `Raw Footage`. |
+| **Raw Footage** | `url` | Link to raw clips Jason filmed (Drive, Frame.io, etc). Filled later, not on script creation. |
 | **Edited Video** | `url` | Link to final edit (replaces old "Frame Link") |
 | **IG Link** | `url` | Public Instagram URL after posting |
 | **Created time** | `created_time` | Auto |
@@ -62,6 +63,7 @@ Idea → Scripted → To Edit → Editing → To Review → Ready To Post → Po
   "Format":       { "select": { "name": "Short-form" } },
   "Type":         { "multi_select": [{ "name": "TOF" }, { "name": "Viral" }] },
   "Post Date":    { "date": { "start": "2026-05-08" } },
+  "Source URL":   { "url": "https://..." },
   "Raw Footage":  { "url": "https://..." },
   "Edited Video": { "url": "https://..." },
   "IG Link":      { "url": "https://..." }
@@ -71,6 +73,7 @@ Idea → Scripted → To Edit → Editing → To Review → Ready To Post → Po
 ### Creating a new page
 ```jsonc
 parent:     { "database_id": "21bf6585-5e6b-81df-b692-e0321083dffa" }
+icon:       { "type": "emoji", "emoji": "📦" }   // top-level — required by scriptwriter on every create
 properties: { /* shapes above */ }
 children:   [ /* block objects for the page body */ ]
 ```

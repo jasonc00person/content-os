@@ -16,7 +16,10 @@ The default play: take a video that already worked for someone else, **steal the
 This is the whole game. Read it twice.
 
 **FORMAT (copy this — it's the proven viral mechanism):**
-- Hook type and mechanism (dream outcome, contrarian, curiosity gap, day-in-the-life intro, etc.)
+- Hook type and mechanism — **what counts as "the hook" depends on the format:**
+  - **Short-form (IG Reels / TikTok / YT Shorts):** the hook is whatever the host SAYS in the first 3-5 seconds. The on-screen title overlay and caption are decoration; the spoken opener is what stops the scroll.
+  - **Long-form (YouTube):** the hook is the **title** (paired with the thumbnail). Title is what earns the click, and no click means no view. The spoken cold-open matters for retention, but the title's grammatical/rhetorical pattern is what we copy as the hook.
+  - In both cases: pull the verbatim hook artifact (spoken line for short-form, title string for long-form) and treat *its* grammatical/rhetorical pattern as the format to keep.
 - Structural shape (list, demo, story, build-in-public, before/after, rant, walkthrough)
 - Pacing and beat timing (when the payoff lands, how long the value section runs)
 - CTA pattern (comment-keyword, DM, link in bio)
@@ -50,58 +53,124 @@ Detect the mode before doing anything. If ambiguous, ask one question and procee
 
 ## TWIST Flow (the main flow)
 
-### 1. Transcribe the source
-- If the user gave a URL, invoke the `transcribe-url` skill. Wait for the markdown file.
-- Read the transcript file from `transcripts/url/`.
+### 1. Ask upfront: "Do you already have a twist?"
 
-### 2. Decompose the source — separate FORMAT from CONCEPT
+Before transcribing or doing any decomposition work, ask the user one question:
 
-Two columns, written silently before going further:
+> *"Got a twist/concept already, or want me to read the video + backbone and propose one?"*
 
-**KEEP (the format — this is the model):**
-- Hook mechanism (dream outcome / contrarian / curiosity gap / pain point / authority hijack)
-- Structural shape (day-in-the-life, list, before/after, build-in-public, rant, demo, story)
-- **The actual structural beats the source uses, in order** — name them as the source's creator would (e.g. "Cold Open Claim → Proof Reel → Architecture Reveal → 4-Step Walkthrough → Free File Giveaway"). These become the headings in the Notion beat sheet. There is no fixed beat template — different formats have different beats.
-- Pacing — where does each beat start/end, how long is the proof section, when does payoff drop
-- The *specific* psych trick that did the heavy lifting (proof shot, mind-read, scarcity, identity assignment, etc.)
-- CTA pattern
+Two branches from here:
 
-**THROW AWAY (the concept — this we replace entirely):**
-- The topic / niche / claim
-- All examples, numbers, names, stories
-- The argument and the conclusion
+- **User has a twist** → capture it verbatim. Skip step 4's candidate generation entirely (their concept is the concept). Run steps 2 → 3 → 5 → 6 with their concept locked in.
+- **User wants you to propose** → run the full flow (steps 2 → 3 → 4 → 5 → 6) and surface ONE proposed twist at step 4. Confirm it before writing to Notion.
 
-The first column is the scaffold we'll build on. The second column is what we burn before step 4 — none of it survives into the twist.
+Skip this question when the user clearly stated their twist in the same message they supplied the URL — including `/ideate` handoffs where the twist appears in the `USER PICK` field. Parse the message for any "except / but / instead / make it about / with [X]" clause that names a fresh angle. If found, treat it as a user-supplied twist and skip the question.
+
+### 2. Spawn a Sonnet subagent — transcribe + decompose (NEVER read the full transcript directly)
+
+Bundle transcription and format decomposition into a single subagent call. The orchestrator must NOT load the full transcript into its own context. The subagent returns only a tight FORMAT skeleton.
+
+**Why this is non-negotiable:** the whole point of TWIST is "throw away concept, keep format." The full transcript is exactly the stuff we need to discard — loading it wastes tokens and risks concept contamination (orchestrator drifting toward source-flavored beats during writeup). A 30-min long-form transcript can run 40K+ tokens, none of which the orchestrator needs.
+
+**The subagent's job:**
+1. Run `transcribe-url` on the URL (or read the cached transcript at the supplied `TRANSCRIPT` path if `/ideate` handoff already produced one).
+2. Decompose the transcript into a structured FORMAT skeleton.
+3. Return ONLY that skeleton + a one-line "source concept signature" (so the orchestrator can do an overlap check on the user's twist without ever seeing the source's specifics).
+
+**Spawn it as:** `Agent` tool with `subagent_type: general-purpose` and `model: sonnet`. Prompt template:
+
+```
+You are doing format decomposition for the scriptwriter skill. Read the source transcript and return ONLY the format skeleton — no concept details.
+
+Source URL: <URL>
+Cached transcript path (skip transcribe if provided): <PATH or "none — transcribe first">
+
+If no cached path: run `bash .claude/skills/transcribe-url/scripts/transcribe-url.sh "<URL>"` first, then read the resulting file (with offset/limit if it's large).
+
+Return EXACTLY this structure (~400 words total):
+
+## SOURCE CONCEPT SIGNATURE
+<one phrase — what the source is actually ABOUT at the topic level. The orchestrator uses this for overlap-check only. Keep it generic enough that it doesn't contaminate, e.g. "small-business consulting transformation" not "HVAC duct cleaning pricing">
+
+## HOOK ARTIFACT (verbatim — pulled from the right place per format)
+For SHORT-FORM (IG Reels / TikTok / YT Shorts): quote the literal first 3-5 seconds of SPOKEN audio (what the host says, NOT the title overlay or caption).
+For LONG-FORM (YouTube): quote the literal video TITLE string (NOT the spoken cold-open).
+"<the verbatim hook artifact, in quotes>"
+
+## HOOK STRUCTURAL PATTERN
+<one sentence describing the grammatical/rhetorical mechanism — e.g. "I used to [embarrassing past belief], and it [got me result]" or "How I [achieved outcome] in [timeframe] using [method]" — strip the actual concept words and just name the SHAPE>
+
+## HOOK MECHANISM
+<one line — type of hook (confession / contrarian / curiosity gap / proof drop / list promise / dream outcome / etc.) + what it promises the viewer>
+
+## STRUCTURAL SHAPE
+<one phrase — e.g. "consultation deep-dive with time-later payoff", "list video", "before/after">
+
+## BEAT LIST (in order)
+For each beat:
+- BEAT NAME IN CAPS — rough timestamp range — one-sentence intent (no concept details)
+
+Aim for the actual count of beats observed. No forced 5-act mold.
+
+## PACING NOTES
+- Where the hook payoff lands
+- How long the value section runs
+- How often the host breaks to camera for meta-commentary
+- CTA placement pattern (single, repeated, woven)
+
+## CTA PATTERN
+<one paragraph — soft/hard, keyword/link, give-first vs direct sale, frequency, exact placement>
+
+## VISUAL / SHOT GRAMMAR
+- Main shot type
+- Signature visual moves (overlays, before/after reveals, physical proof devices, etc.)
+
+## SIGNATURE PSYCH MOVE
+<one sentence — the specific psychological mechanism doing the heavy lifting>
+
+HARD RULES:
+- **THE HOOK ARTIFACT DEPENDS ON THE FORMAT.** Short-form (IG Reels / TikTok / YT Shorts) → the spoken first 3-5 seconds. Long-form (YouTube) → the video title. Never substitute one for the other. On short-form the title overlay/caption is decoration; on long-form the spoken cold-open is retention, not the hook.
+- NO source-specific topics, names, niches, dollar amounts, examples, or arguments anywhere except the SOURCE CONCEPT SIGNATURE line and the HOOK ARTIFACT quote.
+- Beat names describe structural function only ("DIAGNOSE BOTTLENECK" yes, "DIAGNOSE HVAC PRICING" no).
+- ~400 words total. Terse. No editorializing, no improvement suggestions, no "why it works" essays.
+- Return only the structured output. No preamble.
+```
+
+The subagent's return is the only artifact the orchestrator works from for the rest of the flow. Treat it as the canonical decomposition — don't second-guess by re-reading the transcript.
 
 ### 3. Load backbone (selectively)
 Always: `voice-dna.md` + `backbone/icp.md` + `backbone/messaging.md`.
 Add only if relevant: `backbone/offer.md` (pricing/offer angles), `backbone/vision.md` (mission-driven content).
 
-### 4. Build a NEW concept inside the kept format
+### 4. Lock the concept (skip candidate generation if user already named a twist in step 1)
 
-This is where most AI script tools fail — they re-spin the source's concept in a new voice and call it a twist. That is slop. Don't do it.
+**If the user supplied a twist in step 1:** their concept IS the concept. Skip the rest of this step's candidate generation — go straight to the source-creator test (rule 3 below) to make sure their idea isn't accidentally close to the source. Compare the user's twist against the subagent's `SOURCE CONCEPT SIGNATURE` line. If there's overlap, surface that and ask them to sharpen it. Otherwise lock and move on.
 
-Instead: take the FORMAT column from step 2, hold it fixed, and **invent a fresh concept** that fits inside it. The concept must be something the user can credibly say that **didn't appear anywhere in the source transcript**.
+**If the user wanted you to propose:** This is where most AI script tools fail — they re-spin the source's concept in a new voice and call it a twist. That is slop. Don't do it.
 
-Generate 2–3 candidate concepts. Each must:
+Take the FORMAT skeleton returned by the step-2 subagent, hold it fixed, and **invent a fresh concept** that fits inside it. The concept must be something the user can credibly say that doesn't overlap with the subagent's `SOURCE CONCEPT SIGNATURE`.
+
+Surface ONE proposed twist (no menus, no ladders). It must:
 1. **Fit the kept format perfectly** (same hook mechanism, same structural shape, same payoff timing, same CTA pattern). If a concept doesn't fit the format, drop it — find one that does.
 2. **Be anchored to something only the user has** — pull from the user's backbone:
    - Specific proof from the user's proof bank (`backbone/messaging.md` — follower counts, MRR, member wins, named viral hits)
    - A user-specific system, methodology, or tool stack named in their backbone or `voice-dna.md`
    - One of the **belief shifts** in `messaging.md` (if structured that way — count and content vary per user)
    - The user's backstory beats (origin, prior path, distinctive credentials)
-3. **Pass the source-creator test:** if the original creator saw the user's video, they'd nod at the format but not recognize the idea. If they'd recognize the idea, the concept is too close — kill it and try again.
+3. **Pass the source-creator test:** if the original creator saw the user's video, they'd nod at the format but not recognize the idea. Concretely: the user's concept must sit in a different topic-space than the subagent's `SOURCE CONCEPT SIGNATURE`. If they overlap, kill it and try again.
 
-Pick the strongest. State it in one sentence:
+State it in one sentence and wait for the user to confirm or refine:
 *"Format kept: [hook mech + structural shape from source]. New concept: [the user's fresh idea] — anchored to [proof/system/belief]."*
 
+User confirms or refines → lock concept. User wants a different angle → propose a second one (still just one, not a list). Don't write to Notion until the concept is locked.
+
 ### 5. Structure the beats — using the source's actual shape
-Take the structural beats you identified in step 2 and use them as the section headings, in the same order, at roughly the same pacing. **Do not flatten the source into a generic HOOK/BUILDUP/VALUE/PAYOFF/CTA template.** A build-in-public deep-dive has different beats than a rant, a list video, a before/after, or a day-in-the-life — and forcing them all into the same five-act mold strips out the structural reason the source worked.
+Take the structural beats from the step-2 subagent's `BEAT LIST` and use them as the section headings, in the same order, at roughly the same pacing. **Do not flatten the source into a generic HOOK/BUILDUP/VALUE/PAYOFF/CTA template.** A build-in-public deep-dive has different beats than a rant, a list video, a before/after, or a day-in-the-life — and forcing them all into the same five-act mold strips out the structural reason the source worked.
 
 Beats describe *what happens in this section*, not the words the user says. One example anchor line per beat is fine when the line is structurally load-bearing (e.g., the CTA keyword) — otherwise leave room for them to riff.
 
 ### 6. Write to Notion
-Create a new page in the content database. Properties + beat-sheet body — exact spec below.
+Create a new page in the content database. Properties + beat-sheet body — exact spec below. The source URL goes in the **Source URL** property, and for YouTube long-form sources the thumbnail gets embedded as the first body block (see Notion Output Spec).
 
 ---
 
@@ -113,20 +182,28 @@ When there's no source video, you don't get a free format model — you have to 
 - **RAMBLE** — extract the core insight + emotion + ICP pain from the dump. Confirm in one line: *"Heard you saying: [insight] — going [TOF/BOF]. What viral video should I model the format off?"* If they have one, switch to TWIST. If not, pick the natural beat shape for the content type as in FRESH.
 - **PIPELINE** — find the existing `Idea` page in Notion (use search, fuzzy-match title). Same rule: if the Idea page links a reference URL, treat it as TWIST. Otherwise pick the natural beat shape from the content type. **Update** that page (don't create new): set status to `Scripted`, write beats into the page body. Append, don't overwrite, if the page already has notes.
 
-- **IDEATE HANDOFF** — when invoked from `/ideate` with a pre-supplied concept, run the standard TWIST flow but **skip step 1's transcribe call** (ideate already transcribed in its Step 5 — read the supplied `TRANSCRIPT` path directly) and **skip step 4's candidate generation** (the concept comes in pre-formed — use it directly). Still run the source-creator test (step 4 rule 3) and anti-slop check (Quality Gate 1) — those are non-negotiable. Drop into Notion as a brand-new page in `Scripted` status (not `Idea`). Handoff payload looks like:
-  ```
-  URL: <source video URL — used as format model>
-  TRANSCRIPT: <path to existing transcript markdown — read this instead of re-transcribing>
-  CONCEPT: <fresh idea from /ideate Step 5 — the user's creative raw material>
-  FORMAT: Short-form | Long-form
-  ```
-  If `TRANSCRIPT` is missing or the file isn't readable, fall back to step 1 (transcribe the URL). If `MODE: original` is set, skip both transcribe and decompose — write a fresh beat sheet directly from the concept ramble.
+### Ideate batch payloads (no special mode — same flow as a normal call)
+
+When invoked from `/ideate`, the args come in this shape:
+
+```
+URL: <source URL — or "none" for original-idea path>
+FORMAT: Short-form | Long-form
+USER PICK: <user's verbatim pick message from ideate's Step 5 prompt>
+[MODE: original]   ← only present for the rare original-idea path
+```
+
+Treat this as a normal invocation — no bypass logic, no special-case branches:
+- `URL` present + no `MODE: original` → TWIST mode. Step 1 still runs; if `USER PICK` already names a twist (look for "except / but / instead / make it about / with [X]"), skip the question and lock the user's twist as the concept.
+- `MODE: original` (or `URL: none`) → RAMBLE mode. Use `USER PICK` as the ramble.
+
+That's it. The handoff is just a tidier version of "user pasted a URL and said something about it" — no exotic flow needed.
 
 ---
 
 ## Beats — Derived From the Source, Not Templated
 
-There is no fixed beat list. Beat names + count + order come from step 2's decomposition of the source. Some examples of what real source-derived beat sets look like:
+There is no fixed beat list. Beat names + count + order come from the step-2 subagent's `BEAT LIST` decomposition. Some examples of what real source-derived beat sets look like:
 
 - **Build-in-public deep-dive:** Cold Open Claim → Proof Reel → Architecture Reveal → Live Walkthrough (N steps) → Before/After Recap → CTA
 - **Contrarian rant:** Bold Claim → "Here's why everyone's wrong" → Receipt / Proof → Reframe → Action Step → CTA
@@ -185,26 +262,82 @@ Everything else is dictated by the source.
 
 Schema reference: `notion-pipeline.md`. Don't duplicate property shapes here — load that file for the exact write payloads.
 
+### ⚠️ MCP gotcha — `children` takes raw objects, not stringified JSON
+
+The `mcp__notion__API-post-page` tool's JSON schema declares `children: { items: { type: "string" } }`. **It is wrong.** The Notion API rejects strings with `body.children[0] should be an object, instead was "..."`. Pass each block as a raw JSON object in the array — same as the underlying Notion REST API expects. Do this on the first call; don't waste a round trip discovering it again.
+
 ### Property writes
 | Property | Value |
 |----------|-------|
 | **Title** | The script title — punchy, ~6–10 words, hook-flavored. Not the source video's title. |
-| **Status** | `Scripted` (TWIST/FRESH/RAMBLE/IDEATE-HANDOFF create new in this status; PIPELINE flips Idea → this) |
+| **Status** | `Scripted` (TWIST/FRESH/RAMBLE create new in this status; PIPELINE flips Idea → this) |
 | **Format** | `Short-form` by default. `Long-form` only if user says YouTube long-form. |
-| **Type** | Multi-select. Always include exactly one funnel tag (`TOF` / `MOF` / `BOF`). Optionally add `Viral` or `Conversion` when the angle clearly fits. |
-| **Raw Footage** | If TWIST: the source URL goes here so it's findable later. |
+| **Type** | Multi-select. Always include exactly one funnel tag (`TOF` / `MOF` / `BOF`) — see decision rule below. Optionally add `Viral` or `Conversion` when the angle clearly fits. |
+| **Source URL** | TWIST mode: the source video URL goes here (including `/ideate` batch handoffs that supply a URL). Leave blank for FRESH / RAMBLE / `MODE: original`. |
+| **Raw Footage** | Leave blank. This is for Jason's own raw clips later — `post-content` and `video-editor` fill it. |
+
+#### Page icon — always set on create
+
+Every new page gets a single emoji icon that represents the **hook concept** — set it on the initial `API-post-page` call via the top-level `icon` field (`{"type": "emoji", "emoji": "📦"}`). Never skip; the Kanban reads icons at a glance.
+
+Pick the emoji from what the video is actually about, not the funnel tag or format. Examples:
+- Repos / tools list → 📦 · 🧰
+- Money / revenue / MRR → 💰 · 💸
+- Contrarian / hot take / rant → 🔥 · 🎯
+- Build-in-public / system reveal → 🛠️ · ⚙️
+- Numbered countdown / list → 🔟 · 📋
+- Case study / member win → 🏆 · 📈
+- Belief shift / reframe → 🧠 · 💡
+- AI / Claude / agent angle → 🤖
+- Algorithm / virality / hooks → 🎣 · 📊
+- Anti-guru / call-out → 🚫 · 👀
+
+If nothing obvious fits, pick the closest match — never default to a generic 📝 or skip the field. One emoji only.
+
+#### Type tag decision rule — tag by *who the video is for*, not surface format
+
+Don't read the format ("case study", "tutorial", "rant") and pattern-match a tag. Ask: **what is the video asking the viewer to do, and how warm is that viewer?**
+
+| Tag | Audience temperature | What the video is doing | Examples |
+|-----|---------------------|------------------------|----------|
+| **TOF** | Cold — stranger scrolling | Stop the scroll, plant a belief shift, no offer mention | Contrarian hooks, "everyone at 200 views thinks X", broad-niche pain points |
+| **MOF** | Warm — already follows | Deepen trust, show how you think, raise perceived expertise — no proof-of-offer | Framework explainers, behind-the-scenes systems, "how I think about X", build-in-public demos with no member wins involved |
+| **BOF** | Hot — considering the offer | Convert via proof + offer-adjacent CTA. Even with a give-first keyword mid-roll, the *whole video* is a sales proof point | **Case studies, member wins, before/afters, "I 6x'd this stranger's business", "what working with me looks like", testimonial breakdowns** |
+
+**Heuristic shortcut:** if the video features *the result of working with you* (member name, member numbers, transformation), it's BOF — even if the mid-roll CTA is soft. The proof IS the sell.
+
+**Modifiers (optional, additive):**
+- `Viral` — pure reach play, hook-flavored, designed to break out of the niche. Pairs naturally with TOF.
+- `Conversion` — actively qualifies/sells the offer in the body, not just the CTA. Pairs naturally with BOF.
+
+**Common miss to avoid:** tagging case studies as MOF because they "teach" something. The teaching is the wrapper; the proof is the payload. Case studies are BOF + Conversion. 
+
+### YouTube thumbnail (long-form sources only)
+
+For YouTube long-form sources (Format = `Long-form`, source on `youtube.com` / `youtu.be`), embed the thumbnail as the very first body block. The title + thumbnail are the conversion levers for YT, so having the original visible in the script page makes recreation faster.
+
+Extract the video ID from the URL:
+- `youtube.com/watch?v=VIDEO_ID` → `VIDEO_ID`
+- `youtu.be/VIDEO_ID` → `VIDEO_ID`
+- `youtube.com/shorts/VIDEO_ID` → `VIDEO_ID` (but Shorts is short-form — skip)
+
+Use the standard CDN URL: `https://i.ytimg.com/vi/<VIDEO_ID>/maxresdefault.jpg` (fall back to `hqdefault.jpg` if maxres 404s — rare). Embed as a Notion `image` block with `type: external`.
+
+Skip the thumbnail block for IG / TikTok / X / Vimeo sources — they don't have stable, public thumbnail CDNs we can rely on.
 
 ### Body blocks (the beat sheet)
 
 Two fixed framing callouts at the top, two fixed sections at the bottom (final CTA-keyword callout if applicable + Notes for the user). Everything in between is **N beats derived from the source**, each rendered with the same per-beat shape.
 
 ```
+[image — external] https://i.ytimg.com/vi/<VIDEO_ID>/maxresdefault.jpg     ← only for YouTube long-form TWIST sources
+
 [callout 💡] Format kept: <source's structural shape — name the actual beats in order>. New concept: <fresh idea> — anchored to <proof/system/belief>.
 [callout 🎬] Source (format model only — concept is original): <URL>     ← only for TWIST mode
 
 [divider]
 
-── repeat for each beat from step 2, in source order ──
+── repeat for each beat from the step-2 subagent's BEAT LIST, in source order ──
 
 [heading_2] <BEAT NAME IN CAPS> (<rough timestamp range>)
 [paragraph] <intent — one sentence on what this beat does>
@@ -249,7 +382,7 @@ If a written line could come from any other creator in the niche, anchor it to a
 
 ## Quality Gates (silent — fix or flag, don't lecture)
 
-1. **Anti-slop check (TWIST only — the most important gate).** Open the source transcript and scan: do any of the source's specific topics, claims, examples, numbers, names, or framings appear in the new beats? If yes, this is regurgitation. Throw out the concept and re-do step 4 — keep the format, build a *different* idea.
+1. **Anti-slop check (TWIST only — the most important gate).** The orchestrator does NOT have the source transcript (subagent kept it). Instead: scan your written beats and confirm none of them topic-overlap with the subagent's `SOURCE CONCEPT SIGNATURE`. If anything looks suspiciously close (or you're not sure), send the suspect beats back to the same subagent via `SendMessage` and ask: "Do any of these overlap with concept content from the source?" If yes, throw out the concept and re-do step 4 — keep the format, build a *different* idea.
 2. **Format actually kept.** TWIST mode: does the new concept fit the same hook mechanism, structural shape, pacing, and CTA pattern as the source? If we drifted off the format, the structural reason it worked is gone — re-anchor.
 3. **Anchored to the user.** At least one proof / system / belief-shift reference somewhere in the beats. If a generic creator could have written this, it's not anchored.
 4. **Hook opens a loop.** If the payoff is guessable from the hook alone, rewrite the hook.
