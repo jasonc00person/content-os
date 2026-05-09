@@ -36,10 +36,11 @@ As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old
 
 | Folder | What's In It |
 |--------|-------------|
-| `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, notion-content-pipeline, ig-competitor-research, yt-competitor-research, post-content, video-editor, ideate. |
+| `.claude/skills/` | Claude skill files -- scriptwriter, ig-analytics, research-ig-competitors, research-yt-competitors, research-yt-search, research-tt-search, post-content, video-editor, ideate. |
 | `backbone/` | **Locked offer backbone — load these on demand for content/strategy work.** `vision.md` (mission, MRR ladder, backstory), `icp.md` (Standard + Premium ICPs, competitor breakdown, USP), `offer.md` (offer stack, pricing, deliverables), `messaging.md` (headlines, 5 belief shifts, proof bank, anti-LARP positioning). |
 | `video-editor/` | Video editing workspace. Drop raw clips in `inbox/<job-name>/`, final MP4s land in `outputs/<job-name>.mp4`. Intermediates (transcript, cuts) live in `/tmp/video-editor/<job>/`. |
 | `voice-dna.md` | Jason's speech patterns, openers, closers, slang, energy -- extracted from top 10 reels. READ THIS before writing any script. |
+| `notion-pipeline.md` | Live schema for the Notion content database (DB ID, properties, status flow, write shapes). Skills that read/write the pipeline load this for IDs and shapes. |
 | `competitor-list.md` | Competitor accounts to study (Jun Yuh, Ava, Mino Lee, SooWei Goh). |
 | `viral-knowledge/` | Scripting methodology, viral frameworks, psychology tricks, hook analysis, Instagram/YouTube playbooks. |
 | `research/` | Competitor research reports. |
@@ -51,13 +52,14 @@ As of the May 3 2026 pivot: **one motion, one offer, no flip-flopping.** The old
 
 1. **Skill files** (`.claude/skills/`) are the core engines. Each has a `SKILL.md` with system prompts, templates, and methodology:
    - `ig-analytics` -- 30-day Instagram performance reports
-   - `notion-content-pipeline` -- Notion content database management
-   - `ig-competitor-research` -- IG competitor scraping, outlier detection, trend analysis
-   - `yt-competitor-research` -- YouTube competitor scraping (long-form), top-3 by views per channel
+   - `research-ig-competitors` -- IG competitor scraping, outlier detection, trend analysis
+   - `research-yt-competitors` -- YouTube competitor scraping (long-form), top-3 by views per channel
+   - `research-yt-search` -- YouTube keyword/niche exploration via search bar, top-5 by views per search term
+   - `research-tt-search` -- TikTok keyword/niche exploration via search bar, every visible card per term, deduplicated and pooled
    - `scriptwriter` -- Write IG Reel/YT scripts in Jason's voice with viral frameworks (fresh, ramble, batch, rewrite modes)
    - `post-content` -- Post/schedule videos to IG, YouTube, TikTok, LinkedIn, Facebook via Buffer API
    - `video-editor` -- Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, word-aware silence snap, FFmpeg splice. No captions/B-roll -- just tight rough cuts.
-   - `ideate` -- 1-hour timed ideation block. Picks platform + goal, sets a Mac alarm, probes backbone for original angles, scans Notion saved Ideas, falls back to competitor research, drops N packaged ideas into Notion ready for scriptwriter.
+   - `ideate` -- 30-min timed ideation block. Picks platform + goal, opens a self-hosted visual countdown timer in Chrome, probes backbone for original angles, scans Notion saved Ideas, falls back to competitor research, drops N packaged ideas into Notion ready for scriptwriter.
 2. Scripts require **context** to be effective. Load the relevant backbone files on demand:
    - **Default for any script:** `backbone/icp.md` + `backbone/messaging.md` (audience + how we talk about it)
    - **Pricing / offer mechanics:** `backbone/offer.md`

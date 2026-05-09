@@ -24,7 +24,7 @@ Resolve a target video from Notion → download from Frame.io/Drive → upload t
 
 ## Notion Content DB Schema (verified 2026-05-06)
 
-**Database ID:** `21bf6585-5e6b-81df-b692-e0321083dffa`
+**Database ID:** `<the user's Notion content database ID — configure in .env as NOTION_CONTENT_DB_ID or check backbone/ for the project's DB ID>`
 
 | Property | Type | Purpose |
 |----------|------|---------|
@@ -41,19 +41,21 @@ Resolve a target video from Notion → download from Frame.io/Drive → upload t
 
 ## Buffer Platform Config
 
-**Organization ID:** `69d6fa971fcceb5bb1fab20a`
+**Organization ID:** `<the user's Buffer organization ID — configure in .env as BUFFER_ORG_ID>`
 
-**Channel IDs** (run "refresh channels" to update):
-- Instagram: `69d6fab1031bfa423ce3e0d5`
-- TikTok: `69df3f5b031bfa423c063c33`
-- YouTube: `69df3f6a031bfa423c063c68`
+**Channel IDs** (run "refresh channels" to update — IDs are user-specific):
+- Instagram: `<configure in .env as BUFFER_CHANNEL_INSTAGRAM>`
+- TikTok: `<configure in .env as BUFFER_CHANNEL_TIKTOK>`
+- YouTube: `<configure in .env as BUFFER_CHANNEL_YOUTUBE>`
 
-**Refresh channels query** (run after connecting new platforms):
+**Refresh channels query** (run after connecting new platforms to discover your org ID and channel IDs):
 ```bash
-export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/content-os/.env | cut -d= -f2) && curl -s -X POST https://api.buffer.com \
+export BUFFER_API_KEY=$(grep BUFFER_API_KEY .env | cut -d= -f2) && \
+export BUFFER_ORG_ID=$(grep BUFFER_ORG_ID .env | cut -d= -f2) && \
+curl -s -X POST https://api.buffer.com \
   -H "Authorization: Bearer $BUFFER_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"query": "query { channels(input: { organizationId: \"69d6fa971fcceb5bb1fab20a\" }) { id name service type } }"}' | python3 -m json.tool
+  -d "{\"query\": \"query { channels(input: { organizationId: \\\"$BUFFER_ORG_ID\\\" }) { id name service type } }\"}" | python3 -m json.tool
 ```
 
 ---
@@ -65,11 +67,12 @@ export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/conte
 Before doing any new work, check Buffer for posts in `error` state from the last 14 days. **Instagram and TikTok both fail asynchronously** — `createPost` returns success the moment Buffer accepts the queue, but the actual platform ingestion can fail minutes later. Without this scan, errored posts sit silently and you only find out by checking the IG/TikTok app.
 
 ```bash
-export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/content-os/.env | cut -d= -f2)
+export BUFFER_API_KEY=$(grep BUFFER_API_KEY .env | cut -d= -f2)
+export BUFFER_ORG_ID=$(grep BUFFER_ORG_ID .env | cut -d= -f2)
 curl -s -X POST https://api.buffer.com \
   -H "Authorization: Bearer $BUFFER_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"query": "query { posts(input: { organizationId: \"69d6fa971fcceb5bb1fab20a\", filter: { status: [error] } }, first: 20) { edges { node { id text status dueAt channelService error { message rawError } } } } }"}' | python3 -m json.tool
+  -d "{\"query\": \"query { posts(input: { organizationId: \\\"$BUFFER_ORG_ID\\\", filter: { status: [error] } }, first: 20) { edges { node { id text status dueAt channelService error { message rawError } } } } }\"}" | python3 -m json.tool
 ```
 
 If errored posts come back from the last ~14 days:
@@ -94,16 +97,16 @@ Find the Notion row corresponding to the video the user wants to post.
 }
 ```
 
-**C. Filter** results to pages where `parent.database_id == 21bf6585-5e6b-81df-b692-e0321083dffa`.
+**C. Filter** results to pages where `parent.database_id` matches the user's Notion content database ID (see "Notion Content DB Schema" above).
 
 **D. Apply status priority:**
 1. **First pass:** filter to `Status = Ready To Post`. If matches, use these.
-2. **Fallback (only if user gave a keyword and Ready To Post returned nothing):** search across all statuses. Surface the broader matches with their statuses so Jason knows what's going on.
+2. **Fallback (only if user gave a keyword and Ready To Post returned nothing):** search across all statuses. Surface the broader matches with their statuses so the user knows what's going on.
 
 **E. Selection:**
 - **0 matches** → report "no Ready To Post rows found" (or "no matches for `<keyword>` in any status") and stop. Don't guess, don't fall back to local files.
 - **1 match** → use it.
-- **2+ matches** → list candidates: `Title · Status · Edited Video host (frame.io / drive / etc.)` and ask Jason which one. Don't auto-pick.
+- **2+ matches** → list candidates: `Title · Status · Edited Video host (frame.io / drive / etc.)` and ask the user which one. Don't auto-pick.
 
 **F. Extract and hold:**
 - `page_id` (for Notion patch in Step 7)
@@ -111,7 +114,7 @@ Find the Notion row corresponding to the video the user wants to post.
 - `Edited Video` URL (for Step 2 download)
 - `Format` (Short-form vs Long-form — drives YouTube short vs long handling)
 
-If the matched row has a blank `Edited Video` field, stop and tell Jason — the editor hasn't dropped a link yet.
+If the matched row has a blank `Edited Video` field, stop and tell the user — the editor hasn't dropped a link yet.
 
 ### Step 2 — Download the edited video
 
@@ -163,7 +166,7 @@ For files >100MB, Drive injects a virus-scan confirmation. If `file ~/Downloads/
 
 #### C. Google Drive (private — your account only)
 
-Use the Google Drive MCP since Jason's account is connected:
+Use the Google Drive MCP since the user's account is connected:
 1. `mcp__claude_ai_Google_Drive__search_files` to confirm the file ID
 2. `mcp__claude_ai_Google_Drive__download_file_content` returns base64 for binary files. Decode and write to `~/Downloads/<safe-title>.mp4`.
 
@@ -273,9 +276,9 @@ Run with `run_in_background: true` and poll for the output. Don't use stock `ope
 
 Then generate a caption from the transcript:
 - Read `backbone/icp.md` + `backbone/messaging.md` for current positioning, ICP, voice patterns. Layer in `voice-dna.md` for sentence-level rhythm.
-- Caption sounds like Jason — casual, direct, no-BS
-- **CTA rule (drives EVERYTHING about the caption shape):** scan the transcript for an explicit comment/DM CTA Jason actually said on camera (e.g. "comment SYSTEM", "DM me CLAUDE", "drop AGREE in the comments").
-  - **CTA present in transcript →** line 1 of the caption MUST be that exact CTA, matched to what he said ("Comment SYSTEM and I'll send you the framework 👇"). Closing line repeats the keyword with 👇. This is the conversion play — don't soften it.
+- Caption sounds like the creator — casual, direct, no-BS (read `voice-dna.md` if present in the project for sentence-level rhythm)
+- **CTA rule (drives EVERYTHING about the caption shape):** scan the transcript for an explicit comment/DM CTA the creator actually said on camera (e.g. "comment SYSTEM", "DM me CLAUDE", "drop AGREE in the comments").
+  - **CTA present in transcript →** line 1 of the caption MUST be that exact CTA, matched to what they said ("Comment SYSTEM and I'll send you the framework 👇"). Closing line repeats the keyword with 👇. This is the conversion play — don't soften it.
   - **NO CTA in transcript (hot take, contrarian opinion, mindset post, raw thought) →** keep the caption chill and laid back. No forced/manufactured DM keyword. Lead with the hook or a punchy restatement of the take. Optional engagement bait at the end ("agree?", "thoughts?", just an emoji) — but only if it feels natural. Don't fake a funnel CTA on content that wasn't built for one.
 - Structure (when there's a CTA): CTA → hook → bullets/breakdown (use `→` not numbered lists) → closing CTA repeat with 👇
 - Structure (when there's no CTA): hook → take/breakdown → optional soft engagement line
@@ -308,7 +311,10 @@ Posts to each platform AND (for `shareNow`) verifies the post actually went live
 **Why curl from Python:** Buffer's API blocks Python's default `urllib`/`requests` user agent via Cloudflare. We `subprocess.run(['curl', ...])` from Python to get proper JSON handling without shell escaping issues AND a Cloudflare-safe transport.
 
 ```bash
-export BUFFER_API_KEY=$(grep BUFFER_API_KEY /Users/jasoncooperson/Projects/content-os/.env | cut -d= -f2)
+export BUFFER_API_KEY=$(grep BUFFER_API_KEY .env | cut -d= -f2)
+export BUFFER_CHANNEL_INSTAGRAM=$(grep BUFFER_CHANNEL_INSTAGRAM .env | cut -d= -f2)
+export BUFFER_CHANNEL_TIKTOK=$(grep BUFFER_CHANNEL_TIKTOK .env | cut -d= -f2)
+export BUFFER_CHANNEL_YOUTUBE=$(grep BUFFER_CHANNEL_YOUTUBE .env | cut -d= -f2)
 export VIDEO_URL="https://litter.catbox.moe/abc123.mp4"
 export VIDEO_PATH="$VIDEO"   # for re-upload on retry if Litterbox URL expired
 export YT_TITLE="<curiosity-driven title — default to Notion Title>"
@@ -333,11 +339,12 @@ CAPTION    = open(os.environ['CAPTION_FILE']).read().strip()
 PLATFORMS  = os.environ.get('PLATFORMS', 'instagram,tiktok,youtube').split(',')
 
 CHANNELS = {
-    'instagram': {'id': '69d6fab1031bfa423ce3e0d5',
+    # Channel IDs are user-specific — populate from .env or the Buffer Config section above
+    'instagram': {'id': os.environ['BUFFER_CHANNEL_INSTAGRAM'],
                   'meta': {'instagram': {'type': 'reel', 'shouldShareToFeed': True}}},
-    'tiktok':    {'id': '69df3f5b031bfa423c063c33',
+    'tiktok':    {'id': os.environ['BUFFER_CHANNEL_TIKTOK'],
                   'meta': None},
-    'youtube':   {'id': '69df3f6a031bfa423c063c68',
+    'youtube':   {'id': os.environ['BUFFER_CHANNEL_YOUTUBE'],
                   'meta': {'youtube': {'title': YT_TITLE, 'privacy': 'public',
                                        'madeForKids': False, 'notifySubscribers': True,
                                        'categoryId': '22'}}},
@@ -466,7 +473,7 @@ PY
 - `status: sent` — published live
 - `status: error` with no `retry` key — `MODE != shareNow`, can't auto-retry inline
 - `status: error` with `retry.status: sent` — failed, retried, succeeded
-- `status: error` with `retry.status: error` — failed twice; surface to Jason and stop (don't mark Posted in Notion)
+- `status: error` with `retry.status: error` — failed twice; surface to the user and stop (don't mark Posted in Notion)
 
 #### Platform-Specific Requirements
 
@@ -495,7 +502,7 @@ Every post requires **both** `schedulingType` and `mode`. They are NOT interchan
 | Next in queue | "post this next" | `automatic` | `shareNext` | — |
 | Specific time | "schedule for April 20 at 3pm" / "tomorrow at noon" | `automatic` | `customScheduled` | Yes — ISO 8601 UTC |
 
-For `customScheduled`, convert to UTC ISO 8601: `2026-04-20T19:00:00.000Z`. Jason is **Central Time** — UTC-5 (CDT, Mar–Nov) or UTC-6 (CST, Nov–Mar). For vague "tomorrow" with no time, default to **noon CT (17:00 UTC during CDT, 18:00 UTC during CST)**.
+For `customScheduled`, convert to UTC ISO 8601: `2026-04-20T19:00:00.000Z`. Confirm the user's timezone from CLAUDE.md or ask if unknown. For vague "tomorrow" with no time, default to **noon local time** (convert to UTC accordingly).
 
 ### Step 7 — Update Notion Pipeline
 
@@ -508,14 +515,14 @@ We already have `page_id` from Step 1 — no second search needed. Patch the row
   "page_id": "<from Step 1>",
   "properties": {
     "Status": { "status": { "name": "Posted" } },
-    "Post Date": { "date": { "start": "<ISO 8601 with CT offset>" } }
+    "Post Date": { "date": { "start": "<ISO 8601 with local timezone offset>" } }
   }
 }
 ```
 
 **Post Date derivation:**
 - Use `post.dueAt` from Step 6's response (ISO 8601 UTC)
-- Convert to CT offset for readability: `2026-04-30T15:00:00-05:00` (CDT) or `-06:00` (CST)
+- Convert to local timezone offset for readability (e.g. `2026-04-30T15:00:00-05:00`)
 - Notion's date property accepts the full ISO string and renders date + time in the UI
 - If `dueAt` is missing for any reason, fall back to `date +"%Y-%m-%dT%H:%M:%S%z"` and reformat the offset with a colon
 
@@ -598,7 +605,7 @@ When generating captions from transcripts:
 
 13. **Parallel tool-call cancellation cascades** — When two Bash calls go out together and the first fails, the harness cancels the second mid-flight. Risky steps (path probe, network call) should run alone first; parallelize only after confirming inputs.
 
-14. **Don't ask "should I post this?" after Jason said go** — Jason's standing preference is execute, then report. Confirm captions only when he explicitly asks for a draft first.
+14. **Don't ask "should I post this?" after the user said go** — the standing preference is execute, then report. Confirm captions only when explicitly asked for a draft first.
 
 15. **`schedulingType` vs `mode` — don't confuse them** — `schedulingType` is always `"automatic"`. `mode` is the share strategy (`shareNow`, `addToQueue`, `shareNext`, `customScheduled`). Putting `customScheduled` in `schedulingType` returns `Value "customScheduled" does not exist in "SchedulingType" enum.` and `Field "mode" of required type "ShareMode!" was not provided.` Always set both.
 
@@ -610,9 +617,9 @@ When generating captions from transcripts:
 
 19. **`editPost` doesn't accept `channelId`** — When retrying via EditPostInput, drop `channelId`. Pass `id` instead. Re-set `mode: shareNow` and `schedulingType: automatic` even though the original post has them — EditPostInput requires both as non-null.
 
-20. **Litterbox URLs expire in 72h** — For inline `shareNow` retries (within ~5 min), URL is still alive. For Step 0 stale failures (>3 days), URL is dead and source must be re-pulled from Notion + re-uploaded. Step 6's retry function does `url_is_live()` first and re-uploads from `VIDEO_PATH` if needed; for Step 0 retries, ask Jason before re-pulling old videos.
+20. **Litterbox URLs expire in 72h** — For inline `shareNow` retries (within ~5 min), URL is still alive. For Step 0 stale failures (>3 days), URL is dead and source must be re-pulled from Notion + re-uploaded. Step 6's retry function does `url_is_live()` first and re-uploads from `VIDEO_PATH` if needed; for Step 0 retries, ask the user before re-pulling old videos.
 
-21. **Notion DB schema drifts — re-fetch when in doubt** — `Frame Link` was renamed to `Edited Video` on 2026-05-06; statuses like `Ready To Post` get added; `Type` went from select to multi_select. Before relying on a property name in this skill, run `mcp__notion__API-retrieve-a-database` with DB ID `21bf6585-5e6b-81df-b692-e0321083dffa` if you suspect drift.
+21. **Notion DB schema drifts — re-fetch when in doubt** — `Frame Link` was renamed to `Edited Video` on 2026-05-06; statuses like `Ready To Post` get added; `Type` went from select to multi_select. Before relying on a property name in this skill, run `mcp__notion__API-retrieve-a-database` with the user's content DB ID (see "Notion Content DB Schema" above) if you suspect drift.
 
 22. **Chrome MCP downloads land in ~/Downloads, not a tool-returned path** — When clicking a Download button via Chrome MCP, the file flows through Chrome's normal download pipeline. There's no MCP response with the path. Snapshot `~/Downloads` before, poll for the new file after, and confirm size is stable across 3s before treating download as complete.
 
@@ -622,4 +629,4 @@ When generating captions from transcripts:
 
 25. **Buffer's "URL validation timed out" can fire on `create`, not just on the post-create poll** — Lesson #16 noted the timeout exists; what wasn't obvious was that it returns as a `MutationError` from `createPost` itself (no `post_id` ever issued) on top of the post-poll path. The original Step 6 retry only handled the post-poll case. Step 6's `post_one` now retries `create` up to 3× with 5s backoff specifically when the message contains "timed out" — confirmed wins on attempt 2 every time so far. Don't widen the retry trigger; other create errors are usually real (validation, aspect, codec).
 
-26. **Caption shape is dictated by the transcript, not by template** — If the on-camera audio has an explicit comment/DM CTA ("comment SYSTEM", "DM me CLAUDE"), the caption MUST mirror that exact CTA on line 1 — that's the conversion play. If the audio has no CTA (hot take, contrarian opinion, raw thought), forcing a manufactured DM keyword feels off and reads inauthentic. For those, keep the caption chill: lead with the hook, optional soft engagement bait at the end ("agree?", emoji), no fake funnel. Confirmed correct framing for 5/6 "Make Critical Thinking Great Again" — pure hot take, used "Comment AGREE 👇" engagement bait instead of inventing a keyword.
+26. **Caption shape is dictated by the transcript, not by template** — If the on-camera audio has an explicit comment/DM CTA ("comment SYSTEM", "DM me CLAUDE"), the caption MUST mirror that exact CTA on line 1 — that's the conversion play. If the audio has no CTA (hot take, contrarian opinion, raw thought), forcing a manufactured DM keyword feels off and reads inauthentic. For those, keep the caption chill: lead with the hook, optional soft engagement bait at the end ("agree?", emoji), no fake funnel.

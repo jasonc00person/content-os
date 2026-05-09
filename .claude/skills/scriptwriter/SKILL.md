@@ -1,281 +1,273 @@
 ---
 name: scriptwriter
-description: "Writes short-form scripts (IG Reels, YouTube Shorts, TikTok) in Jason's exact voice using proven viral frameworks. Handles fresh topics, ramble-to-script conversion, batch filming day prep, and rewrites. Triggers: write a script, script this, scriptwriter, write me a reel, script out, filming day, batch scripts, rewrite this hook, turn this into a script."
+description: "Turns a source video URL (or fresh topic / ramble / Notion Idea) into a beats-only script written straight into the Notion content pipeline. Default flow: transcribe the source, run it through the backbone to find the user's unique creative twist, then write a visually intuitive beat sheet into a new Notion page — using the source's own structural shape as the section headings (not a fixed HOOK/VALUE/CTA template). Not word-for-word — the user fills in their own expertise on camera. Triggers: write a script, script this, scriptwriter, twist this video, rewrite this reel, script out idea X, turn this ramble into a script, batch scripts."
 ---
 
-# Scriptwriter — Jason's Voice, Viral Frameworks
+# Scriptwriter — Beats Into Notion
 
-Writes scripts that are indistinguishable from ones Jason would write himself. Every script uses proven psychology, sounds like Jason, and is structured for maximum retention.
+Produces **terse beat sheets**, not teleprompter text. Each script lands as a Notion page in the content pipeline, with properties set and a body the user can scan on a phone between takes — fragments, not paragraphs.
 
-## How to Trigger
-- **"write a script about X"**
-- **"turn this into a script: [ramble]"**
-- **"batch 5 scripts for filming day"**
-- **"rewrite this hook, it's weak"**
-- **"script out idea #3 from my pipeline"**
+The default play: take a video that already worked for someone else, **steal the format**, then build a **completely new concept** inside that proven structural shell. The twist is a new idea wearing a winning outfit — not the source video re-spun in the user's voice.
 
 ---
 
-## Mode Detection
+## ⚠️ The Core Principle — Format vs Concept
 
-Classify every request into one of these modes before doing anything else:
+This is the whole game. Read it twice.
 
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| **FRESH** | Topic or angle provided | Load context → generate hooks → write script |
-| **RAMBLE** | Long unstructured input, stream of consciousness | Extract core idea → confirm brief → write script |
-| **BATCH** | Number requested, "filming day" | Pre-flight Script Menu → confirm → write all scripts |
-| **REWRITE** | Existing script pasted + problem stated | Identify what's broken → fix only that → show before/after on changed section |
+**FORMAT (copy this — it's the proven viral mechanism):**
+- Hook type and mechanism (dream outcome, contrarian, curiosity gap, day-in-the-life intro, etc.)
+- Structural shape (list, demo, story, build-in-public, before/after, rant, walkthrough)
+- Pacing and beat timing (when the payoff lands, how long the value section runs)
+- CTA pattern (comment-keyword, DM, link in bio)
+- Visual/shot grammar (proof shot opener, screen recording, talking head, B-roll style)
 
----
+**CONCEPT (must be net-new — this is where the user actually says something):**
+- The topic / claim / argument / insight
+- The specific examples, numbers, frameworks, names
+- The proof anchors and stories
+- The angle on the niche
+- The belief shift being reinforced
 
-## Context Loading (Selective, Not Exhaustive)
+If we copy both, it's AI slop — the source diluted and rewritten. If we copy neither, we lose the structural reason it worked. The job is **proven format + original concept**. Always.
 
-**Always read (every invocation):**
-1. `voice-dna.md` — internalize Jason's speech patterns, banned phrases, energy before writing a single word
-2. `backbone.md` — ICP (Tier 1 + Tier 2), offers, proof points, backstory
-
-**Read on first script of the session (then cached in context):**
-3. `viral-knowledge/How To Write Viral Scripts.txt` — the core methodology (hook types, buildup tricks, value delivery, payoff timing, CTA mechanics, psychology principles)
-
-**Read only when relevant:**
-- `research/` reports — only if Jason says "use trending angles" or "what's hot right now"
-- Competitor data — only if Jason says "model this after [competitor]"
-- Performance data — only in BATCH mode to inform angle diversity
-
-**Never auto-read:** Full transcripts, partnership files, or the entire viral-knowledge folder on every call. Token conservation matters.
+A successful TWIST passes this test: *"If the source creator saw the user's video, they'd recognize the format but not the idea."* If they'd recognize the idea, restart the concept step.
 
 ---
 
-## Voice Lock System
+## Modes
 
-Before outputting any script, enforce these constraints:
+| Mode | Trigger | Source |
+|------|---------|--------|
+| **TWIST** *(primary)* | URL provided ("twist this", "rewrite this reel", URL pasted) | Source video → transcribe → twist via backbone |
+| **FRESH** | Topic only ("write a script about X") | Backbone + voice DNA, no source |
+| **RAMBLE** | Voice dump / stream of consciousness | Extract core idea → structure |
+| **PIPELINE** | "script out [Idea]" / "script idea #3" | Existing Notion page in `Idea` status |
 
-### Banned Phrases (auto-rewrite triggers)
-- "In today's video..." / "In this reel..."
-- "Don't forget to like and subscribe"
-- "It's important to note..." / "Essentially..."
-- "Leverage" / "Harness the power of" / "Game-changing"
-- "At the end of the day" / "In conclusion"
-- "In today's fast-paced world"
-- Any passive voice construction
-- "Follow for more value" (weak CTA — rewrite as a give-first CTA)
-- Corporate hedging ("results may vary", "this may not work for everyone")
-
-### Required Voice Markers
-- **Openers:** Must be one of: "Yo what up" / bold declarative claim / rhetorical question aimed at viewer's pain / "I just built..." / "Someone's gotta say it"
-- **"Right?"** — appears 2-4x per script at natural check-in moments after making a point
-- **Closers:** Always "Peace." or "Pooch!" — never a formal sign-off
-- **Short sentences.** 5-12 words per line in hooks. Fragments are preferred.
-- **Light swearing** where it adds emphasis: "damn", "hell yeah", "BS", "shit", "bro"
-- **Anti-guru energy:** If a claim sounds like something a guru would say, rewrite from the opposite angle
-
-### Persona Test
-Before finalizing: *Could any other creator have said this?* If yes, anchor it to at least one of:
-- Jason's specific proof (173k followers, $10k/mo, specific client wins)
-- His backstory (college dropout, $0 start, $30k spent on courses)
-- A named system he built (setter bot, content pipeline, analytics automation)
+Detect the mode before doing anything. If ambiguous, ask one question and proceed.
 
 ---
 
-## Script Structure
+## TWIST Flow (the main flow)
 
-Every script follows: **Hook → Buildup → Value → Payoff → CTA**
+### 1. Transcribe the source
+- If the user gave a URL, invoke the `transcribe-url` skill. Wait for the markdown file.
+- Read the transcript file from `transcripts/url/`.
 
-### Hook (0-3 seconds)
-- The hook IS the video concept
-- Must be **psychologically impossible** to scroll past
-- Creates an open loop the brain needs to close
-- For TOF: needs **mass appeal** (wide enough for anyone in the niche)
-- For BOF: can be specific (filters to qualified viewers)
-- Generate **3 hook variations** per script, each a different mechanism:
-  - **Hook A (Contrarian/Aggressive):** Bold claim that challenges a belief. Highest ceiling, highest risk.
-  - **Hook B (Pain Point/Relatable):** Hits a specific pain the ICP has right now. Safer, consistent.
-  - **Hook C (Curiosity/Dream Outcome):** Burning question or "here's what's possible." Broad appeal.
-- Mark the recommended hook with ★
+### 2. Decompose the source — separate FORMAT from CONCEPT
 
-### Buildup (3-10 seconds)
-- Hype the value. Build suspense. Make them CRAVE the payoff.
-- Tricks to use:
-  - **Mind Read:** "And NO, I didn't [thing they're assuming]..."
-  - **Risk Reversal:** "The crazy thing is, this takes 5 minutes to set up"
-  - **Authority Endorsement:** "This is the same system that [credible person] uses"
-  - **Controversy:** "I know this might piss people off but..."
-  - **Personal Authority:** "This is how I went from $0 to $10k/mo"
-- Clear objections BEFORE they form
+Two columns, written silently before going further:
 
-### Value (10-40 seconds)
-- **Specific and actionable.** Technical, tactical information.
-- Every line serves a purpose. If it's not advancing the argument, adding proof, or creating tension — cut it.
-- **"Would the viewer pay $5 for this?"** — ask on every script
-- Give away stuff that no one else is giving away. Real sauce, not surface-level advice.
-- Use numbered steps for tutorials, flowing narrative for stories
-- Include **extreme value** moments — specific formats, templates, tools, resources
+**KEEP (the format — this is the model):**
+- Hook mechanism (dream outcome / contrarian / curiosity gap / pain point / authority hijack)
+- Structural shape (day-in-the-life, list, before/after, build-in-public, rant, demo, story)
+- **The actual structural beats the source uses, in order** — name them as the source's creator would (e.g. "Cold Open Claim → Proof Reel → Architecture Reveal → 4-Step Walkthrough → Free File Giveaway"). These become the headings in the Notion beat sheet. There is no fixed beat template — different formats have different beats.
+- Pacing — where does each beat start/end, how long is the proof section, when does payoff drop
+- The *specific* psych trick that did the heavy lifting (proof shot, mind-read, scarcity, identity assignment, etc.)
+- CTA pattern
 
-### Payoff
-- The resolution to the hook's promise
-- Once given, the viewer scrolls. **Hold off as long as possible.**
-- Never give the payoff in the hook (that's a weak hook — the answer is already there)
-- The payoff should feel earned — they watched for it
+**THROW AWAY (the concept — this we replace entirely):**
+- The topic / niche / claim
+- All examples, numbers, names, stories
+- The argument and the conclusion
 
-### CTA (final 3-5 seconds)
-- Placed right after the payoff, when reciprocity kicks in
-- **Best CTAs keep giving:** "Comment [KEYWORD] and I'll send you [valuable thing]"
-- **Never beg:** No "please follow" or "like if you agree"
-- One action only. Don't ask for comment AND follow AND share.
+The first column is the scaffold we'll build on. The second column is what we burn before step 4 — none of it survives into the twist.
 
-#### CTA by Funnel Stage:
-- **TOF:** "Comment [KEYWORD] and I'll send you [free resource]" or "Follow for part 2"
-- **MOF:** "DM me [WORD]" or "Link in bio to see how this works"
-- **BOF:** Direct offer mention — "The Instagram Accelerator, 20 spots, DM me ACCELERATOR"
+### 3. Load backbone (selectively)
+Always: `voice-dna.md` + `backbone/icp.md` + `backbone/messaging.md`.
+Add only if relevant: `backbone/offer.md` (pricing/offer angles), `backbone/vision.md` (mission-driven content).
 
----
+### 4. Build a NEW concept inside the kept format
 
-## TOF vs BOF — Different Formats
+This is where most AI script tools fail — they re-spin the source's concept in a new voice and call it a twist. That is slop. Don't do it.
 
-| Dimension | TOF (Reach) | BOF (Convert) |
-|-----------|-------------|---------------|
-| **Goal** | Stop the scroll for cold audiences | Move warm viewers to action |
-| **Hook** | Broad pain/dream outcome, mass appeal | Specific ICP pain, filters to qualified |
-| **Offer mentions** | None | Present but not desperate |
-| **Value** | Educational, eye-opening, framework-based | Proof-heavy, specific results and timelines |
-| **Psych priority** | Curiosity gap, dream outcome, social proof | Scarcity, social proof (client results), mind read |
-| **CTA** | Comment for resource, follow, save | DM me, comment for call, apply |
-| **Tone** | Energetic, fast, packed with info | Slower, direct, one-on-one conversation |
-| **Length** | 30-45 seconds | 45-75 seconds |
-| **Money moment** | By second 30 (before drop-off) | Can build longer (warm viewers stay) |
+Instead: take the FORMAT column from step 2, hold it fixed, and **invent a fresh concept** that fits inside it. The concept must be something the user can credibly say that **didn't appear anywhere in the source transcript**.
+
+Generate 2–3 candidate concepts. Each must:
+1. **Fit the kept format perfectly** (same hook mechanism, same structural shape, same payoff timing, same CTA pattern). If a concept doesn't fit the format, drop it — find one that does.
+2. **Be anchored to something only the user has** — pull from the user's backbone:
+   - Specific proof from the user's proof bank (`backbone/messaging.md` — follower counts, MRR, member wins, named viral hits)
+   - A user-specific system, methodology, or tool stack named in their backbone or `voice-dna.md`
+   - One of the **belief shifts** in `messaging.md` (if structured that way — count and content vary per user)
+   - The user's backstory beats (origin, prior path, distinctive credentials)
+3. **Pass the source-creator test:** if the original creator saw the user's video, they'd nod at the format but not recognize the idea. If they'd recognize the idea, the concept is too close — kill it and try again.
+
+Pick the strongest. State it in one sentence:
+*"Format kept: [hook mech + structural shape from source]. New concept: [the user's fresh idea] — anchored to [proof/system/belief]."*
+
+### 5. Structure the beats — using the source's actual shape
+Take the structural beats you identified in step 2 and use them as the section headings, in the same order, at roughly the same pacing. **Do not flatten the source into a generic HOOK/BUILDUP/VALUE/PAYOFF/CTA template.** A build-in-public deep-dive has different beats than a rant, a list video, a before/after, or a day-in-the-life — and forcing them all into the same five-act mold strips out the structural reason the source worked.
+
+Beats describe *what happens in this section*, not the words the user says. One example anchor line per beat is fine when the line is structurally load-bearing (e.g., the CTA keyword) — otherwise leave room for them to riff.
+
+### 6. Write to Notion
+Create a new page in the content database. Properties + beat-sheet body — exact spec below.
 
 ---
 
-## Ramble-to-Script Pipeline
+## FRESH / RAMBLE / PIPELINE (shorter)
 
-When Jason provides a ramble or voice dump:
+When there's no source video, you don't get a free format model — you have to pick one. Push back on the user before generating beats from thin air:
 
-1. **Extract** the core insight — what's the one thing he's actually saying?
-2. **Identify** the proof — what story, number, or result is in the ramble?
-3. **Identify** the emotion — rant energy? Excitement? Tough love?
-4. **Identify** the ICP pain — who is this for? What are they feeling?
-
-Output a one-line confirmation before the full script:
-> **I heard you saying:** "[core insight in one sentence]" — going [TOF/BOF], [format] angle.
-
-If the angle is obvious, proceed directly. If it's ambiguous, show 2-3 possible angles and ask Jason to pick.
+- **FRESH** — best path is to reframe as TWIST: ask the user for a reference video that has the format/shape they want. If they refuse or genuinely have no model in mind, pick the natural beat shape for the content type (a list video has N item-beats; a rant has setup → rant → payoff; a demo has hook → setup → steps → result → CTA) and proceed. Never invent a 5-beat HOOK/BUILDUP/VALUE/PAYOFF/CTA shell on autopilot.
+- **RAMBLE** — extract the core insight + emotion + ICP pain from the dump. Confirm in one line: *"Heard you saying: [insight] — going [TOF/BOF]. What viral video should I model the format off?"* If they have one, switch to TWIST. If not, pick the natural beat shape for the content type as in FRESH.
+- **PIPELINE** — find the existing `Idea` page in Notion (use search, fuzzy-match title). Same rule: if the Idea page links a reference URL, treat it as TWIST. Otherwise pick the natural beat shape from the content type. **Update** that page (don't create new): set status to `Scripting/Filming`, write beats into the page body. Append, don't overwrite, if the page already has notes.
 
 ---
 
-## Batch Mode
+## Beats — Derived From the Source, Not Templated
 
-When Jason asks for multiple scripts:
+There is no fixed beat list. Beat names + count + order come from step 2's decomposition of the source. Some examples of what real source-derived beat sets look like:
 
-### Step 1 — Pre-flight Script Menu
-Before writing anything, show:
+- **Build-in-public deep-dive:** Cold Open Claim → Proof Reel → Architecture Reveal → Live Walkthrough (N steps) → Before/After Recap → CTA
+- **Contrarian rant:** Bold Claim → "Here's why everyone's wrong" → Receipt / Proof → Reframe → Action Step → CTA
+- **List/listicle:** Hook + List Promise → Item 1 → Item 2 → … → Item N → CTA
+- **Before/After transformation:** Setup ("here's where I started") → The Trigger → The Process → The Result → How to Replicate → CTA
+- **Day-in-the-life:** Cold Open / Identity Hint → Morning beat → Work beat → Money beat → Wrap → Soft CTA
+- **Demo/tutorial:** Hook + Outcome Promise → Setup → Step 1 → Step 2 → … → Result → CTA
+
+These are illustrations, not menus to pick from. **Mirror what the actual source does.** If the source has a "Proof Reel" before the architecture reveal, the script has a "Proof Reel" before the architecture reveal. If the source has 4 walkthrough steps, the script has 4 walkthrough beats — don't collapse them into a single "Value" block.
+
+### Per-beat structure (applies to every beat, whatever it's called)
+- **Heading:** the beat name in CAPS (e.g. `PROOF REEL`, `ARCHITECTURE REVEAL`, `STEP 2 — DECOMPOSE`). Add a rough timestamp range in parens.
+- **Intent line:** what mental purpose this beat serves — one short sentence, max ~12 words.
+- **Direction bullets:** 2–6 bullets on what gets covered in this section.
+- **Anchor (only when load-bearing):** specific number, system name, exact CTA keyword, or quote that has to land verbatim.
+- **Visual cue (only when relevant):** italic-gray paragraph naming the shot or B-roll.
+
+---
+
+## ✂️ Conciseness Rule (THIS IS A HARD CONSTRAINT)
+
+Every line on the beat sheet must be readable in **under 2 seconds at a glance**. The user is going to read this on a phone between takes — long sentences kill the format.
+
+### Hard rules
+- **Bullets are fragments, not sentences.** No subjects/verbs unless they're load-bearing. Use `→`, `+`, `vs`, `=`, abbreviations.
+- **Max ~10 words per bullet.** If you need more, split into two bullets.
+- **One thought per bullet.** No em-dash sub-clauses, no parenthetical add-ons, no "this is the moment that…" commentary.
+- **Don't write the spoken line.** Direction, not verbiage. The user will say the words on camera, not read them off the page.
+- **Quote ONLY load-bearing lines** (CTA keyword, an exact hook phrase that has to land verbatim, a specific number). Everything else is direction, not script.
+- **Cut meta-commentary entirely.** No "this is what makes the video worth watching," "this earns the rest of the video," "this is the moment that justifies the hook." The user knows why the beats are there.
+- **No filler adverbs/adjectives.** Cut "literally," "actually," "specifically," "really," "very," "quite."
+
+### Before/after — what wrong looks like
+
+❌ Verbose (what Claude defaults to):
+> Drop the receipt immediately: "One script it wrote pulled 700K+ views. Every reel I've shipped in the last 60 days runs through this agent."
+> Name the differentiator (this is what makes the video worth watching): "It refuses to rewrite the source. It steals the FORMAT, then writes a completely new CONCEPT in my voice. No AI slop."
+> Brief identity beat — quick, not a flex: <follower count, MRR, origin>. Anti-guru tone. Then: "Let's get into it."
+
+✅ Tight (what we want):
+> Receipt drop: <viral-hit number> + last 60 days of reels
+> Differentiator: format kept, concept new, no slop
+> ID beat: <follower count, MRR, origin>. Anti-guru tone
+
+Five seconds to read instead of forty-five. Same information.
+
+### Two beats that are almost always present (under different names)
+- **Some kind of opening hook** — the section that earns the rest of the video. Whether it's a cold-open claim, a bold question, a proof shot, or a list promise depends on the source.
+- **Some kind of CTA** — even soft CTAs (just "subscribe" or "link in bio") are beats. The CTA keyword, when one exists, is the only line that's load-bearing verbatim.
+
+Everything else is dictated by the source.
+
+---
+
+## Notion Output Spec
+
+Schema reference: `notion-pipeline.md`. Don't duplicate property shapes here — load that file for the exact write payloads.
+
+### Property writes
+| Property | Value |
+|----------|-------|
+| **Title** | The script title — punchy, ~6–10 words, hook-flavored. Not the source video's title. |
+| **Status** | `Scripting/Filming` (TWIST/FRESH/RAMBLE create new in this status; PIPELINE flips Idea → this) |
+| **Format** | `Short-form` by default. `Long-form` only if user says YouTube long-form. |
+| **Type** | Multi-select. Always include exactly one funnel tag (`TOF` / `MOF` / `BOF`). Optionally add `Viral` or `Conversion` when the angle clearly fits. |
+| **Raw Footage** | If TWIST: the source URL goes here so it's findable later. |
+
+### Body blocks (the beat sheet)
+
+Two fixed framing callouts at the top, two fixed sections at the bottom (final CTA-keyword callout if applicable + Notes for the user). Everything in between is **N beats derived from the source**, each rendered with the same per-beat shape.
 
 ```
-BATCH PLAN — [X] Scripts
+[callout 💡] Format kept: <source's structural shape — name the actual beats in order>. New concept: <fresh idea> — anchored to <proof/system/belief>.
+[callout 🎬] Source (format model only — concept is original): <URL>     ← only for TWIST mode
 
-1. [Title] | TOF | Hook: [mechanism]
-2. [Title] | TOF | Hook: [mechanism]
-3. [Title] | BOF | Hook: [mechanism]
-4. [Title] | TOF | Hook: [mechanism]
-5. [Title] | BOF | Hook: [mechanism]
+[divider]
 
-Confirm or swap any?
+── repeat for each beat from step 2, in source order ──
+
+[heading_2] <BEAT NAME IN CAPS> (<rough timestamp range>)
+[paragraph] <intent — one sentence on what this beat does>
+[bulleted_list] direction points
+[callout 📌] Anchor: <only if beat has a load-bearing line/number/quote>     ← optional
+[paragraph (italic, gray)] Visual: <shot cue>     ← optional
+
+[divider between beats]
+
+── after the final beat ──
+
+[callout 🎯] Keyword: <EXACT CTA KEYWORD>     ← only if a keyword CTA is part of the format
+
+[divider]
+
+[heading_3] Notes for the user
+[bulleted_list] Belief shift reinforced · Proof anchor · Delivery tip · Anything format-specific the user should watch for
 ```
 
-Default mix: 60% TOF / 40% BOF. Jason can override.
-
-### Step 2 — Write
-After confirmation, output each script in standard format with numbered dividers.
-
-### Rules:
-- No two scripts use the same hook mechanism
-- No two scripts hit the same pain point
-- Pull from recent research/competitor data to vary angles
-- Each script gets 3 hook options like normal
+### After the page is written
+Reply in chat with:
+- One-line confirmation: `Created "<title>" → <Notion URL>`
+- Two-sentence angle summary (the twist + why it lands for the user specifically).
+- Nothing else. No re-printing the beats — they live in Notion now.
 
 ---
 
-## Output Format
+## Voice Lock (still enforced)
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SCRIPT: [Title/Angle]
-Funnel: TOF / MOF / BOF
-Est. Duration: ~[X]s (~[Y] words)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The beats themselves don't need the user's exact voice (they supply that on camera) — but any anchor lines, hooks, or CTA wording you DO write must pass voice lock against `voice-dna.md`.
 
-HOOK OPTIONS (pick one):
-[A] "[hook text]" — [psych mechanism]
-[B] "[hook text]" — [psych mechanism]
-[C] ★ "[hook text]" — [psych mechanism] ← recommended
+### Banned phrases (auto-rewrite if they slip in)
+"In today's video" / "Don't forget to like and subscribe" / "It's important to note" / "Leverage" / "Harness the power of" / "Game-changing" / "At the end of the day" / "In conclusion" / "Follow for more value" / corporate hedging.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TELEPROMPTER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+### Voice markers
+Pull voice markers (slang, openers, closers, characteristic phrasings) from `voice-dna.md`. Use them sparingly in anchor lines only.
 
-[HOOK]
-[exact spoken words — clean, no annotations]
-
-[BUILDUP]
-[exact spoken words]
-(pause here)
-
-[VALUE]
-[exact spoken words]
-
-[PAYOFF]
-[exact spoken words]
-(slow down, let it land)
-
-[CTA]
-[exact spoken words]
-
-Peace.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CAPTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[CTA first line — comment KEYWORD]
-
-[3-5 lines of value/context — NOT a transcript of the script]
-
-[Repeat CTA at bottom with emoji]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SCRIPT NOTES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Psychology used: [3-5 principles listed]
-Delivery tip: [1-2 sentences — where to slow down, what to emphasize, visual/B-roll if needed]
-Proof anchor: [what credential/result validates this script]
-```
-
-### Key output rules:
-- **Teleprompter section is CLEAN** — no annotations, no psychology labels. Just the words Jason reads.
-- **Parenthetical delivery cues** are OK in teleprompter: `(pause here)`, `(lean in)`, `(show screen)`
-- **Caption is separate copy** — optimized for someone who reads before watching. CTA first line always.
-- **Script Notes go last** — Jason can ignore on filming day but they're there for review.
-- **Duration estimate** at ~130 words/minute conversational pace.
+### Persona test
+If a written line could come from any other creator in the niche, anchor it to a user-specific proof, system, or belief shift — or cut it.
 
 ---
 
-## Quality Gates (run silently)
+## Quality Gates (silent — fix or flag, don't lecture)
 
-These checks happen before output. Don't lecture Jason — just fix it or flag in Script Notes.
+1. **Anti-slop check (TWIST only — the most important gate).** Open the source transcript and scan: do any of the source's specific topics, claims, examples, numbers, names, or framings appear in the new beats? If yes, this is regurgitation. Throw out the concept and re-do step 4 — keep the format, build a *different* idea.
+2. **Format actually kept.** TWIST mode: does the new concept fit the same hook mechanism, structural shape, pacing, and CTA pattern as the source? If we drifted off the format, the structural reason it worked is gone — re-anchor.
+3. **Anchored to the user.** At least one proof / system / belief-shift reference somewhere in the beats. If a generic creator could have written this, it's not anchored.
+4. **Hook opens a loop.** If the payoff is guessable from the hook alone, rewrite the hook.
+5. **Beats are scannable.** A reader scrolling on a phone in 5 seconds can see the script's shape (whatever the source's shape is) and know what each section does. Headings in CAPS, dividers between beats, intent line under each heading.
+6. **Conciseness check.** Every bullet readable in <2s. No bullet over ~10 words. Fragments, not sentences. No meta-commentary. No quoted spoken lines unless load-bearing. If a bullet has an em-dash with a sub-clause hanging off it, split or cut.
+7. **CTA is give-first.** No begging. Comment-for-resource or DM-keyword preferred.
+8. **Type tag matches the angle.** TOF for cold-reach hooks, BOF when there's offer mention or qualified ICP filter.
 
-1. **Hook Test:** Does the hook create an open loop? If someone can guess the payoff from the hook alone, rewrite it.
-2. **Line Utility:** Every line advances the argument, adds proof, or creates tension. Zero filler.
-3. **Voice Check:** Run against banned phrases list. Check for required markers (right?, short sentences, direct address). If it sounds like a blog post read aloud, rewrite.
-4. **$5 Value Test:** Would someone pay $5 for the information in this script?
-5. **Persona Test:** Could any creator have said this? If yes, anchor to Jason's specifics.
-6. **Platform Fit:** For IG, the money moment must land by second 30. Don't bury the insight.
-7. **CTA Quality:** Is it a give-first CTA or a begging CTA? Give-first only.
+---
+
+## Context Loading Rules
+
+**Always:** `voice-dna.md`, `backbone/icp.md`, `backbone/messaging.md`, `notion-pipeline.md`.
+
+**On request only:** `backbone/offer.md`, `backbone/vision.md`, anything in `viral-knowledge/`, research reports, performance data, full transcripts of the user's own past content.
+
+The methodology lives in the source video itself — that's the whole point of TWIST. The backbone supplies *the user's* layer (audience, voice, beliefs); the source supplies the structural model. We don't need a generic "how to write viral scripts" overlay sitting on top of both.
+
+Never read the entire `viral-knowledge/` folder per call. Never read `transcripts/` wholesale.
 
 ---
 
 ## What This Skill Does NOT Do
 
-- Generate hashtags (caption includes 3-5 max if relevant)
-- Schedule or post content (use post-content skill)
-- Research trends (use ig-competitor-research skill first, then feed findings here)
-- Write YouTube long-form scripts (this is optimized for short-form — Reels/Shorts/TikTok)
-- Ask 10 clarifying questions before starting — make a call and go
+- Write word-for-word teleprompter text. (Beats only — the user riffs on camera.)
+- Generate hashtags or full captions.
+- Schedule or post content (use `post-content`).
+- Research trends from scratch (use `research-ig-competitors` / `research-yt-competitors` / `research-yt-search` first, then feed findings here).
+- Transcribe (use `transcribe-url`).
+- Ask 10 clarifying questions before starting — make a call and go.

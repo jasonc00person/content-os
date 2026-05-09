@@ -16,7 +16,7 @@ Turns raw talking-head clips into a tight rough cut. You transcribe, you decide 
 
 ## Folder Contract
 
-Jason works out of `/video-editor/` at the repo root.
+The skill operates out of `/video-editor/` at the repo root.
 
 ```
 video-editor/
@@ -31,13 +31,13 @@ video-editor/
 
 Intermediates (transcript, cuts.json, segments, etc.) live in `/tmp/video-editor/<job-name>/` so the job folder stays clean. Read from there when iterating.
 
-If no `intent.md` exists, ask Jason in one line: *"Give me the hook + takeaway in a sentence so I know what to keep."*
+If no `intent.md` exists, ask in one line: *"Give me the hook + takeaway in a sentence so I know what to keep."*
 
 ---
 
 ## The Edit Philosophy (non-negotiable)
 
-Jason's rule: **short and snappy, max value per second, respect the viewer.**
+**Short and snappy, max value per second, respect the viewer.**
 
 Every cut decision runs through this filter:
 1. **Does this line deliver value?** If not, kill it.
@@ -62,7 +62,7 @@ When building `cuts.json`, automatically remove:
 | Throat-clears, "okay let me start over", etc. | Production noise |
 | Preamble before the hook lands | Every reel opens ON the hook |
 
-**Preserve Jason's cadence though.** Don't surgical-kill every "like" — some are rhythm, some are filler. Taste call.
+**Preserve the creator's cadence though.** Don't surgical-kill every "like" — some are rhythm, some are filler. Taste call.
 
 ---
 
@@ -105,7 +105,7 @@ Apply the auto-kill rules and the edit philosophy. Output `/tmp/video-editor/<jo
 - Don't cut mid-word. Find the gap between words.
 - Segments CAN cross clips in any order — that's the whole point
 
-Include the `transcript` field for each segment so Jason can read the cut sheet and sanity-check it without watching.
+Include the `transcript` field for each segment so the creator can read the cut sheet and sanity-check it without watching.
 
 ### Step 3 — Splice
 
@@ -113,15 +113,15 @@ Include the `transcript` field for each segment so Jason can read the cut sheet 
 bash .claude/skills/video-editor/scripts/splice.sh <job_dir>
 ```
 
-Writes `video-editor/outputs/<job-name>.mp4`. Runs silence-snap on `cuts.json` first (FFmpeg silencedetect → `cuts_snapped.json`) so every cut lands in silence, not mid-word. Uses h264_videotoolbox (hardware accel on M-series) for the encode, loudnorm for audio levels.
+Writes `video-editor/outputs/<job-name>.mp4`. Runs silence-snap on `cuts.json` first (FFmpeg silencedetect → `cuts_snapped.json`) so every cut lands in silence, not mid-word. Uses h264_videotoolbox (hardware accel on Apple Silicon) for the encode, loudnorm for audio levels.
 
 **Always run in background** — renders take 15-45s for 60s output.
 
 ### Step 4 — Report back
 
-Show Jason:
+Show the creator:
 - Final duration vs raw total (e.g., "3:47 → 0:48, 79% cut")
-- The cut sheet (clip + timestamp + line) so he can review
+- The cut sheet (clip + timestamp + line) to review
 - Path to the MP4
 
 ---
@@ -152,12 +152,12 @@ Keep it tight. If a segment feels weak, flag it: **"⚠️ segment 3 is borderli
 - **Whisper can mishear.** Always cross-check the transcript before killing a line — sometimes "Claude" becomes "cloud" or "Cloud" and the line looks wrong when it's fine.
 - **Don't re-run transcribe.sh** if `/tmp/video-editor/<job-name>/words.json` already exists. Check first. Transcribing is the slowest step.
 - **Clip order in `cuts.json` = final order in the reel.** You're writing the script sequence.
-- **If intent.md is missing and Jason didn't specify**, ask one question in one sentence. Don't guess.
+- **If intent.md is missing and no direction was given**, ask one question in one sentence. Don't guess.
 
 ---
 
 ## Handoff
 
-Once the rough cut is approved, Jason takes it into Submagic / CapCut for captions + polish, OR triggers the `post-content` skill to schedule it.
+Once the rough cut is approved, the creator takes it into Submagic / CapCut for captions + polish, OR triggers the `post-content` skill to schedule it.
 
 This skill does ONE thing: cut the reel down to the essential lines. It does not do captions, B-roll, zoom effects, or vertical reframing. That's Phase 2+.

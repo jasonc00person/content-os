@@ -1,6 +1,6 @@
 # Competitor List
 
-Accounts in the same niche (personal branding / AI content / creator economy) to study for hooks, formats, and trends. Used by the `ig-competitor-research` and `yt-competitor-research` skills — each skill reads only its own platform section.
+Accounts in the same niche (personal branding / AI content / creator economy) to study for hooks, formats, and trends. Used by the `research-ig-competitors` and `research-yt-competitors` skills — each skill reads only its own platform section.
 
 ---
 
@@ -33,3 +33,21 @@ Accounts in the same niche (personal branding / AI content / creator economy) to
 ### RoboNuggets (@RoboNuggets)
 - **URL**: https://www.youtube.com/@RoboNuggets/videos
 - **Notes**: AI tools / automation tutorials.
+
+### Patrick Dang (@patrickdang)
+- **URL**: https://www.youtube.com/@patrickdang/videos
+- **Notes**: 1-person business / personal brand with AI. Outcome-first titles ("sign clients", "in 30 days"), heavy free-training + skill-file CTA stack.
+
+---
+
+## YouTube Search Terms
+
+Niche keywords to explore via YouTube search. Used by the `research-yt-search` skill — each `- ` line is one search term.
+
+<!-- Add one term per line, e.g.:
+- ai automation
+- n8n agent
+- claude code agents
+-->
+
+

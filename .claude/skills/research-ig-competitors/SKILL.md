@@ -1,5 +1,5 @@
 ---
-name: ig-competitor-research
+name: research-ig-competitors
 description: "Scans Instagram competitors serially via Chrome — orchestrator opens a fresh tab and hands the ID to a Sonnet scraper that loops every account in that single tab, picks the top 3 reels by views per handle (excluding pinned), then visits only those 3 to capture caption + engagement + date. The orchestrator then sorts all 3 × N reels by views and writes the report directly. Triggers: content research, competitor research, what's trending, niche research, research competitors, find outliers, trending content, what's working in my niche."
 ---
 
@@ -30,7 +30,7 @@ Override: user can name specific handles ("research creator_one, creator_two, cr
 ## Architecture
 
 ```
-Orchestrator (opens tab, assigns ID) → Sonnet scraper (uses assigned tab, closes it) → Orchestrator (writes report) → research/Competitor-Research_YYYY-MM-DD.md
+Orchestrator (opens tab, assigns ID) → Sonnet scraper (uses assigned tab, closes it) → Orchestrator (writes report) → research/IG-Competitor-Research_YYYY-MM-DD.md
 ```
 
 **Why this design:**
@@ -152,7 +152,7 @@ For each reel, add:
 
 Add a **Pattern paragraph** at the top — 2-3 sentences on what repeats across the pool: dominant themes, hook archetypes, format mechanics, comment-keyword games, etc. If a handle had a scrape error, omit it from the body but call it out in the Pattern line.
 
-Write to: `<project_root>/research/Competitor-Research_<DATE>.md` (computed in step 2)
+Write to: `<project_root>/research/IG-Competitor-Research_<DATE>.md` (computed in step 2)
 
 Format EXACTLY:
 
@@ -194,7 +194,7 @@ RULES:
 ## Main Skill Flow (what YOU do, the orchestrator)
 
 1. **Resolve handles.** Read `competitor-list.md` from the project root and extract every handle listed (or use handles the user named inline). If both are missing, ask the user.
-2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/Competitor-Research_<DATE>.md`. Create `research/` if missing. If a file already exists at that path (e.g. you ran the skill earlier today), `rm` it now so step 5 can do a clean Write.
+2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/IG-Competitor-Research_<DATE>.md`. Create `research/` if missing. Don't inspect or clean up prior reports — every run just writes a new report. A same-day rerun will overwrite that day's file via Write; that's fine.
 3. **Open the Chrome tab.** Load Chrome tab tools via `ToolSearch` with query `select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__tabs_create_mcp`. Then:
    - Call `tabs_context_mcp`. If it returns "No MCP tab groups found" AND Chrome isn't running (`pgrep -x "Google Chrome"` via Bash), launch Chrome (`open -a "Google Chrome"` on macOS), wait ~2s, then call `tabs_context_mcp` with `createIfEmpty: true`. If Chrome is already running but the group is empty, call `tabs_context_mcp` with `createIfEmpty: true`. If the group already exists, call `tabs_create_mcp` to add a fresh tab.
    - Capture the new tab's ID. This is `{TAB_ID}` for step 4.

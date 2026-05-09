@@ -5,7 +5,7 @@ description: Download and transcribe any video from a social/web URL (YouTube, I
 
 # Transcribe URL — yt-dlp + faster-whisper
 
-Pulls audio from any public video URL and transcribes it locally. Zero API cost, runs on Jason's M-series Mac. Built for fast research lookups — "what's this competitor reel actually saying?"
+Pulls audio from any public video URL and transcribes it locally. Zero API cost, runs on the user's local machine. Built for fast research lookups — "what's this competitor reel actually saying?"
 
 ## How to Trigger
 
@@ -35,8 +35,8 @@ For most reels (<3 min), run synchronously — total wall time is ~10-30s includ
 
 After it completes:
 1. Read the output file
-2. Show Jason the transcript inline (or summarize if it's long)
-3. Mention the saved path in case he wants to reference it later
+2. Show the user the transcript inline (or summarize if it's long)
+3. Mention the saved path in case they want to reference it later
 
 ## Output Shape
 
@@ -75,11 +75,11 @@ First run downloads the model (~250MB for small, ~1.5GB for medium, ~3GB for lar
 - **Music-heavy or no-speech videos** — Whisper may hallucinate lyrics. If the transcript looks like nonsense, that's why. Note it in the report rather than passing the garbage along.
 - **Title is used for the filename slug** — exotic Unicode titles get stripped to `transcript_<date>.md`. That's fine.
 - **Don't re-transcribe** — if the same URL was already saved (search `transcripts/url/` first), just read the existing file. Whisper isn't deterministic enough that re-running adds value.
-- **Language** — script lets faster-whisper auto-detect language. The `small.en` model is English-only; if Jason needs another language, switch to `small` (no `.en`) via the env var.
+- **Language** — script lets faster-whisper auto-detect language. The `small.en` model is English-only; if the user needs another language, switch to `small` (no `.en`) via the env var.
 
 ## Handoff
 
 This skill produces transcripts. It does NOT summarize, pull viral hooks, or write scripts. After transcribing:
 - For script ideas → invoke `scriptwriter` with the transcript as raw input
-- For competitor analysis at scale → use `ig-competitor-research` instead (handles many accounts at once)
-- For Jason's own raw clips already on disk → use `video-editor` (different pipeline, word-level precision)
+- For competitor analysis at scale → use `research-ig-competitors` instead (handles many accounts at once)
+- For raw clips already on disk → use `video-editor` (different pipeline, word-level precision)

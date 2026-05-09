@@ -1,5 +1,5 @@
 ---
-name: yt-competitor-research
+name: research-yt-competitors
 description: "Scans YouTube competitors serially via Chrome — orchestrator opens a fresh tab and hands the ID to a Sonnet scraper that loops every channel in that single tab, picks the top 3 long-form videos by views per channel from the most recent grid load, then visits only those 3 to capture title + description + likes + date. The orchestrator then sorts all 3 × N videos by views and writes the report directly. Triggers: youtube competitor research, yt research, what's working on youtube, youtube outliers, research yt competitors, youtube niche research."
 ---
 
@@ -223,7 +223,7 @@ RULES:
 ## Main Skill Flow (what YOU do, the orchestrator)
 
 1. **Resolve handles.** Read `competitor-list.md` from the project root. Find the `## YouTube` section and extract every `@handle` from `youtube.com/@handle` URLs in that section (or use handles the user named inline). If the section is missing/empty and no inline handles, ask the user.
-2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/YT-Competitor-Research_<DATE>.md`. Create `research/` if missing. If a file already exists at that path (e.g. you ran the skill earlier today), `rm` it now so step 5 can do a clean Write.
+2. **Compute the output path.** Today's date in `YYYY-MM-DD` → `<project_root>/research/YT-Competitor-Research_<DATE>.md`. Create `research/` if missing. Don't inspect or clean up prior reports — every run just writes a new report. A same-day rerun will overwrite that day's file via Write; that's fine.
 3. **Open the Chrome tab.** Load Chrome tab tools via `ToolSearch` with query `select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__tabs_create_mcp`. Then:
    - Call `tabs_context_mcp`. If it returns "No MCP tab groups found" AND Chrome isn't running (`pgrep -x "Google Chrome"` via Bash), launch Chrome (`open -a "Google Chrome"` on macOS), wait ~2s, then call `tabs_context_mcp` with `createIfEmpty: true`. If Chrome is already running but the group is empty, call `tabs_context_mcp` with `createIfEmpty: true`. If the group already exists, call `tabs_create_mcp` to add a fresh tab.
    - Capture the new tab's ID. This is `{TAB_ID}` for step 4.
