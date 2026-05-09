@@ -111,7 +111,16 @@ When there's no source video, you don't get a free format model — you have to 
 
 - **FRESH** — best path is to reframe as TWIST: ask the user for a reference video that has the format/shape they want. If they refuse or genuinely have no model in mind, pick the natural beat shape for the content type (a list video has N item-beats; a rant has setup → rant → payoff; a demo has hook → setup → steps → result → CTA) and proceed. Never invent a 5-beat HOOK/BUILDUP/VALUE/PAYOFF/CTA shell on autopilot.
 - **RAMBLE** — extract the core insight + emotion + ICP pain from the dump. Confirm in one line: *"Heard you saying: [insight] — going [TOF/BOF]. What viral video should I model the format off?"* If they have one, switch to TWIST. If not, pick the natural beat shape for the content type as in FRESH.
-- **PIPELINE** — find the existing `Idea` page in Notion (use search, fuzzy-match title). Same rule: if the Idea page links a reference URL, treat it as TWIST. Otherwise pick the natural beat shape from the content type. **Update** that page (don't create new): set status to `Scripting/Filming`, write beats into the page body. Append, don't overwrite, if the page already has notes.
+- **PIPELINE** — find the existing `Idea` page in Notion (use search, fuzzy-match title). Same rule: if the Idea page links a reference URL, treat it as TWIST. Otherwise pick the natural beat shape from the content type. **Update** that page (don't create new): set status to `Scripted`, write beats into the page body. Append, don't overwrite, if the page already has notes.
+
+- **IDEATE HANDOFF** — when invoked from `/ideate` with a pre-supplied concept, run the standard TWIST flow but **skip step 1's transcribe call** (ideate already transcribed in its Step 5 — read the supplied `TRANSCRIPT` path directly) and **skip step 4's candidate generation** (the concept comes in pre-formed — use it directly). Still run the source-creator test (step 4 rule 3) and anti-slop check (Quality Gate 1) — those are non-negotiable. Drop into Notion as a brand-new page in `Scripted` status (not `Idea`). Handoff payload looks like:
+  ```
+  URL: <source video URL — used as format model>
+  TRANSCRIPT: <path to existing transcript markdown — read this instead of re-transcribing>
+  CONCEPT: <fresh idea from /ideate Step 5 — the user's creative raw material>
+  FORMAT: Short-form | Long-form
+  ```
+  If `TRANSCRIPT` is missing or the file isn't readable, fall back to step 1 (transcribe the URL). If `MODE: original` is set, skip both transcribe and decompose — write a fresh beat sheet directly from the concept ramble.
 
 ---
 
@@ -180,7 +189,7 @@ Schema reference: `notion-pipeline.md`. Don't duplicate property shapes here —
 | Property | Value |
 |----------|-------|
 | **Title** | The script title — punchy, ~6–10 words, hook-flavored. Not the source video's title. |
-| **Status** | `Scripting/Filming` (TWIST/FRESH/RAMBLE create new in this status; PIPELINE flips Idea → this) |
+| **Status** | `Scripted` (TWIST/FRESH/RAMBLE/IDEATE-HANDOFF create new in this status; PIPELINE flips Idea → this) |
 | **Format** | `Short-form` by default. `Long-form` only if user says YouTube long-form. |
 | **Type** | Multi-select. Always include exactly one funnel tag (`TOF` / `MOF` / `BOF`). Optionally add `Viral` or `Conversion` when the angle clearly fits. |
 | **Raw Footage** | If TWIST: the source URL goes here so it's findable later. |

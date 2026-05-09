@@ -1,11 +1,13 @@
 ---
 name: ideate
-description: "Runs a timed ideation block. Starts a visual countdown timer, asks platform + goal count, gives the user a chance to flex original ideas first, then falls back to the research folder (running the matching research skill if no report exists for the platform) and lists the top 10 hyperlinked videos for inspiration. Drops each idea — original or research-modeled — into Notion as an Idea page so the scriptwriter skill can pick it up. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas."
+description: "Runs a timed ideation block that ships beat sheets, not just ideas. Starts a visual countdown timer, asks platform + goal count, pulls research (auto-runs the matching research skill if no report exists), then runs a per-pair loop where the user picks a winning video to recreate and names a twist. If the user blanks on a twist, ideate reads the backbone and proposes one. Each locked pair (source URL + twist) goes to the scriptwriter skill, which transcribes the source, keeps the format, swaps in the new concept, and drops a beat sheet into Notion as `Scripted`. Rare path: user has an original idea instead — ramble it (voice-to-text fine) and scriptwriter packages it fresh. Triggers: /ideate, ideate, ideation, ideation block, brainstorm ideas, come up with ideas, batch ideas, fill the pipeline, content ideation, need ideas, batch scripts."
 ---
 
-# Ideate — Timed Ideation Block
+# Ideate — Timed Batch Scriptwriter
 
-A focused ideation session that ends with N ideas dropped into Notion, ready for the scriptwriter skill. The flow gives the user a chance to flex original ideas first, then falls back to inspiration from the `research/` folder. **The scriptwriter skill handles the actual creative twist on the next call — `/ideate` just captures and packages.**
+A focused ideation block that produces **N beat sheets in Notion as `Scripted`** by the end of the timer. Default flow is **format-first**: pull research, user picks a winning video to recreate, user names a twist (or ideate proposes one from backbone if they blank), pair gets handed off to `scriptwriter`. Rare path: user has an original idea instead — they ramble, scriptwriter packages it fresh.
+
+Ideate is the batch wrapper; scriptwriter is the engine.
 
 ## How to Trigger
 - **"/ideate"** — start a new ideation block
@@ -17,16 +19,18 @@ A focused ideation session that ends with N ideas dropped into Notion, ready for
 ## The Flow
 
 ```
-Step 1 → Start timer                         (~30s)
-Step 2 → Ask platform                        (~30s)
-Step 3 → Ask goal count                      (~30s)
-Step 4 → Original ideas first                (open-ended)   ← user flexes creative muscle
-Step 5 → Pull research (or run research)     (~3–5 min)     ← only if more ideas needed
-Step 6 → User picks from top 10              (~5–10 min)
-Step 7 → Package + drop into Notion as Ideas
+Step 1 → Start timer                                (~30s)
+Step 2 → Ask platform                               (~30s)
+Step 3 → Ask goal count                             (~30s)
+Step 4 → Pull research (or run research skill)      (~3–5 min)
+Step 5 → Per-pair loop: pick video → name twist     (~3–5 min/pair)
+Step 6 → Hand off each pair to scriptwriter         (~5 min/pair)
+Step 7 → Stop timer + report duration
 ```
 
-If the goal is hit early (e.g. user dumps all N original ideas), **skip remaining steps and go straight to Step 7**. The timer is a budget, not a quota.
+The timer is a budget, not a quota. If the goal is hit early, finalize immediately — don't wait out the clock.
+
+**Step 5 and Step 6 can interleave.** As soon as a pair locks in Step 5, fire its handoff and start the next pair while scriptwriter runs. (Sequential handoffs only — see Step 6 sequencing rule.)
 
 ---
 
@@ -87,14 +91,14 @@ The HTML handles everything end-to-end:
 **Important:** Chrome blocks audio until the user clicks the page once. When the tab opens, tell the user: *"Click the timer page once to unlock the alarm sound."*
 
 ### Step transitions
-At each step transition (Step 5 → 6 → 7), print elapsed/remaining via:
+At each step transition (Step 4 → 5 → 6), print elapsed/remaining via:
 ```
 python3 -c "import json,time,sys; r=json.load(open(sys.argv[1])); e=int(time.time())-r['start']; print(f'[{e//60} min in — {(1800-e)//60} min left]')" "$SKILL_DIR/.runtime.json"
 ```
 Print once per transition. Don't spam.
 
 ### Stopping early
-If the user bails or hits the goal early, run the cleanup block from Step 7 (kills server via `stop.py` + closes Chrome tab).
+If the user bails or hits the goal early, run the cleanup block from Step 7 (kills server via `stop.py` + closes Chrome tab + reports session duration).
 
 ---
 
@@ -122,31 +126,9 @@ Output one line confirming:
 
 ---
 
-## Step 4 — Original Ideas First (creative muscle flex)
+## Step 4 — Pull Research (always runs)
 
-Before pulling any research, give the user the floor. They know their voice + audience better than any report. Tell them:
-
-> Got any original ideas you want to flex first? Drop them now — caption / title / rough concept, one per line. When you're tapped out, say so and we'll pull the top 10 from research for inspiration.
-
-For each original idea the user gives, capture:
-- **Caption / title** — what they said, verbatim or lightly cleaned
-- **Format** — derived from platform (Short-form for IG/TT, Long-form for YT)
-- **Source URL** — none (original idea)
-
-Track the running count: `[X / N original]`. If the user hits the goal entirely with original ideas, **skip Steps 5–6** and go straight to Step 7.
-
-If the user has fewer originals than the goal, ask whether to top up from research or stop here. If they say top up, continue to Step 5.
-
-### Rules
-- **Don't pitch ideas yourself.** Don't volunteer angles. The user is flexing — let them.
-- **Don't filter or critique.** If they give you a weak idea, capture it and move on. Their pipeline.
-- **Don't load the backbone.** Same reason as the rest of the skill — scriptwriter handles brand fit.
-
----
-
-## Step 5 — Pull Research (only if needed)
-
-Only runs if the user has fewer original ideas than the goal count. The `research/` folder holds prior outputs from the research skills.
+The default flow is recreating winning videos with a fresh twist, so research always loads. The `research/` folder holds prior outputs from the research skills.
 
 ### Filter by platform
 - **IG short-form** → `IG-Competitor-Research_*.md` (also `TT-Search-Research_*.md` if present — short-form trends overlap)
@@ -164,15 +146,15 @@ Run the appropriate research skill before proceeding. Match platform → skill:
 Tell the user one line: *"No [platform] research on file. Running `/research-[skill]` now — give it ~3–5 min."* Then invoke the skill via `Skill` tool. When it finishes, re-scan the `research/` folder and continue.
 
 ### Read the reports
-Read the selected report files in parallel. **Do NOT load the backbone** — we're surfacing what works, not filtering for on-brand.
+Read the selected report files in parallel. **Do NOT load the backbone yet** — it only loads in Step 5 if the user blanks on a twist.
 
 ---
 
-## Step 6 — User Picks From Top 10 (~5–10 min)
+## Step 5 — Per-Pair Loop (~3–5 min/pair)
 
-Pull videos from the loaded reports into one ranked table, **sorted by views descending**, and **show only the top 10**. Don't dump the full pool — 10 is the cap, every time.
+This is the core. Pull all videos from the loaded reports into one ranked table, **sorted by views descending**, **top 10 cap**. Show it once at the start of the loop.
 
-### Table format
+### The format table
 
 ```
 | # | Views | Title | Channel |
@@ -183,68 +165,94 @@ Pull videos from the loaded reports into one ranked table, **sorted by views des
 | ... (up to 10)
 ```
 
-Below the table:
-> Pick [remaining count] (or just give me the numbers).
+### The default loop (format-first — repeat N times until pairs locked == goal count)
+
+Each round, ask:
+
+> **Pair [X/N]** — which video # are we recreating? *(Or if you've got an original idea instead, just ramble it — voice-to-text fine.)*
+
+**Default branch (format-first):**
+1. User picks `format #3` from the table.
+2. **Transcribe the source first.** Invoke `transcribe-url` (or call its bash entrypoint directly: `bash .claude/skills/transcribe-url/scripts/transcribe-url.sh "<URL>"`) and read the resulting markdown file from `transcripts/url/`. **Captions lie about what made the video work** — the spoken content reveals the real hook mechanism, beat count, and pacing. Save the transcript path; you'll pass it to scriptwriter in Step 6 so it doesn't re-transcribe.
+3. **Post a 3-line format breakdown** of the actual transcript: hook mechanism (one line), structural beats in order (one line), the psych trick that did the heavy lifting (one line). Keep it terse. This grounds the twist conversation in reality, not caption guesses.
+4. Prompt: *"What's the twist? How are we making it our own?"*
+5. **If the user names a twist** → lock pair → fire Step 6 handoff (or queue it).
+6. **If the user blanks** ("got nothing", "you tell me", "I'm stuck") → load backbone:
+   - Read `backbone/icp.md` and `backbone/messaging.md` (default).
+   - If the source video is offer/pricing-related, also read `backbone/offer.md`. If mission/strategy-leaning, also read `backbone/vision.md`.
+   - Propose **one** twist in plain English: a fresh original concept the user can speak from, dressed in the source's winning format (use the actual transcript-derived beats, not the caption). One sentence, no ladders or alternatives — pick the strongest angle and commit.
+   - User accepts → lock pair. User refines → use their refinement, lock pair.
+
+**Escape hatch (original idea — rare):**
+1. User has a concept that isn't a recreation. Capture it verbatim — voice-to-text rambles welcome.
+2. No source URL, no transcribe step. Format type comes from the platform (Short-form for IG/TT, Long-form for YT).
+3. Lock the pair → fire Step 6 handoff in `original` mode (no URL, scriptwriter writes fresh from the ramble).
 
 ### Rules
-- **Top 10 only.** Sort by views, present the top 10 — never more.
-- **Always hyperlink the title** to the source URL using markdown `[title](url)` form. Never plain text titles in the table.
+- **Top 10 only.** Sort by views, top 10 — never more.
+- **Always hyperlink the title** to the source URL using `[title](url)` form.
 - **Don't pre-filter for "on-brand."** The user knows their voice.
-- **Don't pitch angles or twists.** Don't say "your version of this could be...". The shape IS the shape — scriptwriter handles the twist.
-- **Don't ask which "concept" or "pattern."** Just videos. User picks by number.
-- **One round of clarification max** if the user wants to discuss a pick. Otherwise: pick → package → ship.
+- **Default is recreation.** Original ideas are the rare path, not the lead.
+- **Don't pitch a twist unless the user blanks.** Wait for them to ask or clearly say they're stuck. Don't volunteer alternatives, don't list options — give them the floor first.
+- **When you do propose a twist, propose ONE.** No ladders, no "or you could do X." Pick the strongest angle from backbone, state it, ship it.
+- **Many-to-many is fine.** Same source can be reused with different twists; same twist can be paired with multiple sources.
+- **One round of clarification max** per pair before locking.
 
-### Track research-modeled picks
-For each picked video, capture:
-- **Caption / title** — the source video's title, verbatim
-- **Format** — Short-form for IG/TT, Long-form for YT
-- **Source URL** — the source video's URL
+### Track each pair
+For each locked pair, capture:
+- **Source URL** — from the picked format row (or `null` for original-idea path)
+- **Transcript path** — path to the markdown file written by `transcribe-url` (or `null` for original-idea path)
+- **Concept/twist** — verbatim from user (or your backbone-derived proposal if they blanked)
+- **Format type** — Short-form for IG/TT, Long-form for YT
 
-When the total (originals + picks) hits the goal, move to Step 7.
+When `pairs locked == goal count`, exit the loop. Move to Step 6 (or finalize if you've been firing handoffs inline).
 
 ---
 
-## Step 7 — Package + Drop Into Notion
+## Step 6 — Hand Off Each Pair To Scriptwriter
 
-For each idea collected (whether original or research-modeled), create a new page in the Notion content DB using `mcp__notion__API-post-page`. DB ID and property names come from `notion-pipeline.md` — load it before writing.
+For each locked pair, invoke the `scriptwriter` skill via the `Skill` tool in **IDEATE-HANDOFF** mode. Scriptwriter does all the heavy lifting — transcribe the source via `transcribe-url`, decompose format vs concept, run the anti-slop check, write the beat sheet, and create a new Notion page in `Scripted` status.
 
-### Page shape
+### Handoff payload (per pair)
+
+**Recreation pair (default):**
 ```
-parent: { "database_id": "<from notion-pipeline.md>" }
-properties: {
-  "Title":  { "title":  [{ "text": { "content": "[caption / title]" } }] },
-  "Status": { "status": { "name": "Idea" } },
-  "Format": { "select": { "name": "Short-form" or "Long-form" } }
-}
-children: [
-  // ONE paragraph block containing the source URL as a hyperlink, OR
-  // no children at all if it's an original idea (no source link)
-]
+IDEATE HANDOFF
+URL: <source URL from the format pick>
+TRANSCRIPT: <path to the markdown file from transcribe-url, e.g. transcripts/url/video-by-creator_2026-05-08.md>
+CONCEPT: <user's twist — verbatim, or backbone-derived if user blanked>
+FORMAT: Short-form | Long-form
 ```
 
-### Body content
-- **Research-modeled idea:** ONE paragraph block. The block contains a single text run with the source URL as the visible text AND as the link target — i.e. `{ "type": "text", "text": { "content": "<URL>", "link": { "url": "<URL>" } } }`. That's it. No "why it worked", no view counts, no funnel-stage labels.
-- **Original idea:** No children at all. Empty body.
-
-That's the whole package: caption title, format, source link (if any). Scriptwriter pulls full context when it runs.
-
-### Final output
+**Original-idea pair (rare):**
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-/IDEATE COMPLETE — [N]/[goal] ideas packaged
-Time: [XX min] of 30 min
-Originals: [X] · Research-modeled: [Y]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Dropped into Notion as Ideas:
-  1. [caption / title] — [original / modeling URL]
-  2. [caption / title] — [original / modeling URL]
-  ...
-
-Next: /scriptwriter to turn any of these into scripts.
+IDEATE HANDOFF
+URL: none
+CONCEPT: <user's ramble — verbatim>
+FORMAT: Short-form | Long-form
+MODE: original
 ```
 
-If under goal: be honest. Don't pad with weak picks to hit the number.
+Scriptwriter recognizes the `IDEATE HANDOFF` header. For recreation pairs, it reads the supplied `TRANSCRIPT` path directly (skips re-transcription — ideate already did that in Step 5) and decomposes format vs concept. For `MODE: original`, it skips transcription and writes a fresh beat sheet directly from the ramble. Both paths still run the source-creator test and anti-slop check.
+
+### Sequencing
+Run handoffs **sequentially**, not in parallel. Scriptwriter writes to Notion and uses the Chrome tab via transcribe-url; parallel calls would race. After each pair completes, capture the resulting Notion URL.
+
+You can fire each handoff inline as soon as a pair locks in Step 5 — but still one at a time. If a handoff is mid-flight when the next pair locks, queue it and fire when the previous finishes.
+
+### Step transition print
+Print elapsed/remaining once before the loop starts and once after it finishes. Don't spam between pairs.
+
+---
+
+## Step 7 — Stop Timer + Report Duration
+
+When all pairs are scripted (or the user calls it), compute the session duration and stop the timer.
+
+### Compute duration
+```
+python3 -c "import json,time,sys; r=json.load(open(sys.argv[1])); e=int(time.time())-r['start']; print(f'{e//60} min {e%60} sec')" "$SKILL_DIR/.runtime.json"
+```
 
 ### Cleanup (always run, even on early bail) — cross-platform
 ```
@@ -252,23 +260,45 @@ python3 "$SKILL_DIR/stop.py"
 ```
 (Use `python` on Windows.) `stop.py` kills the server process and removes `.runtime.json`. Then close the timer tab via `mcp__claude-in-chrome__tabs_close_mcp` with the tab ID you saved at Step 1.
 
+### Final output
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/IDEATE COMPLETE — [N]/[goal] beat sheets shipped
+Session: [XX min YY sec]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dropped into Notion as Scripted:
+  1. <Notion URL> — <concept> × format from <source URL>
+  2. <Notion URL> — <concept> × format from <source URL>
+  ...
+
+Next: open Notion → Scripted column → film.
+```
+
+If under goal: be honest. Don't pad with weak pairs.
+
 ---
 
 ## Important Notes
 
-- **Originals before research, every time.** Step 4 always runs before Step 5. The user gets a shot at their own ideas before being shown other people's.
-- **The timer is a budget, not a quota.** Stop early if the goal is hit. Don't run out the clock.
-- **Top 10 cap, hyperlinked titles, every time.** No exceptions in Step 6.
-- **Auto-run research only if no matching report exists.** Don't re-run if a report from this week already exists — just use it. Match platform → research skill in Step 5.
-- **Don't load the backbone.** Not needed here — scriptwriter handles brand fit.
-- **Always run the Step 7 cleanup block** when ending the session. Don't leave the http server or Chrome tab orphaned.
+- **Default = format-first recreation.** User picks a winning video → names a twist → handoff. Don't ask "concept-first or format-first?" — just lead with the table.
+- **Original ideas are the escape hatch, not the default.** Mention it once in the loop prompt, then move on.
+- **Backbone loads ONLY if the user blanks on a twist.** Otherwise the user owns the concept. When you do propose, propose ONE twist — no menus.
+- **Ideate transcribes at pick-time so the twist is grounded in the actual video, not the caption.** Captions usually misrepresent what made a video work. The transcript is what surfaces the real hook mechanism + beat structure — both for the user and (when proposing) for ideate. Then hand the transcript path forward so scriptwriter doesn't re-pull it.
+- **Scriptwriter is still the engine.** Don't duplicate decompose / beat-sheet / Notion-write logic here. Hand off in Step 6 and trust it.
+- **The timer is a budget, not a quota.** Fire handoffs inline as pairs lock; don't wait until all N are paired.
+- **Top 10 cap, hyperlinked titles, every time.** No exceptions in Step 5.
+- **Auto-run research only if no matching report exists.** Don't re-run if a recent report exists — just use it.
+- **Always run the cleanup block** when ending the session. Don't leave the http server or Chrome tab orphaned.
+- **Always report session duration** in the final output.
 
 ---
 
 ## What This Skill Does NOT Do
 
-- **Brainstorm twists, angles, or original takes for the user.** Step 4 captures what THEY say. Don't pitch.
-- **Write titles, thumbnails, or hooks.** Scriptwriter's job.
+- **Transcribe, decompose, or write beats.** That's scriptwriter's job. Hand off in Step 6.
+- **Brainstorm twists upfront.** Let the user name the twist first. Only propose one (from backbone) if they explicitly blank.
+- **Ask "concept-first or format-first?"** Default is format-first. Just show the table.
+- **Drop pages in `Idea` status.** Pairs go straight to `Scripted` via scriptwriter.
 - **Filter for "on-brand."** The user picks. They know their voice.
 - **Pad to hit the goal.** Honest count > vanity count.
-- **Write the actual scripts.** Use the scriptwriter skill.
