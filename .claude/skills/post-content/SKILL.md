@@ -11,7 +11,7 @@ Resolve a target video from Notion → download from Frame.io/Drive → upload t
 - **"post this"** — pick the Ready To Post row in Notion (1 row → just post; 2+ → ask which)
 - **"post [keyword]"** — search Notion for a row matching the keyword, prefer Ready To Post status
 - **"schedule [keyword] for [time]"** — same lookup, scheduled mode
-- **"post [/abs/path/to.mp4]"** — legacy: skip Notion lookup, post the local file directly
+- **"post [/abs/path/to.mp4]"** — skip Notion lookup for the SOURCE, but still fuzzy-match the filename back to a Notion row at Step 7 so the pipeline gets flipped to Posted
 - **"transcribe and post [keyword]"** — full lookup → download → transcribe → caption → post
 - **"check failed posts"** — Step 0 only: scan Buffer for errored posts in the last 14 days
 
@@ -86,7 +86,7 @@ If the user invoked the skill with **"check failed posts"** as the only request,
 
 Find the Notion row corresponding to the video the user wants to post.
 
-**A. Parse the user's message** for a keyword/title (everything meaningful after "post" / "schedule" / "publish"). If the message contains a literal absolute file path that exists on disk (e.g., `/Users/.../foo.mp4`), **skip to Step 3** — treat as legacy direct-post.
+**A. Parse the user's message** for a keyword/title (everything meaningful after "post" / "schedule" / "publish"). If the message contains a literal absolute file path that exists on disk (e.g., `/Users/.../foo.mp4`), **skip to Step 3** for the source — but hold onto the filename (basename minus extension) so Step 7 can fuzzy-match it back to a Notion row and still flip the pipeline to Posted.
 
 **B. Query Notion** with `mcp__notion__API-post-search`:
 ```json
@@ -396,7 +396,7 @@ def build_input(channel, mode, video_url):
         'channelId': channel['id'],
         'schedulingType': 'automatic',
         'mode': mode,
-        'assets': {'videos': [{'url': video_url}]},
+        'assets': [{'video': {'url': video_url}}],
     }
     if channel['meta']: inp['metadata'] = channel['meta']
     if mode == 'customScheduled' and DUE_AT: inp['dueAt'] = DUE_AT
@@ -528,7 +528,12 @@ We already have `page_id` from Step 1 — no second search needed. Patch the row
 
 If the Notion update fails, **don't fail the whole flow** — the post already went out. Report and continue.
 
-*(Legacy direct-post mode where the user pasted a file path: skip Step 7 entirely. There's no Notion row to update.)*
+**Direct-path mode (user pasted an absolute file path in Step 1):** the filename is the source of truth for matching. Strip the path and extension, then run `mcp__notion__API-post-search` with that as the query. Filter to the content DB and exclude rows already in `Posted` / `Archived`. Resolution:
+- **Exactly 1 non-Posted match** — patch it (same shape as above).
+- **2+ matches** — list `Title · Status` candidates and ask which row before patching.
+- **0 matches** — surface that and stop (don't invent a row, don't silently skip). Filename → title mapping is usually obvious to the creator (e.g. `Claude content system.mp4` → "I Built the Ultimate Content System With Claude"); if Notion truly has nothing, the row probably needs to be created manually.
+
+Only fully skip Step 7 if the user explicitly said "don't touch Notion."
 
 ### Step 8 — Confirm
 
@@ -570,7 +575,7 @@ When generating captions from transcripts:
 **"transcribe and post [keyword]"** — Same as above + auto-generate caption from transcript
 **"schedule [keyword] for tomorrow at 10am"** — Same lookup, customScheduled mode
 **"post [keyword] to IG only"** — Same lookup, restrict to Instagram
-**"post /Users/.../foo.mp4"** — Legacy: skip Notion lookup, post local file directly (no Notion update)
+**"post /Users/.../foo.mp4"** — Direct-path: skip Notion lookup for the source, but Step 7 still fuzzy-matches the filename back to a Notion row and flips it to Posted
 **"check failed posts"** — Step 0 only; scan Buffer for errored posts in last 14 days
 
 ---

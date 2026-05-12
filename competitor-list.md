@@ -8,13 +8,13 @@ Accounts in the same niche (personal branding / AI content / creator economy) to
 
 ## Instagram
 
-### Patrick Dang (@patrickdang)
-- **URL**: https://www.instagram.com/patrickdang/
-- **Notes**: 1-person business / personal brand with AI. Outcome-first hooks ("sign clients", "in 30 days"), heavy free-training + skill-file CTA stack.
+### Nick Saraev (@nick_saraev)
+- **URL**: https://www.instagram.com/nick_saraev/
+- **Notes**: AI automation / agency operator. Build-in-public + outcome-driven hooks.
 
-### Nate Herk (@nateherkai)
-- **URL**: https://www.instagram.com/nateherkai/
-- **Notes**: AI automation creator (n8n, agents, workflows). Heavy education + tutorial format.
+### Mino Lee (@minolee.mp4)
+- **URL**: https://www.instagram.com/minolee.mp4/
+- **Notes**: AI content + creator economy. Format-heavy, edit-driven reels.
 
 ### Chase H (@chase.h.ai)
 - **URL**: https://www.instagram.com/chase.h.ai/
