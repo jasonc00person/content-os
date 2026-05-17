@@ -1,12 +1,49 @@
 # Competitor Research — Top Reels
 
-**Generated:** 2026-05-11 | **Accounts scraped:** 3 | **Reels in report:** 9 (top 3 by views per handle)
+**Generated:** 2026-05-11 | **Accounts scraped:** 4 | **Reels in report:** 12 (top 3 by views per handle)
 
-> **Pattern:** Claude Code is the dominant subject — 8 of 9 reels are Claude Code workflow tips, tool stacks, or efficiency hacks. Comment-keyword DM bait (`Comment "CODING"`, `"CLAUDE"`, `"GOOGLE"`, `"agency"`, `"agent"`) is the default CTA across Nick and Chase, and it's the single biggest comment-rate driver in the pool — Nick's 639K reel hit 3.0% comment rate against a 1–2% baseline. Mino is the outlier: first-person "here's what I built" + relatable hooks, no comment-bait, much lower comment rates but stronger like rates.
+> **Pattern:** Comment-keyword DM bait dominates — 9 of 12 reels use it (Nick, Chase, Reid all run the same template: "Comment X" → auto-DM with link). Claude Code is the second strongest theme but Reid breaks the pool open from a different niche entirely: his beginner-finance content (3.1M-view "investing without big words", 899K credit-card tier list) tops the chart by a wide margin, showing topical breadth (universal money basics) beats niche depth (AI tooling) on view ceiling — even though both run the same comment-bait CTA mechanic. Mino is the lone non-DM-bait creator, leaning on curiosity/relatability for top like rates (6.2%).
 
 ---
 
-### 1. [Comment "CODING" to get the full guide on how Build Stunning Animated websites Using Claude Code + Google Stitch + MotionSites.](https://www.instagram.com/nick_saraev/reel/DXqzDc6j-H_/) — @nick_saraev
+### 1. [Investing easy without big words 🙂‍↕️](https://www.instagram.com/builtbyreid/reel/DX-3IdwAHf-/) — @builtbyreid
+
+`3.1M views · 225K likes · 1,380 comments` · 7.3% like rate · 0.04% comment rate · posted May 5, 2026
+
+**Topic:** Education · **CTA:** Comment-bait
+
+**Why it worked:** "Without big words" disarms beginner-finance anxiety — the exact audience who normally bounces from investing content. 7.3% like rate is by far the highest in the pool, signaling content that gets *saved and liked* even when comment-bait incentive is weak (people don't comment on finance posts publicly).
+
+> Investing easy without big words 🙂‍↕️
+>
+> Comment "SAVE" and automated message thingy will send you the link to the HIGH YIELD savings account I use
+>
+> Note: in your Roth IRA, you actually need to buy things! ETFs like $VOO that track the S&P 500 (biggest American companies) are best!
+>
+> Not investment advice and I'm not a certified financial advisor, just sharing my experience
+>
+> @americanexpress @sofi
+
+---
+
+### 2. [My honest credit card tier list...](https://www.instagram.com/builtbyreid/reel/DYLxnh7PusV/) — @builtbyreid
+
+`899K views · 24K likes · 335 comments` · 2.7% like rate · 0.04% comment rate · posted May 10, 2026
+
+**Topic:** Hot take · **CTA:** Comment-bait
+
+**Why it worked:** Tier-list format is a meme-borrowed structure that primes the algorithm + viewer for "rank reveal" — "honest" adds authority claim. Brand tag cluster (@capitalone @discover @americanexpress @bilt) likely boosted reach via cross-promo signaling.
+
+> My honest credit card tier list...
+>
+> .
+> Comment 'BANANA' and my auto DM thingy will send you my referral link to the Venture X and Discover IT cards for an added sign up bonus 🤝
+>
+> @capitalone @discover @americanexpress @bilt
+
+---
+
+### 3. [Comment "CODING" to get the full guide on how Build Stunning Animated websites Using Claude Code + Google Stitch + MotionSites.](https://www.instagram.com/nick_saraev/reel/DXqzDc6j-H_/) — @nick_saraev
 
 `639K views · 22K likes · 19K comments` · 3.4% like rate · 3.0% comment rate · posted April 28, 2026
 
@@ -40,7 +77,7 @@
 
 ---
 
-### 2. [Comment "CLAUDE" to get the Advanced Claude Code Guide to learn more such tricks and tips.](https://www.instagram.com/nick_saraev/reel/DXMtRJOj-M-/) — @nick_saraev
+### 4. [Comment "CLAUDE" to get the Advanced Claude Code Guide to learn more such tricks and tips.](https://www.instagram.com/nick_saraev/reel/DXMtRJOj-M-/) — @nick_saraev
 
 `467K views · 16K likes · 5,815 comments` · 3.4% like rate · 1.2% comment rate · posted April 16, 2026
 
@@ -72,7 +109,7 @@
 
 ---
 
-### 3. [Comment "GOOGLE" to these new Vibe Design and Vibe-Coding tools from Google.](https://www.instagram.com/nick_saraev/reel/DXWCgXvj2AR/) — @nick_saraev
+### 5. [Comment "GOOGLE" to these new Vibe Design and Vibe-Coding tools from Google.](https://www.instagram.com/nick_saraev/reel/DXWCgXvj2AR/) — @nick_saraev
 
 `442K views · 14K likes · 8,249 comments` · 3.2% like rate · 1.9% comment rate · posted April 20, 2026
 
@@ -94,7 +131,7 @@
 
 ---
 
-### 4. [a couple things im also doing w AI in my biz rn:](https://www.instagram.com/minolee.mp4/reel/DWmUz6yF0Cs/) — @minolee.mp4
+### 6. [a couple things im also doing w AI in my biz rn:](https://www.instagram.com/minolee.mp4/reel/DWmUz6yF0Cs/) — @minolee.mp4
 
 `299K views · 11K likes · 60 comments` · 3.7% like rate · 0.02% comment rate · posted April 1, 2026
 
@@ -114,13 +151,13 @@
 
 ---
 
-### 5. [This might be a tough one 😳😩](https://www.instagram.com/minolee.mp4/reel/DW5uiYKl2kY/) — @minolee.mp4
+### 7. [This might be a tough one 😳😩](https://www.instagram.com/minolee.mp4/reel/DW5uiYKl2kY/) — @minolee.mp4
 
 `195K views · 12K likes · 167 comments` · 6.2% like rate · 0.09% comment rate · posted April 9, 2026
 
 **Topic:** Lifestyle · **CTA:** None
 
-**Why it worked:** Pure curiosity-gap hook — no topic disclosure, just emotion ("tough one 😳😩"). 6.2% like rate is the highest in the pool; lifestyle/relatable content over-indexes on likes vs. educational.
+**Why it worked:** Pure curiosity-gap hook — no topic disclosure, just emotion ("tough one 😳😩"). 6.2% like rate is the highest in the Mino/Nick/Chase cluster; lifestyle/relatable content over-indexes on likes vs. educational.
 
 > This might be a tough one 😳😩
 >
@@ -128,7 +165,7 @@
 
 ---
 
-### 6. [99% of gamblers quit before their first big win](https://www.instagram.com/minolee.mp4/reel/DX8OoaDv-vA/) — @minolee.mp4
+### 8. [99% of gamblers quit before their first big win](https://www.instagram.com/minolee.mp4/reel/DX8OoaDv-vA/) — @minolee.mp4
 
 `182K views · 6,529 likes · 119 comments` · 3.6% like rate · 0.07% comment rate · posted May 4, 2026
 
@@ -140,7 +177,35 @@
 
 ---
 
-### 7. [Comment "agency" to get my Claude code agentic OS](https://www.instagram.com/chase.h.ai/reel/DX8W-VIJVip/) — @chase.h.ai
+### 9. [Because school didn't teach us](https://www.instagram.com/builtbyreid/reel/DX5FgwJS5qA/) — @builtbyreid
+
+`170K views · 6,948 likes · 82 comments` · 4.1% like rate · 0.05% comment rate · posted May 3, 2026
+
+**Topic:** Education · **CTA:** Comment-bait
+
+**Why it worked:** Resentment hook ("school didn't teach us") activates a near-universal grievance — primes the viewer for value before any content lands. Glossary-style breakdown of HYSA / brokerage / ETF / S&P / Roth IRA / 401(k) = save-worthy reference card.
+
+> Because school didn't teach us
+>
+> High Yield Savings: Like a regular savings account, except it pays 3-4% interest so your money makes money for you. Comment "SAVE" and my auto DM thingy will send you the link to the one I use
+>
+> Brokerage Account: An account where you buy stocks and ETFs to invest in
+>
+> ETF: One investment you buy that's a lot of different stocks in one. For example, $VOO is all the S&P 500 stocks in one
+>
+> S&P 500: the 500 biggest US companies whose stock you can buy publicly to invest in
+>
+> Roth IRA: A super OP retirement investment account where you don't pay taxes on the gains over your investment (with certain rules)
+>
+> 401(k): An investment account where you contribute pre-tax money
+>
+> @americanexpress @sofi @fidelityinvestments @robinhoodapp
+>
+> I'm not a financial advisor and this is not financial advice. Just sharing what has worked through my persona experience.
+
+---
+
+### 10. [Comment "agency" to get my Claude code agentic OS](https://www.instagram.com/chase.h.ai/reel/DX8W-VIJVip/) — @chase.h.ai
 
 `56.8K views · 1,162 likes · 2,240 comments` · 2.0% like rate · 3.9% comment rate · posted May 4, 2026
 
@@ -152,24 +217,24 @@
 
 ---
 
-### 8. [Comment "agent" to get my Claude code guides](https://www.instagram.com/chase.h.ai/reel/DX7oRT3J1Hq/) — @chase.h.ai
+### 11. [Comment "agent" to get my Claude code guides](https://www.instagram.com/chase.h.ai/reel/DX7oRT3J1Hq/) — @chase.h.ai
 
 `55.6K views · 866 likes · 82 comments` · 1.6% like rate · 0.1% comment rate · posted May 4, 2026
 
 **Topic:** Tutorial · **CTA:** Comment-bait
 
-**Why it worked:** Same comment-keyword formula as #7 but generic asset ("guides") instead of named system ("agentic OS") — comment rate cratered from 3.9% → 0.1%, suggesting the *specificity of the asset name* drives comment volume more than the CTA format itself.
+**Why it worked:** Same comment-keyword formula as #10 but generic asset ("guides") instead of named system ("agentic OS") — comment rate cratered from 3.9% → 0.1%, suggesting the *specificity of the asset name* drives comment volume more than the CTA format itself.
 
 > Comment "agent" to get my Claude code guides
 
 ---
 
-### 9. [Comment "agent" to get access to all of my Claude Code guides](https://www.instagram.com/chase.h.ai/reel/DX2ubACJYRN/) — @chase.h.ai
+### 12. [Comment "agent" to get access to all of my Claude Code guides](https://www.instagram.com/chase.h.ai/reel/DX2ubACJYRN/) — @chase.h.ai
 
 `52.7K views · 1,332 likes · 343 comments` · 2.5% like rate · 0.7% comment rate · posted May 2, 2026
 
 **Topic:** Tutorial · **CTA:** Comment-bait
 
-**Why it worked:** "All of my" adds completion / collection appeal vs. #8's bare "my guides" — comment rate 7× higher than #8 with nearly identical caption. Tiny copy tweaks materially move comment volume.
+**Why it worked:** "All of my" adds completion / collection appeal vs. #11's bare "my guides" — comment rate 7× higher than #11 with nearly identical caption. Tiny copy tweaks materially move comment volume.
 
 > Comment "agent" to get access to all of my Claude Code guides

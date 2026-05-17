@@ -1,6 +1,6 @@
 ---
 name: rough-cut
-description: "Rough-cuts short-form reels from raw clips. Transcribes with faster-whisper, kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the inbox, trim this, chop this up, rough-cut, make a rough cut."
+description: "Rough-cuts short-form reels from raw clips. Transcribes with WhisperX (large-v3 + wav2vec2 word-level alignment), kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the inbox, trim this, chop this up, rough-cut, make a rough cut."
 ---
 
 # Rough Cut — Transcript-Driven Edits
@@ -76,17 +76,19 @@ Find the job folder. Run:
 bash .claude/skills/rough-cut/scripts/transcribe.sh <job_dir>
 ```
 
-This runs faster-whisper large-v3 with word-level timestamps and writes `/tmp/video-editor/<job-name>/words.json`.
+This runs WhisperX (large-v3 ASR + wav2vec2 forced alignment) with true word-level timestamps and writes `/tmp/video-editor/<job-name>/words.json`. Word timestamps are tighter than plain faster-whisper, so cuts land more precisely.
+
+**Add `--diarize`** to label each word with a speaker (multi-person clips). Requires `HUGGINGFACE_TOKEN` in env and accepting the pyannote/speaker-diarization-3.1 model on HF.
 
 **Run in background** if expected >2min:
-- ~30s of clip = ~8-15s wall time
-- ~5min of clip = ~90s wall time
+- ~30s of clip = ~10-20s wall time (first run is slower — alignment model downloads)
+- ~5min of clip = ~2min wall time
 
 For total clip length >3min, use `run_in_background: true` and Monitor.
 
 ### Step 2 — Read the transcript + decide cuts
 
-Read `/tmp/video-editor/<job-name>/words.json`. Each clip has a `words` array of `{w, start, end, prob}`.
+Read `/tmp/video-editor/<job-name>/words.json`. Each clip has a `words` array of `{w, start, end, prob}` (plus `speaker` when `--diarize` was used).
 
 Apply the auto-kill rules and the edit philosophy. Output `/tmp/video-editor/<job-name>/cuts.json` in this shape:
 
@@ -158,6 +160,6 @@ Keep it tight. If a segment feels weak, flag it: **"⚠️ segment 3 is borderli
 
 ## Handoff
 
-Once the rough cut is approved, the creator takes it into Submagic / CapCut for captions + polish, OR triggers the `post-content` skill to schedule it.
+Once the rough cut is approved, continue the repo pipeline: `audio-polish` → `reframe` → `broll` → `captions` → `post-content`.
 
-This skill does ONE thing: cut the reel down to the essential lines. It does not do captions, B-roll, zoom effects, or vertical reframing. That's Phase 2+.
+This skill does ONE thing: cut the reel down to the essential lines. It does not do audio polish, captions, B-roll, zoom effects, or vertical reframing.

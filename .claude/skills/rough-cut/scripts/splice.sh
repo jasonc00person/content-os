@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # splice.sh — cuts + concatenates clips per cuts.json, single final re-encode
 # usage: splice.sh <job_dir>
-# reads:  <job_dir>/working/cuts.json
-# writes: <job_dir>/outbox/rough-cut.mp4
+# reads:  /tmp/video-editor/<job-name>/cuts.json
+# writes: video-editor/outputs/<job-name>.mp4
 
 set -euo pipefail
 

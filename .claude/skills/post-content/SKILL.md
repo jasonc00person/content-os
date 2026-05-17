@@ -24,12 +24,12 @@ Resolve a target video from Notion → download from Frame.io/Drive → upload t
 
 ## Notion Content DB Schema (verified 2026-05-06)
 
-**Database ID:** `<the user's Notion content database ID — configure in .env as NOTION_CONTENT_DB_ID or check backbone/ for the project's DB ID>`
+**Database ID:** use `notion-pipeline.md` as the source of truth; `.env` may also define `NOTION_CONTENT_DB_ID` for scripts.
 
 | Property | Type | Purpose |
 |----------|------|---------|
 | Title | title | Video name (matched against user keyword) |
-| Status | status | Idea, Scripting/Filming, To Edit, Editing, To Review, **Ready To Post**, Posted, Archived |
+| Status | status | Idea, Scripted, To Edit, Editing, To Review, **Ready To Post**, Posted, Archived |
 | Format | select | Short-form, Long-form |
 | Type | multi_select | TOF, MOF, BOF, Brainrot, Viral |
 | Post Date | date | Publish timestamp |
@@ -482,8 +482,6 @@ PY
 | Instagram | `type: reel`, `shouldShareToFeed: true` | Min 3s, 9:16 ideal, h264+AAC, must have audio |
 | TikTok | None | Video URL must stay live until published |
 | YouTube | `title`, `privacy`, `madeForKids`, `notifySubscribers`, `categoryId` | categoryId `"22"` = People & Blogs |
-| LinkedIn | None | More professional tone |
-| Facebook | None | Casual tone OK |
 
 #### YouTube Category IDs
 - `"22"` — People & Blogs (default for creator content)
@@ -558,19 +556,19 @@ If any platform fails twice (initial + retry), surface both errors and skip the 
 
 When generating captions from transcripts:
 
-1. **CTA FIRST** — keyword CTAs are ALWAYS line 1. Shows before "...more" in feed.
-2. **Hook line** — 1-line hook after CTA that makes people read on
-3. **Body** — key points. Arrows (→) or line breaks, never numbered lists
-4. **Closing CTA** — repeat the keyword with 👇
+1. **CTA FIRST only when spoken** — if the transcript includes an explicit keyword CTA, put that CTA on line 1 so it shows before "...more".
+2. **Hook line** — 1-line hook after the CTA, or line 1 when there is no spoken CTA.
+3. **Body** — key points. Arrows (→) or line breaks, never numbered lists.
+4. **Closing CTA** — repeat the keyword with 👇 only when the transcript included one.
 5. **Voice** — casual, direct, emojis sparingly. Sounds like a text from a friend
-6. **Length** — IG/TikTok max 2,200 chars; LinkedIn max 3,000 chars
+6. **Length** — IG/TikTok max 2,200 chars
 7. **YouTube** — separate `title` field (max 100 chars). Curiosity-driven, short.
 
 ---
 
 ## Common Commands
 
-**"post this"** — Find Ready To Post in Notion, download from Edited Video link, post to all platforms with verify+retry
+**"post this"** — Find Ready To Post in Notion, download from Edited Video link, post to configured Buffer platforms with verify+retry
 **"post [keyword]"** — Notion search for keyword (Ready To Post first), then full flow
 **"transcribe and post [keyword]"** — Same as above + auto-generate caption from transcript
 **"schedule [keyword] for tomorrow at 10am"** — Same lookup, customScheduled mode

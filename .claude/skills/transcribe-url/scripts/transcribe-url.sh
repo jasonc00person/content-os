@@ -80,7 +80,7 @@ with open(vtt_path) as f:
 # split into cues by blank line
 blocks = re.split(r'\n\s*\n', raw)
 cues = []  # (start_seconds, clean_text)
-ts_re = re.compile(r'(\d+):(\d+):([\d.]+)\s+-->')
+ts_re = re.compile(r'(?:(\d+):)?(\d+):(\d+(?:\.\d+)?)\s+-->')
 
 for block in blocks:
     lines = [l for l in block.splitlines() if l.strip()]
@@ -90,9 +90,11 @@ for block in blocks:
     if not ts_line:
         continue
     m = ts_re.search(ts_line)
-    h, mm, ss = int(m.group(1)), int(m.group(2)), float(m.group(3))
+    h = int(m.group(1) or 0)
+    mm = int(m.group(2))
+    ss = float(m.group(3))
     start = h * 3600 + mm * 60 + ss
-    body = [l for l in lines if l is not ts_line and not l.startswith(('WEBVTT', 'Kind:', 'Language:'))]
+    body = [l for l in lines if l != ts_line and not l.startswith(('WEBVTT', 'Kind:', 'Language:'))]
     # find the line with word-level timestamps (the "currently typing" line)
     active = next((l for l in body if re.search(r'<\d+:\d+:[\d.]+>', l) or '<c>' in l), None)
     if active is None and body:

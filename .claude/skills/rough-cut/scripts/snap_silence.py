@@ -2,8 +2,8 @@
 """
 snap_silence.py — word-aware cut snapping.
 
-Reads: <job_dir>/working/cuts.json (or /tmp/video-editor/<job>/cuts.json)
-Uses:  /tmp/video-editor/<job>/words.json (from faster-whisper)
+Reads: /tmp/video-editor/<job>/cuts.json
+Uses:  /tmp/video-editor/<job>/words.json (from WhisperX)
        + FFmpeg silencedetect (on each clip)
 Writes: /tmp/video-editor/<job>/cuts_snapped.json
 
@@ -20,6 +20,10 @@ Per-segment: set "no_snap": true on a segment in cuts.json to bypass snapping.
 """
 
 import json, os, re, subprocess, sys
+
+if len(sys.argv) != 2:
+    sys.stderr.write("usage: snap_silence.py <job_dir>\n")
+    sys.exit(1)
 
 JOB_DIR = sys.argv[1]
 JOB_NAME = os.path.basename(os.path.normpath(JOB_DIR))
@@ -39,8 +43,32 @@ EXPANDED_WINDOW = 1.00        # how far to search when Whisper boundary is suspi
 
 # ---------- Load cuts + words ----------
 
+if not os.path.isdir(JOB_DIR):
+    sys.stderr.write(f"job dir not found: {JOB_DIR}\n")
+    sys.exit(1)
+if not os.path.exists(CUTS):
+    sys.stderr.write(f"missing cuts file: {CUTS}\n")
+    sys.exit(1)
+
 with open(CUTS) as f:
     cuts = json.load(f)
+if not isinstance(cuts.get("segments"), list):
+    sys.stderr.write(f"{CUTS} must contain a segments array\n")
+    sys.exit(1)
+for i, seg in enumerate(cuts["segments"]):
+    missing = [key for key in ("clip", "start", "end") if key not in seg]
+    if missing:
+        sys.stderr.write(f"segment #{i} missing required keys: {', '.join(missing)}\n")
+        sys.exit(1)
+    try:
+        seg["start"] = float(seg["start"])
+        seg["end"] = float(seg["end"])
+    except (TypeError, ValueError):
+        sys.stderr.write(f"segment #{i} has non-numeric start/end: {seg!r}\n")
+        sys.exit(1)
+    if seg["end"] <= seg["start"]:
+        sys.stderr.write(f"segment #{i} has end <= start: {seg!r}\n")
+        sys.exit(1)
 
 words_by_clip = {}
 if os.path.exists(WORDS):
@@ -186,6 +214,9 @@ def snap_out_silence_only(t, silences):
 silences_by_clip = {}
 for clip_name in sorted({seg["clip"] for seg in cuts["segments"]}):
     clip_path = os.path.join(JOB_DIR, clip_name)
+    if not os.path.exists(clip_path):
+        sys.stderr.write(f"clip not found for cuts.json segment: {clip_path}\n")
+        sys.exit(1)
     print(f"[snap] scanning {clip_name}", file=sys.stderr)
     silences_by_clip[clip_name] = detect_silences(clip_path)
     print(f"[snap]   {len(silences_by_clip[clip_name])} silence ranges",
@@ -207,6 +238,13 @@ for seg in cuts["segments"]:
     new_seg = dict(seg)
     new_seg["start"] = round(new_in, 3)
     new_seg["end"] = round(new_out, 3)
+    if new_seg["end"] <= new_seg["start"]:
+        sys.stderr.write(
+            f"[snap] invalid snapped segment for {seg['clip']}: "
+            f"{new_seg['start']}→{new_seg['end']} "
+            f"(original {seg['start']}→{seg['end']})\n"
+        )
+        sys.exit(1)
     new_seg["_snap"] = {
         "in": in_note, "out": out_note,
         "orig_start": seg["start"], "orig_end": seg["end"],

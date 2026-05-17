@@ -27,8 +27,12 @@ The whole system is one linear flow. Each step has a dedicated skill (or is Jaso
 | 2. Ideation | `ideate` | Pulls research, runs pick-loop with Jason, hands picks to scriptwriter |
 | 3. Scripting | `scriptwriter` | Owns the twist conversation, transcription, and Notion write. All scripting expertise lives here. |
 | 4. Filming | _(Jason)_ | Records on camera from the beat sheet |
-| 5. Editing | `rough-cut` | Transcribes raw clips, kills filler/dead air, stitches tight rough cut. Workspace: `video-editor/inbox/` → `video-editor/outputs/` |
-| 6. Posting | `post-content` | Posts/schedules to IG, YouTube, TikTok, LinkedIn, Facebook via Buffer API |
+| 5. Rough Cut | `rough-cut` | Transcribes raw clips (WhisperX), kills filler/dead air, stitches tight rough cut. Workspace: `video-editor/inbox/` → `video-editor/outputs/` |
+| 6. Audio Polish | `audio-polish` | FFmpeg denoise + loudnorm to -14 LUFS. Optional music bed with sidechain duck. |
+| 7. Reframe | `reframe` | 16:9 → 9:16 with MediaPipe face tracking. Auto-skips if already vertical. |
+| 8. B-Roll | `broll` | Generative cinematic inserts via Higgsfield. Claude proposes prompts, you approve, skill submits + overlays. |
+| 9. Captions | `captions` | Word-grouped burn-in with yellow emphasis pop. libass/ffmpeg-full renders and burns captions. |
+| 10. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
 
 Helper: `transcribe-url` — pulls a transcript from any video URL when needed (not part of the main pipeline).
 
