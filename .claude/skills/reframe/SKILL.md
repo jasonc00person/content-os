@@ -25,7 +25,7 @@ If no face is detected in a frame, holds the previous position (or center on fra
 ## Folder Contract
 
 ```
-video-editor/outputs/
+video-editor/projects/<job>/outputs/
 ├── <job>__polished.mp4     ← input (audio-polished from previous step)
 └── <job>__9x16.mp4         ← output (vertical)
 ```
@@ -34,7 +34,7 @@ video-editor/outputs/
 
 ```bash
 # Default output: <input_dir>/<input_stem>__9x16.mp4
-bash .claude/skills/reframe/scripts/reframe.sh video-editor/outputs/<job>__polished.mp4
+bash .claude/skills/reframe/scripts/reframe.sh video-editor/projects/<job>/outputs/<job>__polished.mp4
 
 # Explicit output
 bash .claude/skills/reframe/scripts/reframe.sh in.mp4 /tmp/out.mp4

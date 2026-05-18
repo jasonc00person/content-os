@@ -1,6 +1,6 @@
 ---
 name: rough-cut
-description: "Rough-cuts short-form reels from raw clips. Transcribes with WhisperX (large-v3 + wav2vec2 word-level alignment), kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the inbox, trim this, chop this up, rough-cut, make a rough cut."
+description: "Rough-cuts short-form reels from raw clips. Transcribes with WhisperX (large-v3 + wav2vec2 word-level alignment), kills filler + dead air, keeps only the essential lines, stitches with FFmpeg. No captions, no B-roll — just a tight rough cut ready for final polish. Triggers: edit this reel, rough cut, cut this video, edit the latest project, trim this, chop this up, rough-cut, make a rough cut."
 ---
 
 # Rough Cut — Transcript-Driven Edits
@@ -8,7 +8,7 @@ description: "Rough-cuts short-form reels from raw clips. Transcribes with Whisp
 Turns raw talking-head clips into a tight rough cut. You transcribe, you decide the cuts, FFmpeg stitches. The goal: **shortest possible reel that still delivers the value.** Respect the viewer's time.
 
 ## How to Trigger
-- **"edit the inbox"** → finds the newest job folder, edits it
+- **"edit the latest project"** → finds the newest job folder, edits it
 - **"rough cut [job name]"** → edits a specific job folder
 - **"cut this reel"** with a path → edits that folder
 
@@ -20,13 +20,17 @@ The skill operates out of `/video-editor/` at the repo root.
 
 ```
 video-editor/
-├── inbox/
+├── projects/
 │   └── <job-name>/              ← one folder per reel
-│       ├── clip-01.mov          ← raw clips (any name, any count)
-│       ├── clip-02.mov
+│       ├── raw/                 ← raw clips (any name, any count)
+│       │   ├── clip-01.mov
+│       │   └── clip-02.mov
+│       ├── audio/               ← OPTIONAL — music beds / audio assets
+│       ├── assets/              ← OPTIONAL — refs, screen recordings, B-roll sources
+│       ├── thumbnails/          ← OPTIONAL — thumbnail source images/working files
+│       ├── outputs/             ← rendered deliverables for this job
+│       │   └── <job-name>.mp4
 │       └── intent.md            ← OPTIONAL — what the reel is about
-└── outputs/
-    └── <job-name>.mp4           ← final deliverable (named after job folder)
 ```
 
 Intermediates (transcript, cuts.json, segments, etc.) live in `/tmp/video-editor/<job-name>/` so the job folder stays clean. Read from there when iterating.
@@ -103,9 +107,11 @@ Apply the auto-kill rules and the edit philosophy. Output `/tmp/video-editor/<jo
 ```
 
 **Timestamp rules:**
-- Add ~0.1-0.2s headroom on each cut so you don't clip the start/end of a word
-- Don't cut mid-word. Find the gap between words.
-- Segments CAN cross clips in any order — that's the whole point
+- Trust WhisperX word-level timestamps as the source of truth.
+- Start on the first word you want, usually `word.start - 0.03` to `0.08`.
+- End after the last word you want, usually `word.end + 0.04` to `0.10`.
+- Don't cut mid-word. If a transition feels clipped, adjust `cuts.json` manually and rerender.
+- Segments CAN cross clips in any order — that's the whole point.
 
 Include the `transcript` field for each segment so the creator can read the cut sheet and sanity-check it without watching.
 
@@ -115,7 +121,7 @@ Include the `transcript` field for each segment so the creator can read the cut 
 bash .claude/skills/rough-cut/scripts/splice.sh <job_dir>
 ```
 
-Writes `video-editor/outputs/<job-name>.mp4`. Runs silence-snap on `cuts.json` first (FFmpeg silencedetect → `cuts_snapped.json`) so every cut lands in silence, not mid-word. Uses h264_videotoolbox (hardware accel on Apple Silicon) for the encode, loudnorm for audio levels.
+Writes `video-editor/projects/<job-name>/outputs/<job-name>.mp4` directly from `/tmp/video-editor/<job-name>/cuts.json`. Uses accurate FFmpeg seeking (`-i clip -ss start -t duration`) so WhisperX timestamps stay authoritative, then re-encodes each segment with h264_videotoolbox and normalizes audio.
 
 **Always run in background** — renders take 15-45s for 60s output.
 
@@ -136,7 +142,7 @@ After the cut lands, report like this:
 ✂️ ROUGH CUT DONE
 
 📊 3:47 → 0:48 (79% cut)
-📁 video-editor/outputs/<job-name>.mp4
+📁 video-editor/projects/<job-name>/outputs/<job-name>.mp4
 
 CUT SHEET:
 1. [clip-02 @ 1.24-4.60] "Are you still paying a VA three grand a month"
@@ -151,6 +157,7 @@ Keep it tight. If a segment feels weak, flag it: **"⚠️ segment 3 is borderli
 ## Gotchas
 
 - **`-c copy` alone doesn't work on arbitrary cut points** — causes A/V desync. `splice.sh` re-encodes each segment with hardware accel, which is still fast (~15s for a 60s reel). Don't "optimize" to pure stream copy.
+- **Don't auto-snap cuts to silence.** WhisperX word alignment is the unlock. Automatic silencedetect snapping can move intentionally chosen boundaries into filler words or awkward pauses.
 - **Whisper can mishear.** Always cross-check the transcript before killing a line — sometimes "Claude" becomes "cloud" or "Cloud" and the line looks wrong when it's fine.
 - **Don't re-run transcribe.sh** if `/tmp/video-editor/<job-name>/words.json` already exists. Check first. Transcribing is the slowest step.
 - **Clip order in `cuts.json` = final order in the reel.** You're writing the script sequence.

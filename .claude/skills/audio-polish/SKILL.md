@@ -18,16 +18,15 @@ Cleans the audio track on a video file. Denoises, normalizes loudness, optionall
 
 ```
 video-editor/
-├── inbox/
+├── projects/
 │   └── <job>/
-│       └── music/                ← OPTIONAL — drop one .mp3 here to enable a music bed
-│           └── bed.mp3
-└── outputs/
-    ├── <job>.mp4                 ← input (rough-cut output)
-    └── <job>__polished.mp4       ← output (audio cleaned)
+│       ├── audio/                ← OPTIONAL — drop one .mp3 here to enable a music bed
+│       └── outputs/
+│           ├── <job>.mp4         ← input (rough-cut output)
+│           └── <job>__polished.mp4
 ```
 
-If `inbox/<job>/music/*.mp3` exists, it gets auto-detected and used as the bed. Otherwise voice-only polish.
+If `projects/<job>/audio/*.mp3` exists, it gets auto-detected and used as the bed. Otherwise voice-only polish.
 
 ## The Chain
 
@@ -42,16 +41,16 @@ Everything is one FFmpeg pass. Re-encoded audio (AAC 192k), copied video. Fast.
 
 ```bash
 # Default: detect job folder's music dir, write <input>__polished.mp4 next to input
-bash .claude/skills/audio-polish/scripts/polish.sh video-editor/outputs/<job>.mp4
+bash .claude/skills/audio-polish/scripts/polish.sh video-editor/projects/<job>/outputs/<job>.mp4
 
 # Explicit output path
-bash .claude/skills/audio-polish/scripts/polish.sh video-editor/outputs/<job>.mp4 /tmp/out.mp4
+bash .claude/skills/audio-polish/scripts/polish.sh video-editor/projects/<job>/outputs/<job>.mp4 /tmp/out.mp4
 
 # Force a specific music file (overrides auto-detect)
-bash .claude/skills/audio-polish/scripts/polish.sh video-editor/outputs/<job>.mp4 --music ~/music/lofi.mp3
+bash .claude/skills/audio-polish/scripts/polish.sh video-editor/projects/<job>/outputs/<job>.mp4 --music ~/music/lofi.mp3
 
-# Skip music bed even if one exists in inbox
-bash .claude/skills/audio-polish/scripts/polish.sh video-editor/outputs/<job>.mp4 --no-music
+# Skip music bed even if one exists in the project folder
+bash .claude/skills/audio-polish/scripts/polish.sh video-editor/projects/<job>/outputs/<job>.mp4 --no-music
 ```
 
 ## Defaults Worth Knowing

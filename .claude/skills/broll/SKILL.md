@@ -16,7 +16,7 @@ The differentiator. Instead of keyword-matched stock footage, Claude reads your 
 ## The Flow
 
 ```
-1. Claude reads /tmp/video-editor/<job>/cuts.json + inbox/<job>/intent.md
+1. Claude reads /tmp/video-editor/<job>/cuts.json + projects/<job>/intent.md
 2. Claude writes /tmp/video-editor/<job>/broll.json — proposed moments + prompts
 3. You review the manifest, edit prompts, drop moments
 4. Run generate.py → submits to Higgsfield in parallel, polls, downloads
@@ -29,7 +29,7 @@ The differentiator. Instead of keyword-matched stock footage, Claude reads your 
 
 ```json
 {
-  "video": "video-editor/outputs/<job>__9x16.mp4",
+  "video": "video-editor/projects/<job>/outputs/<job>__9x16.mp4",
   "model_default": "seedance_2_0",
   "duration_default": 5,
   "aspect_ratio_default": "9:16",
@@ -92,7 +92,7 @@ Default to slow/subtle motion. Hectic generative motion fights the voiceover.
 python3 .claude/skills/broll/scripts/generate.py /tmp/video-editor/<job>/broll.json
 
 # Step 2: Overlay onto the video
-bash .claude/skills/broll/scripts/render.sh /tmp/video-editor/<job>/broll_resolved.json video-editor/outputs/<job>__9x16.mp4
+bash .claude/skills/broll/scripts/render.sh /tmp/video-editor/<job>/broll_resolved.json video-editor/projects/<job>/outputs/<job>__9x16.mp4
 ```
 
 Default output: `<input_dir>/<input_stem>__broll.mp4`.

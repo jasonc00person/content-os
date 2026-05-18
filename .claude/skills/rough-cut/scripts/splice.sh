@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# splice.sh — cuts + concatenates clips per cuts.json, single final re-encode
+# splice.sh — cuts + concatenates clips per cuts.json
 # usage: splice.sh <job_dir>
 # reads:  /tmp/video-editor/<job-name>/cuts.json
-# writes: video-editor/outputs/<job-name>.mp4
+# writes: video-editor/projects/<job-name>/outputs/<job-name>.mp4
 
 set -euo pipefail
 
@@ -10,46 +10,43 @@ JOB_DIR="${1:?usage: splice.sh <job_dir>}"
 JOB_DIR="$(cd "$JOB_DIR" && pwd)"
 JOB_NAME="$(basename "$JOB_DIR")"
 WORK="/tmp/video-editor/$JOB_NAME"
-# video-editor root is two levels up from job dir (inbox/<job>)
-VIDEO_ROOT="$(cd "$JOB_DIR/../.." && pwd)"
-OUT="$VIDEO_ROOT/outputs"
+MEDIA_DIR="$JOB_DIR"
+[ -d "$JOB_DIR/raw" ] && MEDIA_DIR="$JOB_DIR/raw"
+OUT="$JOB_DIR/outputs"
 CUTS="$WORK/cuts.json"
 mkdir -p "$WORK/segments" "$OUT"
 
 [ -f "$CUTS" ] || { echo "missing $CUTS" >&2; exit 1; }
 
-# Snap cut boundaries to silence if snap_silence.py exists and snapped file missing
-SNAP_SCRIPT="$(dirname "$0")/snap_silence.py"
-SNAPPED="$WORK/cuts_snapped.json"
-if [ -f "$SNAP_SCRIPT" ]; then
-  echo "[splice] snapping to silence..." >&2
-  python3 "$SNAP_SCRIPT" "$JOB_DIR"
-  [ -f "$SNAPPED" ] && CUTS="$SNAPPED"
-fi
-
 # cuts.json schema:
 # { "segments": [ { "clip": "clip-01.mov", "start": 1.2, "end": 4.8 }, ... ] }
 
-# extract each segment to a .ts intermediate (stream copy — instant, no quality loss)
+# Extract each segment to a .ts intermediate. Use accurate output seeking so
+# WhisperX word-level timestamps stay authoritative.
 rm -f "$WORK/segments"/*.ts "$WORK/concat.txt" 2>/dev/null || true
 
-idx=0
-python3 - "$JOB_DIR" "$CUTS" "$WORK" <<'PY' > "$WORK/segments.tsv"
+python3 - "$MEDIA_DIR" "$CUTS" "$WORK" <<'PY' > "$WORK/segments.tsv"
 import json, os, sys
-job_dir, cuts_path, work = sys.argv[1:]
+media_dir, cuts_path, work = sys.argv[1:]
 with open(cuts_path) as f:
     cuts = json.load(f)
 for i, seg in enumerate(cuts["segments"]):
-    clip_path = os.path.join(job_dir, seg["clip"])
-    print(f"{i}\t{clip_path}\t{seg['start']}\t{seg['end']}")
+    clip_path = seg["clip"] if os.path.isabs(seg["clip"]) else os.path.join(media_dir, seg["clip"])
+    start = float(seg["start"])
+    end = float(seg["end"])
+    if end <= start:
+        raise SystemExit(f"segment {i} has end <= start: {seg}")
+    if not os.path.exists(clip_path):
+        raise SystemExit(f"clip not found for segment {i}: {clip_path}")
+    print(f"{i}\t{clip_path}\t{start:.3f}\t{end - start:.3f}")
 PY
 
-while IFS=$'\t' read -r i clip start end; do
+while IFS=$'\t' read -r i clip start duration; do
   seg_file="$WORK/segments/seg-$(printf '%04d' "$i").ts"
-  # -ss before -i = fast seek; re-encode here once to keep A/V sync clean on cuts
+  # -ss after -i = accurate seek; re-encode each segment to keep A/V sync clean.
   # NOTE: pure -c copy on arbitrary cut points often desyncs; small encode is worth it
   ffmpeg -nostdin -hide_banner -loglevel error -y \
-    -ss "$start" -to "$end" -i "$clip" \
+    -i "$clip" -ss "$start" -t "$duration" \
     -c:v h264_videotoolbox -b:v 8M \
     -c:a aac -b:a 192k -ar 48000 -ac 2 \
     -avoid_negative_ts make_zero \

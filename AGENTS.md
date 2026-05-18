@@ -89,4 +89,10 @@ Supporting memory workflow:
 - Do not delete research reports, transcripts, or video-editor outputs unless the user explicitly asks.
 - Keep `knowledge/` short, source-linked, and explicitly derived. `backbone/`, `voice-dna.md`, `viral-knowledge/`, `research/`, and `transcripts/` remain the source of truth.
 
+## Lab Notes
+
+- For thumbnail visual edits, prefer rerolling/editing through the project `thumbnail` skill and Higgsfield. Local scripted color-grade passes were not good enough for Jason's thumbnail standards.
+- `video-editor/` is project-first now: keep media under `video-editor/projects/<job>/{raw,audio,assets,broll,thumbnails,outputs}`. Root `video-editor/outputs/` is stale.
+- Rough cuts should trust WhisperX word timestamps directly. Skip `snap_silence.py`; if a cut feels off, adjust `/tmp/video-editor/<job>/cuts.json` manually and rerender with accurate FFmpeg seeking.
+
 ## Imported Claude Cowork project instructions

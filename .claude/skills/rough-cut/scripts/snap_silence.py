@@ -27,6 +27,7 @@ if len(sys.argv) != 2:
 
 JOB_DIR = sys.argv[1]
 JOB_NAME = os.path.basename(os.path.normpath(JOB_DIR))
+MEDIA_DIR = os.path.join(JOB_DIR, "raw") if os.path.isdir(os.path.join(JOB_DIR, "raw")) else JOB_DIR
 WORK = f"/tmp/video-editor/{JOB_NAME}"
 CUTS = os.path.join(WORK, "cuts.json")
 OUT = os.path.join(WORK, "cuts_snapped.json")
@@ -213,7 +214,7 @@ def snap_out_silence_only(t, silences):
 
 silences_by_clip = {}
 for clip_name in sorted({seg["clip"] for seg in cuts["segments"]}):
-    clip_path = os.path.join(JOB_DIR, clip_name)
+    clip_path = clip_name if os.path.isabs(clip_name) else os.path.join(MEDIA_DIR, clip_name)
     if not os.path.exists(clip_path):
         sys.stderr.write(f"clip not found for cuts.json segment: {clip_path}\n")
         sys.exit(1)

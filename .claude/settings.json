@@ -15,7 +15,7 @@
       "Bash(bash .claude/skills/captions/scripts/burn.sh:*)",
       "Bash(bash .claude/skills/broll/scripts/render.sh:*)",
       "Bash(python3 .claude/skills/thumbnail/scripts/add_title.py:*)",
-      "Bash(mkdir -p video-editor/inbox/*)",
+      "Bash(mkdir -p video-editor/projects/*)",
       "Bash(chmod +x .claude/skills/rough-cut/scripts/*)"
     ]
   }

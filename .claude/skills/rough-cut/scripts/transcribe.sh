@@ -11,6 +11,8 @@ set -euo pipefail
 JOB_DIR="${1:?usage: transcribe.sh <job_dir> [--diarize]}"
 JOB_DIR="$(cd "$JOB_DIR" && pwd)"
 JOB_NAME="$(basename "$JOB_DIR")"
+MEDIA_DIR="$JOB_DIR"
+[ -d "$JOB_DIR/raw" ] && MEDIA_DIR="$JOB_DIR/raw"
 WORK="/tmp/video-editor/$JOB_NAME"
 mkdir -p "$WORK"
 
@@ -25,14 +27,18 @@ while [ $# -gt 0 ]; do
 done
 
 shopt -s nullglob nocaseglob
-CLIPS=("$JOB_DIR"/*.mov "$JOB_DIR"/*.mp4 "$JOB_DIR"/*.mkv "$JOB_DIR"/*.m4v)
+CLIPS=("$MEDIA_DIR"/*.mov "$MEDIA_DIR"/*.mp4 "$MEDIA_DIR"/*.mkv "$MEDIA_DIR"/*.m4v)
 shopt -u nocaseglob
 if [ ${#CLIPS[@]} -eq 0 ]; then
-  echo "no clips found in $JOB_DIR" >&2
+  echo "no clips found in $MEDIA_DIR" >&2
   exit 1
 fi
 
 export UV_PROJECT_ENVIRONMENT="${UV_PROJECT_ENVIRONMENT:-$HOME/.cache/video-editor-venv}"
+if [ -d /opt/homebrew/opt/ffmpeg@7 ]; then
+  export DYLD_LIBRARY_PATH="/opt/homebrew/opt/ffmpeg@7/lib:${DYLD_LIBRARY_PATH:-}"
+  export PATH="/opt/homebrew/opt/ffmpeg@7/bin:$PATH"
+fi
 
 uv run --quiet \
   --python 3.11 \

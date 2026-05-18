@@ -3,7 +3,7 @@
 generate.py — submit thumb.json concepts to Higgsfield via the `higgsfield` CLI, wait, download images.
 
 Reads:    /tmp/thumbnails/<slug>/thumb.json
-Writes:   video-editor/outputs/thumbnails/<slug>/<concept_id>_v<n>.png
+Writes:   video-editor/projects/<slug>/thumbnails/generated/<concept_id>_v<n>.png
           /tmp/thumbnails/<slug>/thumb_resolved.json
 
 Anchor model: every file in assets/face-refs/ is passed as `--image <path>` on every
@@ -29,7 +29,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]  # .../content-os
 FACE_REFS_DIR = PROJECT_ROOT / "assets" / "face-refs"
-OUTPUT_ROOT = PROJECT_ROOT / "video-editor" / "outputs" / "thumbnails"
+PROJECTS_ROOT = PROJECT_ROOT / "video-editor" / "projects"
 
 DEFAULT_MODEL = "nano_banana_2"
 DEFAULT_ASPECT = "16:9"
@@ -219,7 +219,7 @@ def main():
     ensure_cli()
 
     slug = manifest.get("slug") or manifest_path.parent.name
-    out_dir = OUTPUT_ROOT / slug
+    out_dir = PROJECTS_ROOT / slug / "thumbnails" / "generated"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     jobs = [(c, v) for c in concepts for v in range(1, variants + 1)]

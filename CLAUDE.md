@@ -27,14 +27,14 @@ The whole system is one linear flow. Each step has a dedicated skill (or is Jaso
 | 2. Ideation | `ideate` | Pulls research, runs pick-loop with Jason, hands picks to scriptwriter |
 | 3. Scripting | `scriptwriter` | Owns the twist conversation, transcription, and Notion write. All scripting expertise lives here. |
 | 4. Filming | _(Jason)_ | Records on camera from the beat sheet |
-| 5. Rough Cut | `rough-cut` | Transcribes raw clips (WhisperX), kills filler/dead air, stitches tight rough cut. Workspace: `video-editor/inbox/` → `video-editor/outputs/` |
+| 5. Rough Cut | `rough-cut` | Transcribes raw clips (WhisperX), kills filler/dead air, stitches tight rough cut inside `video-editor/projects/<job>/outputs/` |
 | 6. Audio Polish | `audio-polish` | FFmpeg denoise + loudnorm to -14 LUFS. Optional music bed with sidechain duck. |
 | 7. Reframe | `reframe` | 16:9 → 9:16 with MediaPipe face tracking. Auto-skips if already vertical. |
 | 8. B-Roll | `broll` | Generative cinematic inserts via Higgsfield. Claude proposes prompts, you approve, skill submits + overlays. |
 | 9. Captions | `captions` | Word-grouped burn-in with style presets. libass/ffmpeg-full renders and burns captions. |
 | 10. Thumbnail | `thumbnail` | Generates YouTube thumbnail concepts via Higgsfield Nano Banana Pro and optional title overlays. |
 | 11. Carousel | `carousel-generator` | Turns trends/news/posts into polished Instagram carousel PNGs + caption package. |
-| 12. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
+| 12. Posting | `post-content` | Posts/schedules a provided video directly through Buffer |
 
 Helper: `transcribe-url` — pulls a transcript from any video URL when needed (not part of the main pipeline).
 Helper: `carousel-generator` — can also run standalone for trend/news carousels outside the video pipeline.
@@ -52,7 +52,7 @@ Helper: `carousel-generator` — can also run standalone for trend/news carousel
 | `knowledge/` | Compiled repo memory. Start here for strategy, ideation, scripting, and research synthesis before opening long raw sources. Derived from `research/`, `transcripts/`, `backbone/`, `viral-knowledge/`, and skill learnings. |
 | `research/` | Research reports. `*-Research_YYYY-MM-DD.md`. Never deleted. |
 | `transcripts/` | Raw transcripts (Jason's content, sales calls, URL transcripts in `transcripts/url/`). |
-| `video-editor/` | `rough-cut` workspace. Raw clips in `inbox/<job>/`, finals in `outputs/<job>.mp4`. Intermediates in `/tmp/video-editor/<job>/`. |
+| `video-editor/` | Video workspace. One folder per content piece in `projects/<job>/`; raw clips in `raw/`, audio/music in `audio/`, source assets in `assets/`, B-roll in `broll/`, thumbnails in `thumbnails/`, finals in `outputs/`. Intermediates stay in `/tmp/video-editor/<job>/`. |
 | `carousel/outputs/` | Rendered Instagram carousel slides, contact sheets, and captions. |
 
 ## Rules

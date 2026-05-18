@@ -109,7 +109,7 @@ Words are matched case-insensitively. Multi-word phrases get treated as one emph
 ```bash
 # Default — clean style with Claude-curated emphasis
 bash .claude/skills/captions/scripts/burn.sh \
-  video-editor/outputs/<job>__broll.mp4 \
+  video-editor/projects/<job>/outputs/<job>__broll.mp4 \
   /tmp/video-editor/captions-<job>/words.json \
   /tmp/video-editor/captions-<job>/emphasis.json
 
@@ -119,7 +119,7 @@ bash .claude/skills/captions/scripts/burn.sh ... --style mono
 
 # No emphasis JSON — falls back to longest-content-word heuristic per line
 bash .claude/skills/captions/scripts/burn.sh \
-  video-editor/outputs/<job>__broll.mp4 \
+  video-editor/projects/<job>/outputs/<job>__broll.mp4 \
   /tmp/video-editor/captions-<job>/words.json
 ```
 

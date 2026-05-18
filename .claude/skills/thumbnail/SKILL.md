@@ -134,7 +134,7 @@ python3 .claude/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thum
 python3 .claude/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json --dry-run
 ```
 
-Output: `video-editor/outputs/thumbnails/<slug>/<concept_id>_v<n>.png`.
+Output: `video-editor/projects/<slug>/thumbnails/generated/<concept_id>_v<n>.png`.
 
 ## Adding the Title (add_title.py)
 
@@ -142,7 +142,7 @@ After picking a winner, burn the title type on top with `add_title.py`. Renders 
 
 ```bash
 python3 .claude/skills/thumbnail/scripts/add_title.py \
-  video-editor/outputs/thumbnails/<slug>/<winner>.png \
+  video-editor/projects/<slug>/thumbnails/generated/<winner>.png \
   /tmp/thumbnails/<slug>/titled_<winner>.png \
   --blocks '[
     {"text": "CLAUDE", "bg": "#FFFFFF", "fg": "#000000", "rotation": 0, "scale": 0.16},

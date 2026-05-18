@@ -19,6 +19,12 @@ __pycache__/
 # Video editor binaries (raw clips and rendered outputs)
 video-editor/inbox/
 video-editor/outputs/
+video-editor/projects/**/raw/
+video-editor/projects/**/audio/
+video-editor/projects/**/assets/
+video-editor/projects/**/broll/
+video-editor/projects/**/outputs/
+video-editor/projects/**/thumbnails/
 
 # Claude Code worktrees
 .claude/worktrees/
