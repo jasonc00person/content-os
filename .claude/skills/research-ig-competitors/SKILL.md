@@ -13,9 +13,9 @@ Prefer the local headed Playwright runner when available:
 npm run research:ig
 ```
 
-It uses a dedicated Chrome profile at `.cache/ig-research-chrome`, opens a visible Chrome tab, reads the Reels grid DOM for view counts, skips pinned posts, visits the top 3 Reels per handle, and writes `research/IG-Competitor-Research_YYYY-MM-DD.md`.
+It opens a visible logged-out Chrome session, reads public Reels grid DOM for view counts, skips pinned posts, visits the top 3 Reels per handle, and writes `research/IG-Competitor-Research_YYYY-MM-DD.md`.
 
-First run may ask the user to log into Instagram in the opened Chrome window. Do not ask for credentials in chat.
+Do not ask the user to log into Instagram. The workflow is designed to run against public logged-out pages. By default it uses an ephemeral browser session and does not preserve cookies or create `.cache/ig-research-chrome`.
 
 Useful flags:
 
@@ -23,7 +23,10 @@ Useful flags:
 npm run research:ig -- nick_saraev minolee.mp4 chase.h.ai
 npm run research:ig -- --all
 npm run research:ig -- --handles 5 --top 3 --scan 12
+npm run research:ig -- --profile-dir /tmp/ig-research-debug
 ```
+
+Use `--profile-dir` only for debugging a browser run. It is not required for login/session reuse.
 
 Use the Claude-in-Chrome MCP flow below only when specifically running in Claude Code with those MCP tools connected.
 

@@ -31,11 +31,13 @@ The whole system is one linear flow. Each step has a dedicated skill (or is Jaso
 | 6. Audio Polish | `audio-polish` | FFmpeg denoise + loudnorm to -14 LUFS. Optional music bed with sidechain duck. |
 | 7. Reframe | `reframe` | 16:9 → 9:16 with MediaPipe face tracking. Auto-skips if already vertical. |
 | 8. B-Roll | `broll` | Generative cinematic inserts via Higgsfield. Claude proposes prompts, you approve, skill submits + overlays. |
-| 9. Captions | `captions` | Word-grouped burn-in with yellow emphasis pop. libass/ffmpeg-full renders and burns captions. |
+| 9. Captions | `captions` | Word-grouped burn-in with style presets. libass/ffmpeg-full renders and burns captions. |
 | 10. Thumbnail | `thumbnail` | Generates YouTube thumbnail concepts via Higgsfield Nano Banana Pro and optional title overlays. |
-| 11. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
+| 11. Carousel | `carousel-generator` | Turns trends/news/posts into polished Instagram carousel PNGs + caption package. |
+| 12. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
 
 Helper: `transcribe-url` — pulls a transcript from any video URL when needed (not part of the main pipeline).
+Helper: `carousel-generator` — can also run standalone for trend/news carousels outside the video pipeline.
 
 ## Folder Structure
 
@@ -47,13 +49,17 @@ Helper: `transcribe-url` — pulls a transcript from any video URL when needed (
 | `voice-dna.md` | Jason's speech patterns, openers, closers, slang. Used by `scriptwriter`. |
 | `notion-pipeline.md` | Live schema for the Notion content database (DB ID, properties, status flow). Skills load this for IDs/shapes. |
 | `competitor-list.md` | Tracked competitor handles/channels. |
+| `knowledge/` | Compiled repo memory. Start here for strategy, ideation, scripting, and research synthesis before opening long raw sources. Derived from `research/`, `transcripts/`, `backbone/`, `viral-knowledge/`, and skill learnings. |
 | `research/` | Research reports. `*-Research_YYYY-MM-DD.md`. Never deleted. |
 | `transcripts/` | Raw transcripts (Jason's content, sales calls, URL transcripts in `transcripts/url/`). |
 | `video-editor/` | `rough-cut` workspace. Raw clips in `inbox/<job>/`, finals in `outputs/<job>.mp4`. Intermediates in `/tmp/video-editor/<job>/`. |
+| `carousel/outputs/` | Rendered Instagram carousel slides, contact sheets, and captions. |
 
 ## Rules
 
 - **Research is research-skills only.** No Apify, no third-party scrapers, no ad-hoc API calls. If a request needs research data, invoke the matching `research-*` skill.
+- **Use `knowledge/` first for synthesis.** It is the fast compiled layer for strategy/ideation/script context. Verify important claims against source files; do not treat `knowledge/` as authoritative.
+- **Refresh compiled memory when signal changes.** After high-signal research/transcripts or major positioning changes, run `knowledge-compile` to update only the affected `knowledge/` pages.
 - **Scripting expertise lives in `scriptwriter`.** Don't write scripts inline in chat or improvise hook/structure rules from memory — invoke the skill.
 - **Every piece of content ties back to the offer funnel** — Skool join (Standard) or DM / Inner Circle apply (Premium). The skills handle this; just don't drop CTAs by accident.
 - **Document, don't manufacture.** Authenticity outperforms.

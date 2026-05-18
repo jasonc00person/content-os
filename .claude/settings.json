@@ -10,6 +10,11 @@
       "Bash(uv run:*)",
       "Bash(bash .claude/skills/rough-cut/scripts/transcribe.sh:*)",
       "Bash(bash .claude/skills/rough-cut/scripts/splice.sh:*)",
+      "Bash(bash .claude/skills/audio-polish/scripts/polish.sh:*)",
+      "Bash(bash .claude/skills/reframe/scripts/reframe.sh:*)",
+      "Bash(bash .claude/skills/captions/scripts/burn.sh:*)",
+      "Bash(bash .claude/skills/broll/scripts/render.sh:*)",
+      "Bash(python3 .claude/skills/thumbnail/scripts/add_title.py:*)",
       "Bash(mkdir -p video-editor/inbox/*)",
       "Bash(chmod +x .claude/skills/rough-cut/scripts/*)"
     ]

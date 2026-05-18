@@ -2,7 +2,7 @@
 
 **Generated:** 2026-05-18 | **Accounts scraped:** 3 | **Reels in report:** 9 (top 3 by views per handle)
 
-> **Pattern:** Comment-keyword CTAs on "free / open-source Claude Code alternatives" dominate the top of the pool — Nick Saraev's three reels (723K / 225K / 156K) all use the same template: name a paid AI tool, reveal a free alternative, gate the resource behind a one-word comment ("CODING", "DESIGN"). Chase H runs the identical formula ("Comment 'agent'") but lands at ~30–60K — same mechanic, weaker hook specificity and no on-screen demo. Mino Lee plays the opposite lane: one-line text-only captions ("30g creatine experiment", "99% of gamblers quit before their first big win") where the hook lives entirely in the video, not the caption — high like rate (2.8–3.6%) but near-zero comments since there's nothing to comment for. Takeaway: comment-bait + named-tool stacking is the high-comment-rate engine; visual-driven hooks with no CTA still pull views but leave engagement on the table.
+> **Pattern:** Scraped 9 reels across 3 accounts with a headed logged-out Chrome session. No scrape errors. Look for repeated hook mechanics, comment-keyword CTAs, named-tool stacking, and formats with unusually high like/comment rates.
 
 ---
 
@@ -64,7 +64,7 @@
 
 ### 2. [Comment "DESIGN" to get this Free Claude Design Alternative.](https://www.instagram.com/nick_saraev/reel/DYTw6VYPd9P/) — @nick_saraev
 
-`225K views · 7,255 likes · 10K comments` · 3.2% like rate · 4.4% comment rate · posted May 13, 2026
+`225K views · 7,259 likes · 10K comments` · 3.2% like rate · 4.4% comment rate · posted May 13, 2026
 
 **Topic:** Tutorial · **CTA:** Comment-bait
 
@@ -112,7 +112,7 @@
 
 ### 3. [30g creatine experiment](https://www.instagram.com/minolee.mp4/reel/DYU087gtBX_/) — @minolee.mp4
 
-`203K views · 5,683 likes · 71 comments` · 2.8% like rate · 0.0% comment rate · posted May 14, 2026
+`203K views · 5,686 likes · 71 comments` · 2.8% like rate · 0.0% comment rate · posted May 14, 2026
 
 **Topic:** Education · **CTA:** None
 
@@ -124,7 +124,7 @@
 
 ### 4. [99% of gamblers quit before their first big win](https://www.instagram.com/minolee.mp4/reel/DX8OoaDv-vA/) — @minolee.mp4
 
-`191K views · 6,816 likes · 123 comments` · 3.6% like rate · 0.1% comment rate · posted May 4, 2026
+`191K views · 6,817 likes · 123 comments` · 3.6% like rate · 0.1% comment rate · posted May 4, 2026
 
 **Topic:** Education · **CTA:** None
 
@@ -136,7 +136,7 @@
 
 ### 5. [Comment "CODING" to get this Free and Open-source Claude Code Alternative.](https://www.instagram.com/nick_saraev/reel/DX4NsOJP8vB/) — @nick_saraev
 
-`156K views · 3,894 likes · 2,887 comments` · 2.5% like rate · 1.9% comment rate · posted May 3, 2026
+`157K views · 3,894 likes · 2,887 comments` · 2.5% like rate · 1.8% comment rate · posted May 3, 2026
 
 **Topic:** Tutorial · **CTA:** Comment-bait
 
@@ -179,7 +179,7 @@
 
 ### 6. [how i edit my captions. Also works in capcut](https://www.instagram.com/minolee.mp4/reel/DXhM3fsmIP3/) — @minolee.mp4
 
-`133K views · 4,400 likes · 91 comments` · 3.3% like rate · 0.1% comment rate · posted April 24, 2026
+`133K views · 4,401 likes · 91 comments` · 3.3% like rate · 0.1% comment rate · posted April 24, 2026
 
 **Topic:** Education · **CTA:** None
 

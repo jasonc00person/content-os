@@ -23,6 +23,10 @@ Current skills:
 - `captions`
 - `thumbnail`
 - `post-content`
+- `carousel-generator`
+- `knowledge-compile`
+
+Ignore the `anthropic-skills` plugin unless the user explicitly asks for one of its skills. Prefer the project-local `.claude/skills/` workflows first.
 
 ## How Codex-Style Agents Should Use Skills
 
@@ -36,9 +40,23 @@ When the user names a skill, uses a trigger phrase from a skill description, or 
 
 If a skill needs secrets, APIs, paid generation, network access, or long-running commands, use the active harness's permission flow before executing.
 
+### Runner Adapter Notes
+
+Some skill docs were originally written for Claude Code tool names. Other runners should translate the intent, not the literal tool name:
+
+| Claude Code wording | Runner-neutral behavior |
+|---|---|
+| `Bash` | Run the equivalent shell command with the active harness command tool. |
+| `Read` | Read the referenced local file. |
+| `Write` / `Edit` | Create or update the referenced artifact in the path the skill specifies. |
+| `AskUserQuestion` | Ask the user the shortest necessary question and continue from the answer. |
+| `Skill` | Open the target `.claude/skills/<skill>/SKILL.md` and follow it manually. |
+| `Agent` / `SendMessage` | Use subagents only if the active harness supports them and the user has allowed delegation; otherwise do the bounded work locally or ask for the missing capability. |
+| `ToolSearch` / `mcp__...` | Use the matching connector only if it is available in the active harness. If a required MCP connector is absent, stop and state the blocker instead of inventing a fallback. |
+
 ## Primary Pipeline
 
-Use `CLAUDE.md` as the high-level map of the content system. The main pipeline is:
+Use `CLAUDE.md` as the high-level map of the content system. This list mirrors it for non-Claude runners:
 
 1. Research: `research-ig-competitors`, `research-yt-competitors`, `research-yt-search`
 2. Ideation: `ideate`
@@ -50,7 +68,12 @@ Use `CLAUDE.md` as the high-level map of the content system. The main pipeline i
 8. B-Roll: `broll`
 9. Captions: `captions`
 10. Thumbnail: `thumbnail` (YouTube optional)
-11. Posting: `post-content`
+11. Carousel: `carousel-generator` (Instagram static carousel optional)
+12. Posting: `post-content`
+
+Supporting memory workflow:
+
+- `knowledge-compile` refreshes `knowledge/`, the repo-native compiled memory layer used by ideation, scripting, positioning, and research synthesis. It is not part of the linear publishing pipeline.
 
 ## Runner-Specific Notes
 
@@ -64,5 +87,6 @@ Use `CLAUDE.md` as the high-level map of the content system. The main pipeline i
 - Do not add a parallel `.codex/skills` tree unless the user explicitly asks for a native Codex packaging experiment.
 - If a workflow changes, update the matching `SKILL.md`, scripts, and any references in `CLAUDE.md` or this file.
 - Do not delete research reports, transcripts, or video-editor outputs unless the user explicitly asks.
+- Keep `knowledge/` short, source-linked, and explicitly derived. `backbone/`, `voice-dna.md`, `viral-knowledge/`, `research/`, and `transcripts/` remain the source of truth.
 
 ## Imported Claude Cowork project instructions

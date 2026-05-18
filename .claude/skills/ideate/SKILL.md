@@ -22,7 +22,7 @@ Ideate is the **batch wrapper**. Scriptwriter does all the per-video work — tw
 Step 1 → Stamp start time                        (~1s)
 Step 2 → Ask platform                            (~30s)
 Step 3 → Ask goal count                          (~30s)
-Step 4 → Pull research (or run research skill)   (~3–5 min)
+Step 4 → Load knowledge + pull research          (~3–5 min)
 Step 5 → Per-pair pick loop                      (~30s/pair)
 Step 6 → Hand off each pick to scriptwriter      (~5 min/pair, scriptwriter handles)
 Step 7 → Report session duration
@@ -70,14 +70,23 @@ Output one line confirming:
 
 ---
 
-## Step 4 — Pull Research (always runs)
+## Step 4 — Load Knowledge + Pull Research (always runs)
+
+Read these first when they exist:
+
+1. `knowledge/index.md`
+2. `knowledge/current-content-opportunities.md`
+3. `knowledge/competitor-patterns.md`
+4. `knowledge/winning-hooks.md`
+
+This is the fast compiled layer. Use it to understand the current lane before opening raw reports. If the knowledge files are stale or missing important recent research, read the relevant `research/` report directly and mention that `knowledge-compile` should be run after the session.
 
 The default flow is recreating winning videos with a fresh twist, so research always loads. The `research/` folder holds prior outputs from the research skills.
 
 ### Filter by platform
 - **IG short-form** → `IG-Competitor-Research_*.md` (also `TT-Search-Research_*.md` if present — short-form trends overlap)
 - **YouTube long-form** → `YT-Competitor-Research_*.md`, `YT-Search-Research_*.md`
-- **TikTok** → `TT-Search-Research_*.md` (also `IG-Competitor-Research_*.md` if present)
+- **TikTok** → `TT-Search-Research_*.md` if present; otherwise use `IG-Competitor-Research_*.md` as the closest short-form proxy
 
 Sort matching reports by date (newest first via filename `_YYYY-MM-DD`) and pick the **2 most recent**. If only one exists, use that.
 
@@ -85,9 +94,9 @@ Sort matching reports by date (newest first via filename `_YYYY-MM-DD`) and pick
 Run the appropriate research skill before proceeding. Match platform → skill:
 - **IG** → `research-ig-competitors`
 - **YouTube** → `research-yt-competitors` (default — uses `competitor-list.md`, no extra input needed)
-- **TikTok** → `research-tt-search` (needs search terms — ask the user for 4–6 keywords first)
+- **TikTok** → no dedicated TikTok research skill exists yet. Use the newest IG short-form report as a proxy, or ask whether to run `research-ig-competitors` first.
 
-Tell the user one line: *"No [platform] research on file. Running `/research-[skill]` now — give it ~3–5 min."* Then invoke the skill via `Skill` tool. When it finishes, re-scan the `research/` folder and continue.
+Tell the user one line: *"No [platform] research on file. Running `/research-[skill]` now — give it ~3–5 min."* Then invoke the matching skill. When it finishes, re-scan the `research/` folder and continue.
 
 ### Read the reports
 Read the selected report files in parallel. **Do NOT load backbone files, transcribe anything, or decompose formats** — those are scriptwriter's responsibilities. Ideate stops at "user can see the table."

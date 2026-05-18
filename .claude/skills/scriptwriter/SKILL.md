@@ -53,6 +53,17 @@ Detect the mode before doing anything. If ambiguous, ask one question and procee
 
 ## TWIST Flow (the main flow)
 
+### 0. Load compiled repo knowledge
+
+Before opening long transcripts, research reports, or viral playbooks, read these if present:
+
+1. `knowledge/index.md`
+2. `knowledge/creator-ai-positioning.md`
+3. `knowledge/winning-hooks.md`
+4. `knowledge/reusable-script-formats.md`
+
+Treat `knowledge/` as a navigation layer, not a source of truth. If a claim affects the script's proof, offer, or positioning, verify against `backbone/`, `voice-dna.md`, `viral-knowledge/`, `research/`, or the source transcript.
+
 ### 1. Ask upfront: "Do you already have a twist?"
 
 Before transcribing or doing any decomposition work, ask the user one question:

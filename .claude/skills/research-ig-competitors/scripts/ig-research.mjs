@@ -3,10 +3,8 @@ import { chromium } from "playwright-core";
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import readline from "node:readline/promises";
 
 const PROJECT_ROOT = path.resolve(new URL("../../../../", import.meta.url).pathname);
-const DEFAULT_PROFILE_DIR = path.join(PROJECT_ROOT, ".cache", "ig-research-chrome");
 const DEFAULT_OUTPUT_DIR = path.join(PROJECT_ROOT, "research");
 
 const args = parseArgs(process.argv.slice(2));
@@ -16,14 +14,13 @@ if (args.help) {
   npm run research:ig -- nick_saraev minolee.mp4 chase.h.ai
   npm run research:ig -- --all
   npm run research:ig -- --handles 5 --top 3 --scan 12
-  npm run research:ig -- --profile-dir .cache/ig-research-chrome
 
 Options:
   --all                 Scrape every Instagram handle in competitor-list.md
   --handles <n>         Number of competitor-list handles to scrape. Default: 3
   --top <n>             Reels per handle to hydrate/report. Default: 3
   --scan <n>            Recent non-pinned grid reels to consider. Default: 12
-  --profile-dir <path>  Dedicated Chrome profile. Default: .cache/ig-research-chrome
+  --profile-dir <path>  Optional Chrome profile for debugging. Default: ephemeral session
   --output <path>       Report path. Default: research/IG-Competitor-Research_YYYY-MM-DD.md
 `);
   process.exit(0);
@@ -36,7 +33,7 @@ const outputPath = path.resolve(
 const config = {
   top: numberArg(args.top, 3),
   scan: numberArg(args.scan, 12),
-  profileDir: path.resolve(args.profileDir || process.env.IG_CHROME_PROFILE || DEFAULT_PROFILE_DIR),
+  profileDir: optionalPath(args.profileDir || process.env.IG_CHROME_PROFILE),
   outputPath,
   handles: await resolveHandles(args),
 };
@@ -46,19 +43,15 @@ if (!config.handles.length) {
 }
 
 await fs.mkdir(path.dirname(config.outputPath), { recursive: true });
-await fs.mkdir(config.profileDir, { recursive: true });
 
-const context = await chromium.launchPersistentContext(config.profileDir, {
-  channel: "chrome",
-  headless: false,
-  viewport: { width: 1280, height: 900 },
-  args: ["--disable-blink-features=AutomationControlled"],
-});
+const browser = config.profileDir ? null : await chromium.launch(chromeLaunchOptions());
+const context = config.profileDir
+  ? await launchPersistentContext(config.profileDir)
+  : await browser.newContext({ viewport: { width: 1280, height: 900 } });
 
 try {
   const page = context.pages()[0] || await context.newPage();
   await page.bringToFront();
-  await ensureLoggedIn(page);
 
   const results = [];
   for (const handle of config.handles) {
@@ -84,6 +77,7 @@ try {
   console.log(`\nWrote ${config.outputPath}`);
 } finally {
   await context.close();
+  if (browser) await browser.close();
 }
 
 function parseArgs(argv) {
@@ -111,6 +105,10 @@ function parseArgs(argv) {
 function numberArg(value, fallback) {
   const n = Number.parseInt(value, 10);
   return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+function optionalPath(value) {
+  return value ? path.resolve(value) : null;
 }
 
 async function resolveHandles(args) {
@@ -141,35 +139,19 @@ function dedupe(values) {
   return [...new Set(values)];
 }
 
-async function ensureLoggedIn(page) {
-  await page.goto("https://www.instagram.com/", { waitUntil: "domcontentloaded", timeout: 60000 });
-  await page.waitForTimeout(3500);
-
-  if (!(await isLoginPage(page))) return;
-
-  console.log("\nInstagram needs a login in the dedicated research Chrome profile.");
-  console.log(`Profile: ${config.profileDir}`);
-  console.log("Log in in the Chrome window, then press Enter here. The session will be reused next time.");
-
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  await rl.question("");
-  rl.close();
-
-  await page.goto("https://www.instagram.com/", { waitUntil: "domcontentloaded", timeout: 60000 });
-  await page.waitForTimeout(3000);
-  if (await isLoginPage(page)) {
-    throw new Error("Still seeing Instagram login page after confirmation.");
-  }
+function chromeLaunchOptions() {
+  return {
+    channel: "chrome",
+    headless: false,
+    args: ["--disable-blink-features=AutomationControlled"],
+  };
 }
 
-async function isLoginPage(page) {
-  return page.evaluate(() => {
-    const text = document.body?.innerText || "";
-    return Boolean(
-      document.querySelector('input[name="username"]') ||
-      document.querySelector('input[name="password"]') ||
-      /log in|sign up/i.test(text) && /forgot password/i.test(text)
-    );
+async function launchPersistentContext(profileDir) {
+  await fs.mkdir(profileDir, { recursive: true });
+  return chromium.launchPersistentContext(profileDir, {
+    ...chromeLaunchOptions(),
+    viewport: { width: 1280, height: 900 },
   });
 }
 
@@ -270,7 +252,7 @@ function buildReport(results) {
     .sort((a, b) => (b.views || 0) - (a.views || 0));
 
   const pattern = [
-    `Scraped ${allReels.length} reels across ${scraped.length} accounts with a headed local Chrome profile.`,
+    `Scraped ${allReels.length} reels across ${scraped.length} accounts with a headed logged-out Chrome session.`,
     errors.length ? `Errors: ${errors.map((e) => `@${e.handle} (${e.error})`).join(", ")}.` : "No scrape errors.",
     "Look for repeated hook mechanics, comment-keyword CTAs, named-tool stacking, and formats with unusually high like/comment rates.",
   ].join(" ");

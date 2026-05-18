@@ -22,3 +22,6 @@ video-editor/outputs/
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Agent skill mirrors are drift-prone; .claude/skills is canonical.
+.agents/skills/
