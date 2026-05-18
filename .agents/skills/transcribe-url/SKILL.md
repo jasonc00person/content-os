@@ -17,7 +17,7 @@ Pulls audio from any public video URL and transcribes it locally. Zero API cost,
 ## The Pipeline (one script, no orchestration)
 
 ```bash
-bash .claude/skills/transcribe-url/scripts/transcribe-url.sh "<url>"
+bash .Codex/skills/transcribe-url/scripts/transcribe-url.sh "<url>"
 ```
 
 Optional second arg: output directory (defaults to `transcripts/url/`).

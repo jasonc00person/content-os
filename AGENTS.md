@@ -21,6 +21,7 @@ Current skills:
 - `reframe`
 - `broll`
 - `captions`
+- `thumbnail`
 - `post-content`
 
 ## How Codex-Style Agents Should Use Skills
@@ -48,7 +49,8 @@ Use `CLAUDE.md` as the high-level map of the content system. The main pipeline i
 7. Reframe: `reframe`
 8. B-Roll: `broll`
 9. Captions: `captions`
-10. Posting: `post-content`
+10. Thumbnail: `thumbnail` (YouTube optional)
+11. Posting: `post-content`
 
 ## Runner-Specific Notes
 
@@ -62,3 +64,5 @@ Use `CLAUDE.md` as the high-level map of the content system. The main pipeline i
 - Do not add a parallel `.codex/skills` tree unless the user explicitly asks for a native Codex packaging experiment.
 - If a workflow changes, update the matching `SKILL.md`, scripts, and any references in `CLAUDE.md` or this file.
 - Do not delete research reports, transcripts, or video-editor outputs unless the user explicitly asks.
+
+## Imported Claude Cowork project instructions

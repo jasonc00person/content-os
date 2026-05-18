@@ -1,0 +1,11 @@
+{
+  "name": "content-os",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "research:ig": "node .claude/skills/research-ig-competitors/scripts/ig-research.mjs"
+  },
+  "dependencies": {
+    "playwright-core": "^1.57.0"
+  }
+}

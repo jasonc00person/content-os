@@ -36,7 +36,7 @@ The orchestrator opens a fresh Chrome tab and hands the tab ID to a Sonnet scrap
 
 ## Prerequisites
 
-- **Claude in Chrome extension** installed and connected (https://claude.ai/chrome). The skill drives a real Chrome window via the `mcp__claude-in-chrome__*` tools.
+- **Codex in Chrome extension** installed and connected (https://Codex.ai/chrome). The skill drives a real Chrome window via the `mcp__claude-in-chrome__*` tools.
 - **A `competitor-list.md` file** in the project root listing IG handles to scrape (any format that lists `@handle` or `instagram.com/handle/`). The orchestrator just needs to extract handles from it. If the file is missing, the user must name handles inline.
 - **macOS launch command**: the skill uses `open -a "Google Chrome"` to launch Chrome if the extension isn't connected. On Linux/Windows, swap that for the OS-appropriate launcher.
 - **A `research/` directory** at the project root. The skill creates it if missing.
@@ -222,7 +222,7 @@ RULES:
 3. **Open the Chrome tab.** Load Chrome tab tools via `ToolSearch` with query `select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__tabs_create_mcp`. Then:
    - Call `tabs_context_mcp`. If it returns "No MCP tab groups found" AND Chrome isn't running (`pgrep -x "Google Chrome"` via Bash), launch Chrome (`open -a "Google Chrome"` on macOS), wait ~2s, then call `tabs_context_mcp` with `createIfEmpty: true`. If Chrome is already running but the group is empty, call `tabs_context_mcp` with `createIfEmpty: true`. If the group already exists, call `tabs_create_mcp` to add a fresh tab.
    - Capture the new tab's ID. This is `{TAB_ID}` for step 4.
-   - If `tabs_context_mcp` returns "Browser extension is not connected" (or anything similar), STOP and ask the user to verify the Claude in Chrome extension is connected at https://claude.ai/chrome and that the MCP tab is visible on their screen — IG won't hydrate reliably if the tab is hidden behind another window or in a backgrounded space. Wait for the user to confirm before retrying. Don't force-focus Chrome yourself; the user has to do this.
+   - If `tabs_context_mcp` returns "Browser extension is not connected" (or anything similar), STOP and ask the user to verify the Codex in Chrome extension is connected at https://Codex.ai/chrome and that the MCP tab is visible on their screen — IG won't hydrate reliably if the tab is hidden behind another window or in a backgrounded space. Wait for the user to confirm before retrying. Don't force-focus Chrome yourself; the user has to do this.
 4. Spawn the scraper subagent with the brief above. Inject `{HANDLES_JSON}` and `{TAB_ID}`. The scraper uses the assigned tab, scrapes, then closes it before returning.
    - **🚨 MANDATORY Agent call params:** `subagent_type: "general-purpose"` AND `model: "sonnet"`. The `model` param is NOT optional — omitting it inherits the orchestrator's model (often Opus) and burns ~10× the budget. Sonnet handles the scrape fine; this is a mechanical browser loop, not a reasoning task.
 5. **Write the report yourself** using the format above and the scraper's returned JSON. One Write call to the path from step 2.
@@ -237,6 +237,6 @@ RULES:
 - NO scrolling. NO window resize. The default loads what we need.
 - Pinned detection is `svg[aria-label="Pinned post icon"]` — never the innerText regex.
 - Lifecycle ownership: orchestrator opens the tab and assigns the ID; scraper uses that tab and closes it in STEP 4; orchestrator writes the report from the returned JSON.
-- If the scraper returns a hydration error, the orchestrator stops, tells the user "the IG tab couldn't load — make sure the Claude in Chrome MCP tab is visible on your screen (not behind another window, not in a backgrounded space)" and waits for the user to confirm before retrying.
+- If the scraper returns a hydration error, the orchestrator stops, tells the user "the IG tab couldn't load — make sure the Codex in Chrome MCP tab is visible on your screen (not behind another window, not in a backgrounded space)" and waits for the user to confirm before retrying.
 - Create `research/` if missing.
 - Report contains every reel scraped (3 × N). No padding, no editorial cuts.

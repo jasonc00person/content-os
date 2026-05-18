@@ -32,7 +32,8 @@ The whole system is one linear flow. Each step has a dedicated skill (or is Jaso
 | 7. Reframe | `reframe` | 16:9 → 9:16 with MediaPipe face tracking. Auto-skips if already vertical. |
 | 8. B-Roll | `broll` | Generative cinematic inserts via Higgsfield. Claude proposes prompts, you approve, skill submits + overlays. |
 | 9. Captions | `captions` | Word-grouped burn-in with yellow emphasis pop. libass/ffmpeg-full renders and burns captions. |
-| 10. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
+| 10. Thumbnail | `thumbnail` | Generates YouTube thumbnail concepts via Higgsfield Nano Banana Pro and optional title overlays. |
+| 11. Posting | `post-content` | Posts/schedules to Instagram, TikTok, and YouTube via Buffer API |
 
 Helper: `transcribe-url` — pulls a transcript from any video URL when needed (not part of the main pipeline).
 

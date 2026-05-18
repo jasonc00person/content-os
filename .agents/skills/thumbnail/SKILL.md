@@ -1,24 +1,24 @@
 ---
 name: thumbnail
-description: "YouTube thumbnail generator via Higgsfield Nano Banana Pro. Claude reads the video's hook/title (Notion page or raw string), proposes thumbnail concepts with cinematic prompts anchored to Jason's face-ref photo library, you approve the manifest, then submits in parallel and downloads 16:9 PNGs. Optional per-concept extra_refs bake in logos/products/scene refs. A second script burns tilted yellow/white title blocks on top with PIL — no Canva/Photoshop needed. Style-match mode (face_refs: false) lets you mimic an existing thumbnail's no-humans aesthetic. Triggers: make a thumbnail, yt thumbnail, generate thumbnail, youtube thumbnail, design a thumbnail, style-match this thumbnail, add title to thumbnail."
+description: "YouTube thumbnail generator via Higgsfield Nano Banana Pro. Codex reads the video's hook/title (Notion page or raw string), proposes thumbnail concepts with cinematic prompts anchored to Jason's face-ref photo library, you approve the manifest, then submits in parallel and downloads 16:9 PNGs ready for text overlay. Optional per-concept extra_refs let you bake in logos, products, or other brand assets. Triggers: make a thumbnail, yt thumbnail, generate thumbnail, youtube thumbnail, design a thumbnail."
 ---
 
 # Thumbnail — YouTube Thumbnails via Nano Banana Pro
 
-Generates branded YT thumbnails anchored to a small library of real photos of Jason at `assets/face-refs/`. Claude reads the video's hook, proposes concepts (composition, expression, lighting, single visual metaphor), then `nano_banana_2` (Nano Banana Pro) renders 16:9 variants. Optional `extra_refs` per concept bake in logos / products / scene refs alongside the face anchors. Two-stage pipeline: `generate.py` produces the base image with empty negative space for type, then `add_title.py` burns tilted yellow/white title blocks on top (no Canva/Photoshop needed). The model never renders text itself — it hallucinates gibberish letters — type always comes from the PIL stage.
+Generates branded YT thumbnails anchored to a small library of real photos of Jason at `assets/face-refs/`. Codex reads the video's hook, proposes concepts (composition, expression, lighting, single visual metaphor), then `nano_banana_2` (Nano Banana Pro) renders 16:9 variants. Optional `extra_refs` per concept bake in logos / products / scene refs alongside the face anchors. No generated text on the image — title overlay happens in Photoshop/Figma after.
 
 ## Anchor Library (live)
 
 | Source | Purpose |
 |---|---|
 | `assets/face-refs/*.{png,jpg,jpeg,webp}` | Real and AI-generated photos of Jason, varied angles + expressions + lighting. Always passed as `--image <path>` on every generation. |
-| `assets/logos/*.png` | Brand marks (Claude, Codex, etc.) — referenced per-concept via `extra_refs`. |
+| `assets/logos/*.png` | Brand marks (Codex, Codex, etc.) — referenced per-concept via `extra_refs`. |
 
 The CLI auto-uploads local paths every run. No upload-id cache to manage. Adding a new file to `assets/face-refs/` takes effect on the next generation automatically.
 
 **Why this approach beats Soul V2:** Soul-trained fine-tunes drift, leak training-image artifacts (UI screenshots, gibberish text), and lock you into the Soul-aware model lineup. `nano_banana_2` with multi-photo `input_images` gives photoreal output, locks identity from 3+ angles simultaneously, and unlocks the SOTA image models. Trade-off: $2/image vs $0.12 for Soul V2 — but Soul V2 results were unusable so this is the actual price.
 
-**Proven settings (codex-vs-claude-code test, 2026-05-17):** 6 face-refs + 2 logo extra_refs + `nano_banana_2` at `16:9 / 2k` produced clean photoreal output, recognizable logos, locked identity, zero hallucinated text. The orange Anthropic brand vs the purple-blue Codex brand creates a natural warm/cool color split — leverage it in prompts.
+**Proven settings (codex-vs-Codex test, 2026-05-17):** 6 face-refs + 2 logo extra_refs + `nano_banana_2` at `16:9 / 2k` produced clean photoreal output, recognizable logos, locked identity, zero hallucinated text. The orange Anthropic brand vs the purple-blue Codex brand creates a natural warm/cool color split — leverage it in prompts.
 
 ## When to Use
 
@@ -29,45 +29,32 @@ The CLI auto-uploads local paths every run. No upload-id cache to manage. Adding
 ## The Flow
 
 ```
-1. Claude reads input: a Notion page name/ID OR a raw title string (or a reference thumbnail URL to style-match)
-2. Claude writes /tmp/thumbnails/<slug>/thumb.json — concepts + prompts + (optional) extra_refs
+1. Codex reads input: a Notion page name/ID OR a raw title string
+2. Codex writes /tmp/thumbnails/<slug>/thumb.json — concepts + prompts + (optional) extra_refs
 3. You review the manifest, edit prompts, drop concepts
 4. Run generate.py → uploads new face-refs/logos, submits in parallel, downloads
-5. Pick the winner → run add_title.py with title blocks → upload to YT
+5. Pick the winner → add title type in Photoshop/Figma → upload to YT
 ```
 
 **Manifest review is the safety gate.** No money spent until you say go.
-
-## Style-Matching an Existing Thumbnail
-
-When the input is a YouTube URL or screenshot and Jason wants to mimic that style — especially a flat-illustration / mascot / no-humans look — face-refs will pollute the gen. Disable them and use the reference as a style anchor.
-
-1. Download the reference: `curl -sL "https://i.ytimg.com/vi/<video_id>/maxresdefault.jpg" -o /tmp/thumbnails/<slug>/reference.jpg`
-2. Read it to extract style cues (palette, character treatment, composition, negative space).
-3. In `thumb.json` set `"face_refs": false` at the manifest level (default is `true`).
-4. Add the reference image + any brand logos to each concept's `extra_refs` as style anchors.
-5. Write prompts that describe the matched style explicitly — "flat sticker illustration, blocky mascot, no humans, no text".
-
-Validated 2026-05-17 on a "Codex Era" style-match (two terracotta-block mascots on charcoal bg). With face-refs on, the model tried to embed Jason's likeness into the mascot graphic; with `face_refs: false` + reference image as `extra_ref`, it matched the flat sticker aesthetic cleanly.
 
 ## Manifest Schema
 
 ```json
 {
-  "topic": "Codex vs. Claude Code",
-  "slug": "codex-vs-claude-code",
+  "topic": "Codex vs. Codex",
+  "slug": "codex-vs-Codex",
   "model": "nano_banana_2",
   "aspect_ratio": "16:9",
   "quality": "2k",
   "variants_per_concept": 3,
-  "face_refs": true,
   "concepts": [
     {
       "id": "c1",
       "name": "split-verdict",
       "prompt": "...",
       "extra_refs": [
-        "assets/logos/claude-icon-color.png",
+        "assets/logos/Codex-icon-color.png",
         "assets/logos/codex-icon-color.png"
       ]
     },
@@ -87,7 +74,6 @@ Validated 2026-05-17 on a "Codex Era" style-match (two terracotta-block mascots 
 - `aspect_ratio` — `16:9`
 - `quality` — `2k` for nano_banana_2 (no extra cost), `high` for seedream_v4_5
 - `variants_per_concept` — `3`
-- `face_refs` — `true` (manifest-level only). Set `false` to skip auto-loading `assets/face-refs/` — use for style-match runs with no humans.
 
 **`extra_refs`** — paths relative to project root or absolute. Appended to the auto-loaded face-refs on every variant of that concept. Use for logos, product shots, color palette refs, or scene references.
 
@@ -117,54 +103,24 @@ Thumbnail prompts ≠ B-roll prompts. Different rules:
 "Photoreal portrait of this person mid-shocked-laugh, eyes wide, mouth open, hands raised palms-up. Background bisected vertically — left half deep electric-blue lightning column, right half warm amber dust storm. Hard-edge color split behind silhouette. Studio key from above, 50mm shallow DOF, photoreal cinematic. Negative space lower-third for title overlay."
 
 ❌ **Bad prompt:**
-"Claude Code vs ChatGPT thumbnail showing him looking at a terminal screen with code and a chat window"
+"Codex vs ChatGPT thumbnail showing him looking at a terminal screen with code and a chat window"
 
 Why bad: names a screen + terminal + chat window = model renders gibberish text on all three.
 
 ## Usage
 
 ```bash
-# After Claude writes /tmp/thumbnails/<slug>/thumb.json and you've reviewed it:
-python3 .claude/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json
+# After Codex writes /tmp/thumbnails/<slug>/thumb.json and you've reviewed it:
+python3 .Codex/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json
 
 # Re-roll one concept:
-python3 .claude/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json --only c1
+python3 .Codex/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json --only c1
 
 # Dry-run:
-python3 .claude/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json --dry-run
+python3 .Codex/skills/thumbnail/scripts/generate.py /tmp/thumbnails/<slug>/thumb.json --dry-run
 ```
 
 Output: `video-editor/outputs/thumbnails/<slug>/<concept_id>_v<n>.png`.
-
-## Adding the Title (add_title.py)
-
-After picking a winner, burn the title type on top with `add_title.py`. Renders bold black Helvetica on tilted yellow/white blocks at the top of the image — the "The Codex Era" sticker aesthetic.
-
-```bash
-python3 .claude/skills/thumbnail/scripts/add_title.py \
-  video-editor/outputs/thumbnails/<slug>/<winner>.png \
-  /tmp/thumbnails/<slug>/titled_<winner>.png \
-  --blocks '[
-    {"text": "CLAUDE", "bg": "#FFFFFF", "fg": "#000000", "rotation": 0, "scale": 0.16},
-    {"text": "vs.",    "bg": "#FFD600", "fg": "#000000", "rotation": -8, "scale": 0.10, "offset_y": -0.025},
-    {"text": "CODEX",  "bg": "#FFD600", "fg": "#000000", "rotation": 0, "scale": 0.16}
-  ]'
-```
-
-**Block schema:**
-- `text` — string to render
-- `bg` — hex color of block (yellow accent `#FFD600`, white block `#FFFFFF`, custom welcome)
-- `fg` — hex text color, default `#000000`
-- `rotation` — degrees, positive = ccw left tilt. Small accent words ~ -8°; main blocks 0°.
-- `scale` — font height as fraction of image height. Main words ~0.16, accent words ~0.10.
-- `pad_x` / `pad_y` — block padding in font-height units (defaults 0.35 / 0.20)
-- `offset_x` / `offset_y` — per-block nudge as fraction of image dims. Use `-0.025` on accent words to lift them above the main row.
-
-**Global flags:** `--top-margin` (default `0.04` of image height) sets the row's vertical position. `--gap` (default `0.01` of width) sets horizontal block spacing.
-
-Blocks are placed in a horizontal row centered horizontally, anchored at top-margin. Tilted blocks rotate around their own center; use `offset_y` to lift them above the row like the reference aesthetic.
-
-**Proven recipe (Codex Era style):** one small tilted yellow accent block + two large straight blocks (white + yellow). Validated 2026-05-17 on the CLAUDE-vs-CODEX boxing thumbnail.
 
 ## CLI Quirks (read before editing)
 
@@ -213,11 +169,12 @@ Script prints estimate before submit:
 - **Negative space is a request, not a guarantee** — verify on output before paying for type-overlay work.
 - **Failed generations** — script reports per-concept failures. Re-run with `--only c2` to retry.
 - **Manifest review is mandatory** — never auto-approve. Prompts are the creative work.
-- **No text in image** — title type is burned on by `add_title.py` after, never by the model. The model hallucinates gibberish if asked for words.
+- **No text in image** — title type goes on in Photoshop/Figma after. The model will hallucinate gibberish if asked for words.
 
 ## What This Skill Does NOT Do
 
-- Pull Notion script content automatically (Claude does that before writing the manifest)
+- Render title type on the thumbnail (Photoshop/Figma after)
+- Pull Notion script content automatically (Codex does that before writing the manifest)
 - Upload to YouTube (`post-content` handles posting)
 - Generate Reels covers / IG carousel covers (different aspect, different rules — out of scope)
 - Train Soul IDs or run Marketing Studio workflows (broader Higgsfield surface — this skill is just thumbnails)
