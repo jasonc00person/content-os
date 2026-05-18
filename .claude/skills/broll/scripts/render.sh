@@ -71,7 +71,10 @@ if [ ! -s "$FILTER_FILE" ]; then
 fi
 
 MAP_V="$(cat "$MAP_FILE")"
-mapfile -t INPUTS < <(python3 - "$INPUTS_FILE" <<'PY'
+INPUTS=()
+while IFS= read -r line; do
+  INPUTS+=("$line")
+done < <(python3 - "$INPUTS_FILE" <<'PY'
 import json, sys
 for arg in json.loads(open(sys.argv[1]).read()):
     print(arg)

@@ -1,57 +1,59 @@
 #!/usr/bin/env python3
 """
-generate.py — submit broll.json moments to Higgsfield, poll, download.
+generate.py — submit broll.json moments to Higgsfield via the `higgsfield` CLI, wait, collect downloads.
 
 Reads:    /tmp/video-editor/<job>/broll.json
-Writes:   /tmp/video-editor/<job>/broll/<id>.mp4   (one per moment)
-          /tmp/video-editor/<job>/broll_resolved.json   (manifest + local paths)
+Writes:   /tmp/video-editor/<job>/broll/<id>.mp4          (one per moment)
+          /tmp/video-editor/<job>/broll_resolved.json     (manifest + local paths)
 
-Auth: HIGGSFIELD_API_KEY env var.
+Auth: handled by the CLI (`higgsfield auth login`, browser session). No API key.
 
 Usage:
     generate.py <broll.json> [--only <id>[,<id>...]] [--dry-run] [--yes]
 """
 import argparse
 import json
-import os
+import re
+import shutil
+import subprocess
 import sys
-import time
 import urllib.request
-import urllib.error
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-API_BASE = "https://api.higgsfield.ai"
-POLL_INTERVAL_S = 6
-POLL_TIMEOUT_S = 600  # 10 min cap per clip
+DEFAULT_MODEL = "seedance_2_0"
+DEFAULT_ASPECT = "9:16"
+WAIT_TIMEOUT = "15m"
+URL_RE = re.compile(r"https?://[^\s\"'<>]+\.mp4[^\s\"'<>]*")
 
 
-def api_post(path: str, body: dict, api_key: str) -> dict:
-    req = urllib.request.Request(
-        API_BASE + path,
-        data=json.dumps(body).encode(),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read())
-
-
-def api_get(path: str, api_key: str) -> dict:
-    req = urllib.request.Request(
-        API_BASE + path,
-        headers={"Authorization": f"Bearer {api_key}"},
-    )
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read())
+def extract_video_url(stdout: str) -> str | None:
+    # Try JSON first (CLI emits structured output with --json), fall back to regex.
+    try:
+        data = json.loads(stdout)
+        urls: list[str] = []
+        def walk(node):
+            if isinstance(node, dict):
+                for k, v in node.items():
+                    if isinstance(v, str) and v.startswith("http") and ".mp4" in v:
+                        urls.append(v)
+                    else:
+                        walk(v)
+            elif isinstance(node, list):
+                for v in node:
+                    walk(v)
+        walk(data)
+        if urls:
+            return urls[0]
+    except (json.JSONDecodeError, ValueError):
+        pass
+    m = URL_RE.search(stdout)
+    return m.group(0) if m else None
 
 
 def download(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(url, timeout=120) as r, open(dest, "wb") as f:
+    with urllib.request.urlopen(url, timeout=180) as r, open(dest, "wb") as f:
         while True:
             chunk = r.read(1 << 16)
             if not chunk:
@@ -59,67 +61,62 @@ def download(url: str, dest: Path) -> None:
             f.write(chunk)
 
 
-def generate_one(moment: dict, duration: float, out_dir: Path, api_key: str) -> dict:
-    """Submit one moment, poll until done, download. Returns {id, status, path|error}."""
+def ensure_cli() -> None:
+    if shutil.which("higgsfield") is None:
+        sys.stderr.write(
+            "higgsfield CLI not found. Install:\n"
+            "  curl -fsSL https://raw.githubusercontent.com/higgsfield-ai/cli/main/install.sh | sh\n"
+        )
+        sys.exit(1)
+    r = subprocess.run(["higgsfield", "account", "status"], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.stderr.write(
+            "higgsfield CLI not authenticated. Run:\n  higgsfield auth login\n"
+            f"(account status said: {(r.stdout or r.stderr).strip()})\n"
+        )
+        sys.exit(1)
+
+
+def generate_one(moment: dict, defaults: dict, out_root: Path) -> dict:
     mid = moment["id"]
-    prompt = moment["prompt"]
+    model = moment.get("model", defaults["model"])
+    duration = int(round(moment.get("duration", defaults["duration"])))
+    aspect = moment.get("aspect_ratio", defaults["aspect_ratio"])
+    start_image = moment.get("start_image")
 
-    body = {
-        "task": "text-to-video",
-        "model": "default-video-model",
-        "prompt": prompt,
-        "duration": duration,
-        "fps": 30,
-    }
+    cmd = [
+        "higgsfield", "--json", "generate", "create", model,
+        "--prompt", moment["prompt"],
+        "--duration", str(duration),
+        "--aspect_ratio", aspect,
+        "--wait", "--wait-timeout", WAIT_TIMEOUT,
+    ]
+    if start_image:
+        cmd += ["--start-image", str(start_image)]
 
+    sys.stderr.write(f"[broll] {mid} submitting ({model}, {duration}s, {aspect}{', i2v' if start_image else ''})\n")
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        err = (r.stderr or r.stdout or "").strip().splitlines()
+        return {"id": mid, "status": "error", "error": " | ".join(err[-3:])[:500] or f"exit {r.returncode}"}
+
+    url = extract_video_url(r.stdout)
+    if not url:
+        return {"id": mid, "status": "error", "error": f"no video url in CLI output: {r.stdout.strip()[:300]}"}
+
+    final_path = out_root / f"{mid}.mp4"
     try:
-        sub = api_post("/v1/generations", body, api_key)
-        gen_id = sub.get("generation_id") or sub.get("id") or sub.get("request_id")
-        if not gen_id:
-            return {"id": mid, "status": "error", "error": f"no id in response: {sub}"}
-    except urllib.error.HTTPError as e:
-        return {"id": mid, "status": "error", "error": f"submit HTTP {e.code}: {e.read().decode(errors='replace')[:300]}"}
+        download(url, final_path)
     except Exception as e:
-        return {"id": mid, "status": "error", "error": f"submit: {e}"}
-
-    sys.stderr.write(f"[broll] {mid} submitted gen={gen_id}\n")
-
-    started = time.time()
-    while time.time() - started < POLL_TIMEOUT_S:
-        try:
-            res = api_get(f"/v1/generations/{gen_id}", api_key)
-        except Exception as e:
-            sys.stderr.write(f"[broll] {mid} poll error: {e} — retrying\n")
-            time.sleep(POLL_INTERVAL_S)
-            continue
-        status = (res.get("status") or "").lower()
-        if status in {"completed", "succeeded", "success", "done"}:
-            video_url = (
-                res.get("video_url")
-                or res.get("output_url")
-                or (res.get("output") or {}).get("video_url")
-                or (res.get("result") or {}).get("video_url")
-            )
-            if not video_url:
-                return {"id": mid, "status": "error", "error": f"no video_url in: {res}"}
-            local = out_dir / f"{mid}.mp4"
-            try:
-                download(video_url, local)
-            except Exception as e:
-                return {"id": mid, "status": "error", "error": f"download: {e}"}
-            return {"id": mid, "status": "ok", "path": str(local), "generation_id": gen_id}
-        if status in {"failed", "error", "cancelled"}:
-            return {"id": mid, "status": "error", "error": f"higgsfield status={status}: {res.get('error') or res.get('message')}"}
-        time.sleep(POLL_INTERVAL_S)
-
-    return {"id": mid, "status": "error", "error": f"poll timeout after {POLL_TIMEOUT_S}s"}
+        return {"id": mid, "status": "error", "error": f"download {url}: {e}"}
+    return {"id": mid, "status": "ok", "path": str(final_path), "source_url": url}
 
 
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("manifest")
     p.add_argument("--only", help="comma-separated moment ids to (re)generate")
-    p.add_argument("--dry-run", action="store_true", help="print what would be submitted, don't call API")
+    p.add_argument("--dry-run", action="store_true", help="print what would be submitted, don't call the CLI")
     p.add_argument("--yes", action="store_true", help="skip the spending confirmation prompt")
     args = p.parse_args()
 
@@ -132,19 +129,21 @@ def main():
         if not moments:
             sys.stderr.write(f"no moments matched --only={args.only}\n")
             sys.exit(1)
-
-    duration = float(manifest.get("duration_default", 5))
-    out_dir = manifest_path.parent / "broll"
-    out_dir.mkdir(parents=True, exist_ok=True)
-
     if not moments:
         sys.stderr.write("[broll] no moments to generate\n")
         sys.exit(1)
 
+    defaults = {
+        "model": manifest.get("model_default", DEFAULT_MODEL),
+        "duration": float(manifest.get("duration_default", 5)),
+        "aspect_ratio": manifest.get("aspect_ratio_default", DEFAULT_ASPECT),
+    }
+
     est_low = 0.5 * len(moments)
     est_high = 1.0 * len(moments)
     sys.stderr.write(
-        f"[broll] {len(moments)} moments × {duration}s each ≈ ${est_low:.2f}-${est_high:.2f} total\n"
+        f"[broll] {len(moments)} moments × {defaults['duration']}s each ≈ "
+        f"${est_low:.2f}-${est_high:.2f} total\n"
     )
 
     if args.dry_run:
@@ -153,26 +152,25 @@ def main():
         sys.exit(0)
 
     if not args.yes:
-        answer = input("[broll] Continue and submit paid generations? [y/N] ").strip().lower()
-        if answer not in {"y", "yes"}:
+        ans = input("[broll] Continue and submit paid generations? [y/N] ").strip().lower()
+        if ans not in {"y", "yes"}:
             sys.stderr.write("[broll] cancelled\n")
             sys.exit(0)
 
-    api_key = os.environ.get("HIGGSFIELD_API_KEY", "").strip()
-    if not api_key:
-        sys.stderr.write("HIGGSFIELD_API_KEY not set in env\n")
-        sys.exit(1)
+    ensure_cli()
+
+    out_root = manifest_path.parent / "broll"
+    out_root.mkdir(parents=True, exist_ok=True)
 
     results = {}
     with ThreadPoolExecutor(max_workers=min(8, len(moments))) as ex:
-        futures = {ex.submit(generate_one, m, duration, out_dir, api_key): m for m in moments}
+        futures = {ex.submit(generate_one, m, defaults, out_root): m for m in moments}
         for fut in as_completed(futures):
             r = fut.result()
             results[r["id"]] = r
             tag = "OK " if r["status"] == "ok" else "ERR"
             sys.stderr.write(f"[broll] {tag} {r['id']}: {r.get('path') or r.get('error')}\n")
 
-    # Write resolved manifest (original + per-moment status/path)
     resolved = dict(manifest)
     resolved["moments"] = []
     for m in manifest.get("moments") or []:

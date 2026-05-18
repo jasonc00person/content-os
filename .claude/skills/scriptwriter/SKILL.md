@@ -5,7 +5,7 @@ description: "Turns a source video URL (or fresh topic / ramble / Notion Idea) i
 
 # Scriptwriter — Beats Into Notion
 
-Produces **terse beat sheets**, not teleprompter text. Each script lands as a Notion page in the content pipeline, with properties set and a body the user can scan on a phone between takes — fragments, not paragraphs.
+Produces **scannable beat sheets**, not teleprompter text. Each script lands as a Notion page in the content pipeline, with properties set and a body the user can read on a phone between takes — every bullet is a full readable sentence describing what happens in that beat.
 
 The default play: take a video that already worked for someone else, **steal the format**, then build a **completely new concept** inside that proven structural shell. The twist is a new idea wearing a winning outfit — not the source video re-spun in the user's voice.
 
@@ -223,32 +223,31 @@ These are illustrations, not menus to pick from. **Mirror what the actual source
 
 ---
 
-## ✂️ Conciseness Rule (THIS IS A HARD CONSTRAINT)
+## ✂️ Readability Rule (THIS IS A HARD CONSTRAINT)
 
-Every line on the beat sheet must be readable in **under 2 seconds at a glance**. The user is going to read this on a phone between takes — long sentences kill the format.
+Each bullet is a **full readable sentence** that describes what happens in that beat — direction with enough context to actually use, not cryptic shorthand. The user reads this on his phone between takes, so the sheet has to flow like real script direction. Fragment-style bullets (`→ / + / = / vs` shorthand, sub-10-word headlines) were tried and failed — too cryptic to scan and act on in the moment.
 
 ### Hard rules
-- **Bullets are fragments, not sentences.** No subjects/verbs unless they're load-bearing. Use `→`, `+`, `vs`, `=`, abbreviations.
-- **Max ~10 words per bullet.** If you need more, split into two bullets.
-- **One thought per bullet.** No em-dash sub-clauses, no parenthetical add-ons, no "this is the moment that…" commentary.
-- **Don't write the spoken line.** Direction, not verbiage. The user will say the words on camera, not read them off the page.
-- **Quote ONLY load-bearing lines** (CTA keyword, an exact hook phrase that has to land verbatim, a specific number). Everything else is direction, not script.
-- **Cut meta-commentary entirely.** No "this is what makes the video worth watching," "this earns the rest of the video," "this is the moment that justifies the hook." The user knows why the beats are there.
-- **No filler adverbs/adjectives.** Cut "literally," "actually," "specifically," "really," "very," "quite."
+- **Every bullet is one complete sentence.** It should make sense read aloud. No `→`, `+`, `=`, `vs` shorthand inside bullets — save those for callout anchors, beat headings, and metadata.
+- **Target ~15–25 words per bullet.** Long enough to convey both the WHAT and roughly the HOW. If a single beat naturally needs 30+ words, split it into two bullets.
+- **Direction, not verbiage.** Describe what happens in this beat — what the host does, what the guest covers, what the section is for. The user says his own words on camera; you're not writing teleprompter text.
+- **Quote ONLY load-bearing lines** (CTA keyword, an exact hook phrase that has to land verbatim, a specific number). Everything else stays as direction.
+- **Cut meta-commentary.** No "this is what makes the video worth watching," "this earns the rest of the video," "this is the moment that justifies the hook." The user knows why the beats are there.
+- **No filler adverbs.** Cut "literally," "actually," "specifically," "really," "very," "quite."
 
 ### Before/after — what wrong looks like
 
-❌ Verbose (what Claude defaults to):
-> Drop the receipt immediately: "One script it wrote pulled 700K+ views. Every reel I've shipped in the last 60 days runs through this agent."
-> Name the differentiator (this is what makes the video worth watching): "It refuses to rewrite the source. It steals the FORMAT, then writes a completely new CONCEPT in my voice. No AI slop."
-> Brief identity beat — quick, not a flex: <follower count, MRR, origin>. Anti-guru tone. Then: "Let's get into it."
-
-✅ Tight (what we want):
+❌ Fragment soup (the old failure mode — too cryptic to scan as direction):
 > Receipt drop: <viral-hit number> + last 60 days of reels
 > Differentiator: format kept, concept new, no slop
 > ID beat: <follower count, MRR, origin>. Anti-guru tone
 
-Five seconds to read instead of forty-five. Same information.
+✅ Full-sentence direction (what we want):
+> Open straight to camera and drop the receipt cold — name the specific viral-hit view count and the fact that every reel in the last 60 days came through this same agent.
+> Land the differentiator: this thing refuses to rewrite the source, it keeps the format and writes a completely new concept, which is why it doesn't read like AI slop.
+> Quick identity beat with the follower count, MRR, and origin — anti-guru tone, in and out, no flex.
+
+A scannable script direction beats cryptic shorthand every time. The user needs to read the bullet and know what to actually do in that beat, without having to decode it.
 
 ### Two beats that are almost always present (under different names)
 - **Some kind of opening hook** — the section that earns the rest of the video. Whether it's a cold-open claim, a bold question, a proof shot, or a list promise depends on the source.
@@ -369,7 +368,7 @@ If a written line could come from any other creator in the niche, anchor it to a
 3. **Anchored to the user.** At least one proof / system / belief-shift reference somewhere in the beats. If a generic creator could have written this, it's not anchored.
 4. **Hook opens a loop.** If the payoff is guessable from the hook alone, rewrite the hook.
 5. **Beats are scannable.** A reader scrolling on a phone in 5 seconds can see the script's shape (whatever the source's shape is) and know what each section does. Headings in CAPS, dividers between beats, intent line under each heading.
-6. **Conciseness check.** Every bullet readable in <2s. No bullet over ~10 words. Fragments, not sentences. No meta-commentary. No quoted spoken lines unless load-bearing. If a bullet has an em-dash with a sub-clause hanging off it, split or cut.
+6. **Readability check.** Every bullet is a full readable sentence (~15–25 words). No `→ / + / = / vs` shorthand inside bullets. No meta-commentary. No quoted spoken lines unless load-bearing. If a bullet sprawls past ~30 words or covers two separate ideas, split it.
 7. **CTA is give-first.** No begging. Comment-for-resource or DM-keyword preferred.
 
 ---

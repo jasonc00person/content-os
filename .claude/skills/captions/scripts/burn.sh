@@ -104,7 +104,7 @@ if [ "$FIXED" -eq 0 ]; then
   fi
 fi
 
-python3 "$SCRIPT_DIR/build_ass.py" "$WORDS" "$ASS_FILE" ${EMPHASIS:+"$EMPHASIS"} --style "$STYLE" "${FACE_FLAG[@]}"
+python3 "$SCRIPT_DIR/build_ass.py" "$WORDS" "$ASS_FILE" ${EMPHASIS:+"$EMPHASIS"} --style "$STYLE" ${FACE_FLAG[@]+"${FACE_FLAG[@]}"}
 
 # The ass filter needs colons in the path escaped. Anywhere a literal colon
 # could appear (rare on macOS but possible) -> \\:.
