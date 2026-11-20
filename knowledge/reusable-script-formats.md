@@ -1,77 +1,68 @@
 ---
 status: compiled
-last_updated: 2026-05-18
+last_updated: 2026-08-17
 sources:
   - voice-dna.md
-  - viral-knowledge/Instagram Deep Dive.md
-  - viral-knowledge/Viral Scripting Masterclass.md
-  - research/YT-Competitor-Research_2026-05-11.md
-  - research/IG-Competitor-Research_2026-05-18.md
+  - voice-corpus/index.md
+  - .claude/skills/scriptwriter/SKILL.md
+  - descriptions/claude-capcut-cheat-code_2026-08-03.md
+  - descriptions/claude-davinci-resolve_2026-08-07.md
+  - transcripts/analysis/i-made-vox-style-motion-graphics-claude-code-omni_structure_2026-07-13.md
+  - transcripts/analysis/every-claude-code-memory-system-compared_2026-06-15_STRUCTURE.md
+  - transcripts/analysis/i-turned-claude-fable-into-the-ultimate-second-brain_2026-06-15_STRUCTURE.md
+  - transcripts/analysis/this-open-source-repo-just-solved-claude-codes-1-problem_2026-06-15_STRUCTURE.md
+  - research/IG-Competitor-Research_2026-06-16_211310.html
 ---
 
 # Reusable Script Formats
 
-## 1. Giveaway System Demo
+Shapes for `scriptwriter`. Formats 1 to 5 are Jason's own, tagged in `voice-corpus/` (42 entries: 23 giveaway-demo, 16 tutorial-walkthrough, 1 build-in-public, 1 case-study, 1 transparency). Formats 6 to 8 are borrowed long-form spines from `transcripts/analysis/`. Pull 2 to 3 verbatim few-shots with `find_voice.py --format <tag>` before drafting; never write from the description alone.
 
-Use for skills, templates, prompts, or workflows.
+There is no rant-take format anywhere in the corpus. Don't invent one; the "Are you still..." attack lives inside a tutorial-walkthrough (`voice-dna.md`).
 
-Shape:
-1. Hook: call out the outdated/manual behavior.
-2. Proof: show the system or output immediately.
-3. Walkthrough: 3-5 steps, fast.
-4. Value contrast: "this takes 5 seconds instead of 30 minutes."
-5. CTA: "Comment KEYWORD and I'll send it."
+## 1. IG giveaway-demo (the default, 22 of 27 IG)
 
-Best for Skool growth and DM capture.
+1. One-sentence bold-claim or dollar hook.
+2. Instant receipts in seconds 5 to 15 (personal numbers, never generic stats).
+3. Optional objection preempt: "Now, I know what you're thinking..."
+4. Screen demo dead-center, narrated as numbered phases or steps.
+5. Comment-keyword CTA + sign-off as the literal last lines: "just comment KEYWORD down below and I'll send it... Peace."
 
-## 2. Build-In-Public AI Employee
+72 to 132 seconds in the current era. Deliverable is code (repo, skill, JSON workflow); the full files live inside the Skool community. Source: `voice-dna.md`
 
-Use when Jason has actually built a system inside this repo.
+## 2. IG tutorial-walkthrough (5 of 27 IG)
 
-Shape:
-1. "I just built..."
-2. Show the real folder/tool/output.
-3. Explain what it replaces.
-4. Give one specific use case.
-5. Invite comments for the template/skill.
+Callout or question hook → personal-numbers authority → objection preempt → imperative numbered steps with the pivotal one flagged ("Step three, and this is where the magic happens") → quantified payoff. 40 to 94 seconds. Source: `voice-dna.md`
 
-Best examples in this repo: research skills, rough-cut pipeline, post-content skill, knowledge layer.
+## 3. YT tutorial-walkthrough (11 of 15 YT)
 
-## 3. Manual vs System Rant
+Proof-stack intro → named self-intro → agenda beat ("First... Then... And then finally...") → "So without further ado, join me on the computer" → demo body → link CTAs both mid-roll and at the end → "I will see you guys in the next one. Peace out." Mistakes stay in on purpose. Source: `voice-dna.md`
 
-Use when the market still tolerates dumb manual work.
+## 4. Editor-series build video (the current YT revenue shape)
 
-Shape:
-1. "Are you still..."
-2. Explain why the old way is cooked.
-3. Show the AI-system way.
-4. Give the time saved or quality gained.
-5. CTA into Standard or keyword resource.
+The shape the last two long-forms actually shipped in: Intro → What You Need → Setup: build it yourself for free → Get the pre-built version (Skool) → Use Case 1..N, each a real edit task → What It Cost / what it can't do → Final Thoughts. Free starter prompt in the description, plug-n-play project folder inside the community. Source: `descriptions/claude-capcut-cheat-code_2026-08-03.md`, `descriptions/claude-davinci-resolve_2026-08-07.md`
 
-Works well with Jason's direct voice.
+Build-in-public variant from the corpus: show the finished artifacts FIRST, then run the machine live, then sell the shortcut. Source: `voice-dna.md`
 
-## 4. Time-Bound Challenge
+## 5. Case-study interview
 
-Use for YouTube or higher-effort reels.
+Cold-open client results clip → intro → before / skepticism / results / "what was the secret sauce" arc → single Skool CTA. Source: `voice-dna.md`, `voice-corpus/index.md`
 
-Shape:
-1. Set the constraint: one hour, one folder, one raw idea.
-2. Show the starting point.
-3. Run the pipeline with timestamps.
-4. Reveal the finished output.
-5. Explain the system behind it.
+## 6. Proof-first cold open + autonomy arc (borrowed)
 
-This turns a tutorial into a watchable event.
+"I just one-shotted this" → finished clip plays 14 seconds → promise (how I did it, how you can too) → step-by-step with human checkpoints → render waits become CTA slots → hand over full autonomy → final payoff → cost kicker → recap → CTA stack. Best for AI video-generation builds. Source: `transcripts/analysis/i-made-vox-style-motion-graphics-claude-code-omni_structure_2026-07-13.md`
 
-## 5. Starting Over Strategy
+## 7. Tier-list escalating levels (borrowed)
 
-Use for evergreen long-form.
+Overwhelm hook + "so you don't have to" → one mental model reused to score every level → Level 1 easy win → pain-triggered transitions ("if you feel X you've outgrown this") → centerpiece level with full recipe → single mid-roll CTA at the value peak → honest down-rank of at least one option → decision matrix payoff. Best for crowded tool categories. Source: `transcripts/analysis/every-claude-code-memory-system-compared_2026-06-15_STRUCTURE.md`
 
-Shape:
-1. "If I were starting from zero in 2026..."
-2. State the counterintuitive first move.
-3. Walk through the system in sequence.
-4. Show mistakes to avoid.
-5. CTA to Creator Accelerator.
+## 8. Framework + demo pegged to news, or tool breakdown (borrowed)
 
-Use less often because the format is crowded. Make the concept specific to AI content systems.
+News peg → urgency → credibility ("I've been doing this for months") → named framework → teach each element → delayed, escalating demos → honest correction → mid-roll soft CTA → cautionary tale → rapid tips → closing thesis. Tool-breakdown twin: big claim → sweetener → mental model → skeptical micro-loop ("they claim 70x, I'm skeptical") → numbered mechanism → install → live test that closes the loop. Source: `transcripts/analysis/i-turned-claude-fable-into-the-ultimate-second-brain_2026-06-15_STRUCTURE.md`, `transcripts/analysis/this-open-source-repo-just-solved-claude-codes-1-problem_2026-06-15_STRUCTURE.md`
+
+## Standing rules
+
+- Bullets in beat sheets are full sentences that read like script direction, not fragments (`.claude/skills/scriptwriter/SKILL.md`).
+- Every format ends on one CTA: comment keyword → resource → the Skool community (name/price per `backbone/offer.md`). No apply or DM-to-call language.
+- Honest-limits beat in every long demo; not-sponsored disclosure when relevant (`voice-dna.md`).
+- Comment-gate is the market default too, on all 15 IG competitor picks (`research/IG-Competitor-Research_2026-06-16_211310.html`).

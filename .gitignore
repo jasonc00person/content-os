@@ -31,3 +31,12 @@ video-editor/projects/**/thumbnails/
 
 # Agent skill mirrors are drift-prone; .claude/skills is canonical.
 .agents/skills/
+
+# Owner data: never public (2026-11-20)
+photos/
+sponsors/
+thumbnails/
+research/
+voice-corpus/
+packaging/dist/
+.obsidian/

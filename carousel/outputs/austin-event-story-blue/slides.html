@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Laid out on the source's 900x1600 grid; render.js shoots at 1.2x = 1080x1920. -->
+<style>
+:root { --blue: #2F7BFF; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; width: 900px; }
+.slide { position: relative; width: 900px; height: 1600px; overflow: hidden; color: #fff;
+  font-family: "SF Pro", sans-serif; -webkit-font-smoothing: antialiased; }
+/* Installed variable SF Pro. --w is set per block to match the source's stroke weight. */
+.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.shade { position: absolute; inset: 0; background: #000; }
+.t { position: absolute; left: 80px; white-space: nowrap; }
+.t, .t b { font-weight: var(--w); font-variation-settings: "wght" var(--w); }
+.t b { color: var(--blue); --w: 650; }
+.emoji { position: absolute; left: 0; right: 0; text-align: center; font-family: "Apple Color Emoji"; }
+
+/* 1 */
+#s1 .shade { opacity: .56; }
+#s1 .emoji { top: 252px; font-size: 100px; line-height: 1; display: flex; justify-content: center; gap: 6px; transform: translateX(-4px); }
+#s1 .hl { top: 581px; font-size: 112px; line-height: 112px; --w: 420; letter-spacing: -0.034em; }
+#s1 .hl b { letter-spacing: -0.05em; }
+/* 2 */
+#s2 .shade { opacity: .69; }
+#s2 .para { top: 447px; font-size: 56px; line-height: 57.5px; --w: 500; letter-spacing: -0.029em; }
+#s2 .dm { top: 777px; font-size: 88px; line-height: 1; --w: 420; letter-spacing: -0.04em; }
+#s2 .dm b { letter-spacing: -0.055em; }
+#s2 .sub { top: 885px; font-size: 49px; line-height: 1.2; --w: 400; }
+#s2 .arrow { position: absolute; left: 0; top: 0; width: 900px; height: 1600px; }
+
+/* 3 */
+#s3 .shade { opacity: .70; }
+#s3 .hl { top: 510px; font-size: 78px; line-height: 80px; --w: 460; letter-spacing: -0.026em; }
+#s3 .hl b { letter-spacing: -0.055em; }
+
+/* 4 */
+#s4 .shade { opacity: .70; }
+#s4 .hl { top: 544px; font-size: 89px; line-height: 89px; --w: 440; letter-spacing: -0.035em; }
+#s4 .body { top: 774px; font-size: 47px; line-height: 61px; --w: 380; }
+</style></head>
+<body>
+
+<section class="slide" id="s1">
+  <img class="bg" src="bg/bg1.jpg"><div class="shade"></div>
+  <div class="emoji"><span>🚨</span><span>🚨</span><span>🚨</span></div>
+  <div class="t hl">Been thinking of<br>doing something<br><b>CRAZY.</b></div>
+</section>
+
+<section class="slide" id="s2">
+  <img class="bg" src="bg/bg2.jpg"><div class="shade"></div>
+  <div class="t para">One day to learn what the top<br>people in AI actually use to grow<br>their business without wasting<br>time on the wrong tools or<br>strategies.</div>
+  <div class="t dm">DM me <b>AUSTIN</b></div>
+  <div class="t sub">to apply for early access.</div>
+  <svg class="arrow" viewBox="0 0 900 1600" fill="none" stroke="var(--blue)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M112 968 C103 1012 116 1046 155 1069"/>
+    <path d="M128 1071 L156 1070 L148 1045"/>
+  </svg>
+</section>
+
+<section class="slide" id="s3">
+  <img class="bg" src="bg/bg3.jpg"><div class="shade"></div>
+  <div class="t hl">For the first time ever,<br>I've teamed up with<br>some of the top AI<br>creators, and we're<br>thinking of throwing our<br>first <b>IN-PERSON</b> event.</div>
+</section>
+
+<section class="slide" id="s4">
+  <img class="bg" src="bg/bg4.jpg"><div class="shade"></div>
+  <div class="t hl">Already using AI and<br>still feel <b>STUCK?</b></div>
+  <div class="t body">Your business still isn't growing like it<br>should, and it's still costing you all<br>your time.</div>
+</section>
+
+</body></html>

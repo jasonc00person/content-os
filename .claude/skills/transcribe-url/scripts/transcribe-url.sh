@@ -11,6 +11,13 @@ set -euo pipefail
 URL="${1:?usage: transcribe-url.sh <url> [output_dir]}"
 OUTPUT_DIR="${2:-transcripts/url}"
 MODEL="${WHISPER_MODEL:-small.en}"
+# optional: YTDLP_COOKIES_BROWSER=chrome (or firefox, safari, ...) for login-walled URLs.
+# Appended as --cookies-from-browser to both yt-dlp calls; unset = public content only.
+COOKIES_BROWSER="${YTDLP_COOKIES_BROWSER:-}"
+
+# system python for the caption parser (YouTube fast path). Windows installs
+# ship `python`, not `python3`; probe once, use "$PY" below.
+PY=python3; python3 -c '' >/dev/null 2>&1 || { PY=python; python -c '' >/dev/null 2>&1 || { echo "[error] python not found; run ./setup.sh from the project root" >&2; exit 1; }; }
 
 WORK="$(mktemp -d /tmp/transcribe-url-XXXXXX)"
 trap 'rm -rf "$WORK"' EXIT
@@ -41,7 +48,10 @@ if [ "$is_youtube" = 1 ]; then
     -o "$WORK/sub.%(ext)s"
   )
 fi
-yt-dlp "${YTDLP_ARGS[@]}" "$URL" >&2
+if [ -n "$COOKIES_BROWSER" ]; then
+  YTDLP_ARGS+=(--cookies-from-browser "$COOKIES_BROWSER")
+fi
+yt-dlp "${YTDLP_ARGS[@]}" "$URL" >&2 || echo "[warn] yt-dlp metadata/caption pull exited $? (rate limit?); continuing to the audio path" >&2
 
 TITLE="$(cat "$WORK/title.txt" 2>/dev/null || echo untitled)"
 UPLOADER="$(cat "$WORK/uploader.txt" 2>/dev/null || echo unknown)"
@@ -59,7 +69,15 @@ SLUG="$(printf '%s' "$TITLE" \
 
 TODAY="$(date +%Y-%m-%d)"
 mkdir -p "$OUTPUT_DIR"
+# resolve to an absolute path so the returned path is unambiguous regardless of cwd
+OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 OUT_FILE="$OUTPUT_DIR/${SLUG}_${TODAY}.md"
+# same title pulled again today: suffix _2, _3, ... instead of clobbering the earlier transcript
+n=2
+while [ -e "$OUT_FILE" ]; do
+  OUT_FILE="$OUTPUT_DIR/${SLUG}_${TODAY}_${n}.md"
+  n=$((n + 1))
+done
 
 # locate VTT (yt-dlp picks the actual extension/lang variant)
 VTT_FILE=""
@@ -69,12 +87,12 @@ fi
 
 if [ -n "$VTT_FILE" ]; then
   echo "[captions] using $VTT_FILE" >&2
-  python3 - "$VTT_FILE" "$OUT_FILE" "$TITLE" "$UPLOADER" "$CANONICAL_URL" "$DURATION" "$UPLOAD_DATE" <<'PY'
+  "$PY" - "$VTT_FILE" "$OUT_FILE" "$TITLE" "$UPLOADER" "$CANONICAL_URL" "$DURATION" "$UPLOAD_DATE" <<'PY'
 import re, sys
 
 vtt_path, out_file, title, uploader, url, duration, upload_date = sys.argv[1:]
 
-with open(vtt_path) as f:
+with open(vtt_path, encoding="utf-8") as f:
     raw = f.read()
 
 # split into cues by blank line
@@ -146,7 +164,7 @@ md = f"""# {title}
 {chr(10).join(timed_lines) if timed_lines else "(no captions)"}
 """
 
-with open(out_file, "w") as f:
+with open(out_file, "w", encoding="utf-8") as f:
     f.write(md)
 
 print(f"[captions] wrote {out_file}", file=sys.stderr)
@@ -157,24 +175,38 @@ fi
 
 # ---- fallback: download audio + run faster-whisper ----
 echo "[fallback] no captions available, downloading audio for whisper" >&2
-yt-dlp \
-  -x --audio-format mp3 \
-  --no-playlist \
-  --quiet --no-warnings --progress \
-  -o "$WORK/audio.%(ext)s" \
-  "$URL" >&2
+AUDIO_ARGS=(
+  -x --audio-format mp3
+  --no-playlist
+  --quiet --no-warnings --progress
+  -o "$WORK/audio.%(ext)s"
+)
+if [ -n "$COOKIES_BROWSER" ]; then
+  AUDIO_ARGS+=(--cookies-from-browser "$COOKIES_BROWSER")
+fi
+yt-dlp "${AUDIO_ARGS[@]}" "$URL" >&2
 
 AUDIO="$WORK/audio.mp3"
 [ -f "$AUDIO" ] || { echo "[error] audio download failed" >&2; exit 1; }
 
-export UV_PROJECT_ENVIRONMENT="${UV_PROJECT_ENVIRONMENT:-$HOME/.cache/transcribe-url-venv}"
+# Persistent venv shared with ig-competitor-research: built once, reused every
+# run (no per-run dep resolution). Same faster-whisper box both skills use.
+VENV="${CONTENT_OS_WHISPER_VENV:-$HOME/.cache/content-os/whisper-venv}"
+PYBIN="$VENV/bin/python"
+[ -e "$PYBIN" ] || PYBIN="$VENV/Scripts/python.exe"   # Windows venv layout
+# sentinel written only after a successful install — a half-built venv (install
+# interrupted once) self-heals on the next run instead of wedging forever
+if [ ! -e "$VENV/.deps-ok" ]; then
+  echo "[transcribe] first-run: building faster-whisper venv at $VENV" >&2
+  rm -rf "$VENV"
+  uv venv "$VENV" --python 3.11 >&2
+  PYBIN="$VENV/bin/python"; [ -e "$PYBIN" ] || PYBIN="$VENV/Scripts/python.exe"
+  uv pip install --python "$PYBIN" faster-whisper onnxruntime >&2
+  touch "$VENV/.deps-ok"
+fi
 echo "[transcribe] model=$MODEL audio=$AUDIO" >&2
 
-uv run --quiet \
-  --python 3.11 \
-  --with "faster-whisper" \
-  --with "onnxruntime" \
-  python - "$AUDIO" "$OUT_FILE" "$TITLE" "$UPLOADER" "$CANONICAL_URL" "$DURATION" "$UPLOAD_DATE" "$MODEL" <<'PY'
+"$PYBIN" - "$AUDIO" "$OUT_FILE" "$TITLE" "$UPLOADER" "$CANONICAL_URL" "$DURATION" "$UPLOAD_DATE" "$MODEL" <<'PY'
 import sys
 from faster_whisper import WhisperModel
 
@@ -228,7 +260,7 @@ md = f"""# {title}
 {chr(10).join(timed_lines) if timed_lines else "(no speech detected)"}
 """
 
-with open(out_file, "w") as f:
+with open(out_file, "w", encoding="utf-8") as f:
     f.write(md)
 
 print(f"[transcribe] wrote {out_file}", file=sys.stderr)

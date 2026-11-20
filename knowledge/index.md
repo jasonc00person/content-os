@@ -1,39 +1,45 @@
 ---
 status: compiled
-last_updated: 2026-05-18
+last_updated: 2026-08-17
 sources:
   - CLAUDE.md
-  - backbone/
+  - backbone/vision.md
+  - backbone/offer.md
+  - backbone/icp.md
+  - backbone/messaging.md
+  - voice-dna.md
+  - voice-corpus/index.md
   - research/
   - transcripts/url/
-  - viral-knowledge/
+  - transcripts/analysis/
+  - descriptions/
 ---
 
 # Knowledge Index
 
-This folder is the repo-native Karpathy layer: compiled working memory for Codex/Claude. It is not a new source of truth.
+Repo-native compiled memory. Fast navigation layer for strategy, ideation, scripting, and research synthesis. Not a source of truth: verify anything that matters against the linked source files.
 
-Use this first for strategy, ideation, scripting, positioning, and research synthesis. If a claim matters, verify against the linked source files.
+Compiled 2026-08-17 against: `backbone/` (vision 2026-08-03; offer, ICP, messaging 2026-07-13), research through 2026-07-27, transcripts through 2026-07-18, shipped descriptions through 2026-08-07, `voice-dna.md` (2026-06-10, 42-entry corpus).
 
 ## Pages
 
-- [Current Content Opportunities](current-content-opportunities.md) - what the latest research says to make next.
-- [Winning Hooks](winning-hooks.md) - reusable hook mechanics that keep showing up.
-- [Competitor Patterns](competitor-patterns.md) - what competitors are doing that is actually working.
-- [Creator AI Positioning](creator-ai-positioning.md) - the market lane and belief shifts to keep hammering.
-- [Reusable Script Formats](reusable-script-formats.md) - proven structures for scripts and beat sheets.
+- [Positioning](creator-ai-positioning.md): the current lane (leverage AI to build a viral brand and scale a business with content), the one offer (the Skool community, name/price per `backbone/offer.md`), ICP, funnel, belief shifts. Filename is fixed for `scriptwriter`.
+- [Current Content Opportunities](current-content-opportunities.md): what the latest research says to make next, and what to avoid.
+- [Winning Hooks](winning-hooks.md): Jason's proven openers plus the market hook shapes winning now, all proof-linked.
+- [Competitor Patterns](competitor-patterns.md): what tracked handles and the algorithm are rewarding, and long-form structure lessons.
+- [Reusable Script Formats](reusable-script-formats.md): the corpus-tagged formats and borrowed long-form spines for beat sheets.
 
-## How To Use
+## How to use
 
-For `ideate`, read this file, then `current-content-opportunities.md`, then only open the raw research reports needed for the platform.
+Ideation: read this file, then `current-content-opportunities.md`, then only the raw report you need (`research/`, newest first; extract text, never open a raw HTML report).
 
-For `scriptwriter`, read `creator-ai-positioning.md`, `winning-hooks.md`, and `reusable-script-formats.md` before opening full transcripts or viral-knowledge files.
+Scripting (`scriptwriter`): read `creator-ai-positioning.md`, `winning-hooks.md`, `reusable-script-formats.md`, then `voice-dna.md` and 2 to 3 few-shots via `find_voice.py`.
 
-For research review, update the relevant page after a new report lands in `research/` or a high-signal transcript lands in `transcripts/url/`.
+Hooks (`hook-generator`): `winning-hooks.md` for Jason's shapes; the 8-structure taxonomy stays in the skill's own `reference/structures.md`.
 
-## Source Rules
+## Source rules
 
-- `backbone/`, `voice-dna.md`, `viral-knowledge/`, `research/`, and `transcripts/` stay authoritative.
-- `knowledge/` is compiled memory. Useful, but disposable.
+- `backbone/`, `voice-dna.md`, `voice-corpus/`, `research/`, `transcripts/`, `descriptions/` stay authoritative. Prices, member counts, follower counts, and MRR live only in `backbone/`; knowledge pages point there instead of repeating them.
 - Never invent proof, numbers, dates, or competitor stats here without a source path.
-- If a source changes, update this page's `last_updated` and the changed topic page.
+- Retired offers (the old high-ticket install, older membership tiers, apply / DM-to-call CTAs) do not appear in these pages except to say never pitch them.
+- When a source changes, run `knowledge-compile` and bump `last_updated` on the touched pages and this index.

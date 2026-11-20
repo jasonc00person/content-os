@@ -1,0 +1,59 @@
+# This folder is a git repository so a new version of Content OS merges in without touching your
+# changes (update.py). These paths stay out of it: never tracked, never changed by an update.
+
+# Your own work: reports, transcripts, your corpus, renders, logs (each folder's shipped README is tracked)
+/research/*
+!/research/README.md
+/transcripts/*/*
+!/transcripts/*/.gitkeep
+/voice-corpus/*
+!/voice-corpus/README.md
+/knowledge/*
+!/knowledge/index.md
+/carousel/outputs/*
+!/carousel/outputs/README.md
+/descriptions/*
+!/descriptions/README.md
+/thumbnails/*
+!/thumbnails/README.md
+/outreach/*/*
+!/outreach/*/README.md
+/assets/face-refs/*
+!/assets/face-refs/README.md
+/assets/logos/*
+!/assets/logos/README.md
+/title-corpus/titles.json
+
+# Media and downloads dropped at the top of this folder
+/*.mp4
+/*.MP4
+/*.mov
+/*.MOV
+/*.m4a
+/*.wav
+/*.mp3
+/*.zip
+/content-os*/
+
+# Secrets and this machine's own wiring
+.env
+/.mcp.json
+.claude/settings.local.json
+/.setup-complete
+/.setup-restarts
+/.setup-second-install
+
+# Installed dependencies (./setup.sh rebuilds them)
+node_modules/
+.claude/skills/carousel-generator/scripts/package-lock.json
+
+# Caches and OS junk
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/

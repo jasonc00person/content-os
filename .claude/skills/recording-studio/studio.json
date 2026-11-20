@@ -1,0 +1,22 @@
+{
+  "_note": "The rig recording-studio checks against. Edit this file, not studio.py, when the gear or the settings change. Values are what was measured to work, see reference/rig.md for why.",
+  "modes": {
+    "horizontal": { "profile": "Horizontal 4K", "collection": "Horizontal 4K", "canvas": [3840, 2160], "format": "Long-form" },
+    "vertical":   { "profile": "Vertical 4K",   "collection": "Vertical 4K",   "canvas": [2160, 3840], "format": "Short-form" }
+  },
+  "fps": [24000, 1001],
+  "output": {
+    "Output/Mode": "Advanced",
+    "AdvOut/RecFormat2": "hybrid_mp4",
+    "AdvOut/RecEncoder": "com.apple.videotoolbox.videoencoder.ave.hevc",
+    "AdvOut/RecTracks": "1",
+    "AdvOut/RecSplitFile": "false",
+    "Audio/SampleRate": "48000"
+  },
+  "record_bitrate_kbps": 40000,
+  "gb_per_hour": 18,
+  "camera": { "device_name": "Cam Link 4K", "source": "Capture Card Device", "kind": "macos-avcapture" },
+  "mic": { "interface": "Volt 1", "source": "Shure SM7B", "sync_ms": 315, "sample_rate": 48000 },
+  "quit_before_recording": ["Loom", "Spotify"],
+  "warn_if_running": ["Screen Studio", "QuickTime Player", "zoom.us", "Riverside", "Descript", "Ecamm Live", "CleanShot X"]
+}
