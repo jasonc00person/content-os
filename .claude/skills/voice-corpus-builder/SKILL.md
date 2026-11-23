@@ -52,7 +52,7 @@ bash <SKILL_DIR>/scripts/yt-entry.sh <id> [--era TAG]
 
 Fan these out to a subagent (one call: "run yt-entry.sh for each of these ids, return
 the printed paths") — each is a metadata + captions pull (2-5 s); only caption-less videos hit
-whisper (small.en, ~1× realtime on CPU). Writes `voice-corpus/yt-<id>.md`.
+whisper (small.en in verbatim mode so filler words survive; seconds per video on a GPU, a few times faster than realtime on a CPU). Writes `voice-corpus/yt-<id>.md`.
 
 ## Step 3 — Instagram (one Apify MCP call, same as ig-competitor-research)
 
@@ -76,7 +76,7 @@ whisper (small.en, ~1× realtime on CPU). Writes `voice-corpus/yt-<id>.md`.
    Keeps videos only, ranks by plays (falls back to likes when the actor returns no play count),
    curls each reel from its signed `videoUrl` (they expire in hours — run this right after the
    scrape), transcribes with faster-whisper, writes `voice-corpus/ig-<shortCode>.md`. Run it in a
-   subagent or in the background: 20 reels ≈ 5-15 min on CPU. Read its stderr tally at the end.
+   subagent or in the background: 20 reels ≈ 1-2 min with a GPU, 5-10 min on a CPU. Read its stderr tally at the end.
 
 ## Step 4 — Tag every entry (your judgment, one script call each)
 

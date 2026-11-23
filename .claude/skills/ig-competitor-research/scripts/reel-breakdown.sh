@@ -67,16 +67,14 @@ if [ ! -e "$VENV/.deps-ok" ]; then
   touch "$VENV/.deps-ok"
 fi
 echo "[reel] transcribing (model=$MODEL)" >&2
-"$PYBIN" - "$AUDIO" "$OUTDIR/transcript.md" "$MODEL" <<'PY'
+"$PYBIN" - "$(cd "$(dirname "$0")" && pwd)" "$AUDIO" "$OUTDIR/transcript.md" "$MODEL" <<'PY'
 import sys
-from faster_whisper import WhisperModel
+sys.path.insert(0, sys.argv[1]); sys.dont_write_bytecode = True  # no __pycache__ beside the scripts
+import fw_fast  # picks the fastest lane on this machine: NVIDIA GPU > Apple GPU > CPU
 
-audio, out_file, model_name = sys.argv[1:]
-model = WhisperModel(model_name, device="auto", compute_type="int8")
-segments, _ = model.transcribe(
-    audio, vad_filter=True, vad_parameters=dict(min_silence_duration_ms=500)
-)
-segs = [s.text.strip() for s in segments if s.text.strip()]
+audio, out_file, model_name = sys.argv[2:]
+segments, _info, _device = fw_fast.transcribe(audio, model_name)
+segs = [s["text"] for s in segments]
 hook = segs[0] if segs else "(no speech detected)"
 full = " ".join(segs) if segs else "(no speech detected)"
 with open(out_file, "w", encoding="utf-8") as f:

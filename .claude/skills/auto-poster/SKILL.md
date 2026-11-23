@@ -162,7 +162,7 @@ To see the exact payload with zero network calls (no upload, no verify, no post)
 `scripts/transcribe_for_caption.sh` uses the one transcription engine every skill in this repo shares: faster-whisper in the persistent venv at `~/.cache/content-os/whisper-venv` (built by `uv` on first use or by `./setup.sh`; `CONTENT_OS_WHISPER_VENV` overrides the location). Model defaults to `tiny.en` (fast, plenty for a caption); override with `AUTO_POSTER_WHISPER_MODEL=base.en` (or `small.en`) for more accuracy at a few seconds more per run.
 
 - The script ffmpeg-extracts 16 kHz mono audio first so whisper processes a few MB instead of hundreds.
-- First run on a machine builds the venv (about 200 MB) and downloads the model; every run after that reuses the cache and a 90-second reel transcribes in a few seconds on CPU.
+- First run on a machine builds the venv (about 200 MB) and downloads the model; every run after that reuses the cache and a 90-second reel transcribes in a few seconds (on the GPU when the machine has one).
 - The venv is sentinel-gated on `.deps-ok`, so an interrupted first build rebuilds cleanly next run.
 
 ## Temp files (security)

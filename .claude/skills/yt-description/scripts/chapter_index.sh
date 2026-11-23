@@ -46,21 +46,19 @@ if [ ! -e "$VENV/.deps-ok" ]; then
   touch "$VENV/.deps-ok"
 fi
 
-"$PYBIN" - "$WORK/a.wav" "$OUT" "$MODEL" <<'PY'
+"$PYBIN" - "$(cd "$(dirname "$0")" && pwd)" "$WORK/a.wav" "$OUT" "$MODEL" <<'PY'
 import sys
-from faster_whisper import WhisperModel
+sys.path.insert(0, sys.argv[1]); sys.dont_write_bytecode = True  # no __pycache__ beside the scripts
+import fw_fast  # picks the fastest lane on this machine: NVIDIA GPU > Apple GPU > CPU
 
-audio, dst, model_name = sys.argv[1:]
-model = WhisperModel(model_name, device="auto", compute_type="int8")
-segments, _ = model.transcribe(audio, word_timestamps=True, vad_filter=True,
-                               vad_parameters=dict(min_silence_duration_ms=500))
+audio, dst, model_name = sys.argv[2:]
+segments, _info, _device = fw_fast.transcribe(audio, model_name, word_timestamps=True)
 n = 0
 with open(dst, "w", encoding="utf-8") as f:
     for seg in segments:
-        for w in seg.words or []:
-            word = w.word.strip()
-            if word:
-                f.write(f"{w.start:.2f}\t{word}\n"); n += 1
+        for w in seg["words"]:
+            if w["word"]:
+                f.write(f"{w['start']:.2f}\t{w['word']}\n"); n += 1
 print(f"{n} words indexed", file=sys.stderr)
 PY
 

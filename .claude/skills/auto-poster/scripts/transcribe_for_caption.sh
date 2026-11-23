@@ -8,7 +8,8 @@
 # AUTO_POSTER_WHISPER_MODEL=base.en / small.en for more accuracy at more time.
 #
 # First run on a machine: builds the venv (~200 MB) and downloads the model.
-# Later runs: a 90-second reel transcribes in a few seconds on CPU.
+# Later runs: a 90-second reel transcribes in a few seconds (fw_fast.py, beside this
+# script, uses the GPU when the machine has one).
 #
 # Usage: transcribe_for_caption.sh <local-video-path-or-direct-url> [output.txt]
 #
@@ -71,15 +72,14 @@ if [ ! -e "$VENV/.deps-ok" ]; then
 fi
 
 log "transcribing (model=$MODEL)"
-"$PYBIN" - "$AUDIO" "$OUT" "$MODEL" <<'PY'
+"$PYBIN" - "$(cd "$(dirname "$0")" && pwd)" "$AUDIO" "$OUT" "$MODEL" <<'PY'
 import sys
-from faster_whisper import WhisperModel
+sys.path.insert(0, sys.argv[1]); sys.dont_write_bytecode = True  # no __pycache__ beside the scripts
+import fw_fast  # picks the fastest lane on this machine: NVIDIA GPU > Apple GPU > CPU
 
-audio, out_file, model_name = sys.argv[1:]
-model = WhisperModel(model_name, device="auto", compute_type="int8")
-segments, _ = model.transcribe(audio, vad_filter=True,
-                               vad_parameters=dict(min_silence_duration_ms=500))
-text = " ".join(seg.text.strip() for seg in segments if seg.text.strip()).strip()
+audio, out_file, model_name = sys.argv[2:]
+segments, _info, _device = fw_fast.transcribe(audio, model_name)
+text = " ".join(seg["text"] for seg in segments).strip()
 with open(out_file, "w", encoding="utf-8") as f:
     f.write(text + "\n")
 PY

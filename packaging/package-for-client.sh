@@ -380,6 +380,14 @@ for ws in ".claude/skills/transcribe-url/scripts/transcribe-url.sh" ".claude/ski
   grep -qF "$VENV_TOKEN" "$STAGE/$ws" || sfail "$ws doesn't use the shared $VENV_TOKEN"
   grep -qF ".deps-ok" "$STAGE/$ws" || sfail "$ws lacks the .deps-ok sentinel gate"
 done
+# one hardware-detection helper: every transcribing skill carries the SAME fw_fast.py (canonical: transcribe-url)
+for fs in auto-poster ig-competitor-research voice-corpus-builder yt-description; do
+  cmp -s "$STAGE/.claude/skills/transcribe-url/scripts/fw_fast.py" "$STAGE/.claude/skills/$fs/scripts/fw_fast.py" \
+    || sfail "$fs/scripts/fw_fast.py is missing or differs from transcribe-url's copy (copy it over)"
+done
+if grep -rIn 'device="auto"' "$STAGE/.claude/skills" --include='*.sh' >/dev/null 2>&1; then
+  sfail "a script still calls WhisperModel(device=\"auto\") instead of fw_fast.transcribe"
+fi
 if grep -rIlE 'whisper\.cpp|whisper-cli|whisper-cpp|cmake' "$STAGE/.claude/skills" >/dev/null 2>&1; then
   sfail "a skill still references whisper.cpp / whisper-cli / cmake: $(grep -rIlE 'whisper\.cpp|whisper-cli|whisper-cpp|cmake' "$STAGE/.claude/skills" | sed 's#^'"$STAGE"'/##' | tr '\n' ' ')"
 fi

@@ -215,7 +215,10 @@ Helper: `dm-revival` is the outreach lane outside the linear pipeline: grinds th
 reels, auto-poster captions, voice-corpus-builder, yt-description chapter index) runs faster-whisper from
 the same persistent venv, `~/.cache/content-os/whisper-venv` (built once by `uv`, sentinel-gated,
 `CONTENT_OS_WHISPER_VENV` overrides). Models download from Hugging Face on first use (tiny.en for
-captions, small.en for research). Nothing else to install.
+captions, small.en for research). Nothing else to install. It uses the fastest hardware the machine
+has without being told: an NVIDIA graphics card, then an Apple Silicon GPU, then the CPU, dropping to
+the next one if one fails (AMD and Intel graphics run on the CPU). An NVIDIA machine downloads its
+GPU libraries once, about 1.2 GB, on the first transcription. `WHISPER_DEVICE=cpu` forces the CPU.
 
 ---
 

@@ -37,16 +37,15 @@ if [ ! -e "$VENV/.deps-ok" ]; then
 fi
 
 echo "[transcribe] model=$MODEL file=$(basename "$MEDIA")" >&2
-"$PYBIN" - "$WORK/audio.wav" "$OUT" "$MODEL" <<'PY'
+"$PYBIN" - "$(cd "$(dirname "$0")" && pwd)" "$WORK/audio.wav" "$OUT" "$MODEL" <<'PY'
 import sys
-from faster_whisper import WhisperModel
+sys.path.insert(0, sys.argv[1]); sys.dont_write_bytecode = True  # no __pycache__ beside the scripts
+import fw_fast  # picks the fastest lane on this machine: NVIDIA GPU > Apple GPU > CPU
 
-audio, out_file, model_name = sys.argv[1:]
-model = WhisperModel(model_name, device="auto", compute_type="int8")
-segments, _info = model.transcribe(
-    audio, vad_filter=True, vad_parameters=dict(min_silence_duration_ms=500),
-)
-lines = [seg.text.strip() for seg in segments if seg.text.strip()]
+audio, out_file, model_name = sys.argv[2:]
+# verbatim: the corpus is imitated word for word, and the fast batched mode drops filler words
+segments, _info, _device = fw_fast.transcribe(audio, model_name, verbatim=True)
+lines = [seg["text"] for seg in segments]
 with open(out_file, "w", encoding="utf-8") as f:
     f.write(" ".join(lines).strip() + "\n")
 print(f"[transcribe] {len(lines)} segments -> {out_file}", file=sys.stderr)
