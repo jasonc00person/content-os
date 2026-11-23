@@ -68,7 +68,7 @@ Follow me on other platforms
 
 Summary ⤵️
 
-Claude edited the intro you just watched. In this tutorial I start with an empty folder and build a Claude Code video editor from scratch. I use Adobe Premiere Pro so you can see the actual cuts land on the timeline and hear what changes when I ask for a revision.
+Claude edited the entire hour-long video you just watched. In this tutorial I start with an empty folder and build a Claude Code video editor from scratch. I use Adobe Premiere Pro so you can see the actual cuts land on the timeline and hear what changes when I ask for a revision.
 
 The free blueprint has the prompt I start with. We connect Claude to the editing app, give it raw footage, and use the free, open-source WhisperX tool to timestamp each word so Claude can cut dead air and repeated takes. Then I play back the rough cut. When I hear a buzz on my mic, I show you how I use ClearerVoice-Studio to clean it up.
 

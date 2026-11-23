@@ -121,6 +121,18 @@ Niche keywords to explore via YouTube search — each `- ` line is one search te
 - **URL**: https://www.instagram.com/liamjohnston.ai/
 - **Notes**: AI content creator. Track for hooks, format patterns, and creator-business angles.
 
+### Remon (@remonbiz)
+- **URL**: https://www.instagram.com/remonbiz/
+- **Notes**: Added by Jason 2026-11-23 as a short-form reference. Track for hooks and format patterns.
+
+### Albert Olgaard (@albert.olgaard)
+- **URL**: https://www.instagram.com/albert.olgaard/
+- **Notes**: Added by Jason 2026-11-23 as a short-form reference. Also in the YouTube section (@albertolgaard).
+
+### Riley Brown (@realrileybrown)
+- **URL**: https://www.instagram.com/realrileybrown/
+- **Notes**: Added 2026-11-23 from the phone feed pass. AI education on agentic tools (Claude Code, Codex, Antigravity as "super apps"); his reels link to long-form "Watch full feature" videos.
+
 ---
 
 ## Skool
