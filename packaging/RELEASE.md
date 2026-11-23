@@ -12,6 +12,16 @@ earlier version merges cleanly).
 Versions shipped before updates existed carry no VERSION file; their fingerprints are recorded under
 the ship date: 2026.09.11, 2026.09.23, 2026.09.26, 2026.09.29.
 
+## 2026.11.22
+
+- Transcribing is much faster. A 20 minute reel now takes about 15 seconds on a newer Mac, down from over 2 minutes
+- It uses your computer's graphics chip when it has one that works for this (Apple Silicon Macs and NVIDIA cards) and switches to the processor by itself if anything goes wrong
+- On a PC with an NVIDIA card, the first transcription downloads about 1.2 GB one time. This NVIDIA path is brand new, so tell us if it acts up
+- Post captions, YouTube chapter timestamps, competitor reel breakdowns and the voice corpus all got the same speedup
+- The voice corpus now keeps your filler words ("like", "you know") so scripts sound more like you
+- Two transcripts running at the same time no longer overwrite each other
+- Instagram transcripts now show how long the video is
+
 ## 2026.11.02.2
 
 - Carousels now render with your own Google Chrome: setup skips a 130 MB download, and a computer cleanup can no longer break carousel exports. No Chrome yet? Get it at google.com/chrome

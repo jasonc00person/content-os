@@ -69,6 +69,11 @@ rsync -a \
   --exclude='/thumbnails/' \
   --exclude='/photos/' \
   --exclude='/sponsors/' \
+  --exclude='/AGENTS.md' \
+  --exclude='/.codex/' \
+  --exclude='/.agents/' \
+  --exclude='/reports/' \
+  --exclude='/research_notes/' \
   --exclude='/.setup-complete' \
   --exclude='/CLAUDE.md' \
   --exclude='.claude/skills/auto-poster/.env' \
