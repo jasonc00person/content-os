@@ -16,7 +16,7 @@
   "record_bitrate_kbps": 40000,
   "gb_per_hour": 18,
   "camera": { "device_name": "Cam Link 4K", "source": "Capture Card Device", "kind": "macos-avcapture" },
-  "mic": { "interface": "Volt 1", "source": "Shure SM7B", "sync_ms": 315, "sample_rate": 48000 },
+  "mic": { "interface": "Volt 1", "source": "Shure SM7B", "sync_ms": 235, "sample_rate": 48000 },
   "quit_before_recording": ["Loom", "Spotify"],
   "warn_if_running": ["Screen Studio", "QuickTime Player", "zoom.us", "Riverside", "Descript", "Ecamm Live", "CleanShot X"]
 }

@@ -76,7 +76,7 @@ Want the mic checked too? Run `obs_levels` while he talks at recording volume. T
 
 - **Horizontal 4K:** 3840x2160. Two scenes:
   - `4K`: camera full frame.
-  - `Screen Capture`: the LG display 1:1 with a camera picture-in-picture.
+  - `Screen Capture`: the LG display 1:1 (OBS's own windows hidden) with a camera picture-in-picture.
 - **Vertical 4K:** 2160x3840. The Cam Link feed is rotated 90°, because the camera is mounted sideways for full-sensor 9:16.
 
 Jason's `~/Applications/OBS {Horizontal,Vertical} 4K.app` launchers do the same thing by hand. Never switch the profile or collection live over the websocket: switching collections can crash OBS 32. The raw tool blocks it.
@@ -131,7 +131,7 @@ The profile streams YouTube RTMPS: canvas rescaled to 1080p, H.264 CBR 8 Mbps, a
    - relaunch with `obs_launch`
    - `obs_preflight` to confirm
 3. **Never print `basic.ini` whole.** It holds the YouTube OAuth token in plain text. Grep specific keys.
-4. **The Settings window through computer use** needs full-screen control. Background clicks report success but never switch Settings pages. The OBS windows live on the Built-in Retina display.
+4. **The Settings window through computer use** needs full-screen control. Background clicks report success but never switch Settings pages. The OBS windows live on the LG, the only display.
 5. **Update `studio.json`** and the changelog in `reference/rig.md` in the same turn.
 
 ## Setup (once per machine)

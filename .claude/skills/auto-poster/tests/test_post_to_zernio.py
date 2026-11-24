@@ -156,6 +156,27 @@ class AutoPosterTests(unittest.TestCase):
             f.truncate(163 * 1000 * 1000)
         cls.uhd = make("uhd.mp4", "2160x3840")
 
+        def still(name, size):
+            out = cls.tmp / name
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"testsrc=size={size}:rate=1",
+                            "-frames:v", "1", str(out)], check=True)
+            return out
+
+        cls.story_png = still("story.png", "1080x1920")
+        cls.story_2x = still("story-2x.png", "2160x3840")  # carousel-generator renders at 2x
+        cls.wide_jpg = still("wide.jpg", "1920x1080")
+        cls.story_clip = cls.tmp / "story-clip.mp4"  # 5 s: inside the 3-60 s Story window
+        cls.long_clip = cls.tmp / "long-clip.mp4"    # 61 s: one second over
+        for out, seconds in ((cls.story_clip, 5), (cls.long_clip, 61)):
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i",
+                            f"testsrc=size=270x480:rate=2:duration={seconds}",
+                            "-c:v", "libx264", "-pix_fmt", "yuv420p", str(out)], check=True)
+        cls.heic = cls.tmp / "photo.heic"
+        cls.heic.write_bytes(b"not really a heic")
+        cls.big_story = cls.tmp / "big-story.mp4"
+        with open(cls.big_story, "wb") as f:
+            f.truncate(101 * 1000 * 1000)
+
     @classmethod
     def tearDownClass(cls):
         cls.server.shutdown()
@@ -330,6 +351,85 @@ class AutoPosterTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stderr)
         yt = self.json_out(proc)["payload"]["platforms"][0]
         self.assertEqual(yt["platformSpecificData"], {"title": "T", "visibility": "private"})
+
+    # --- instagram story ------------------------------------------------
+
+    def story_dry(self, media, *extra):
+        proc = self.run_script(media, "--ig-story", "--dry-run", *extra)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        return proc, self.json_out(proc)["payload"]
+
+    def test_story_goes_to_instagram_only_as_a_story(self):
+        # No --platforms: the default is every account in the env. A Story must
+        # never fan the same file out as a Reel, a Short, a TikTok...
+        _, payload = self.story_dry(self.story_png)
+        self.assertEqual(payload["platforms"], [{
+            "platform": "instagram", "accountId": ACCOUNTS["instagram"],
+            "platformSpecificData": {"contentType": "story"},
+        }])
+        self.assertEqual(payload["mediaItems"], [{"type": "image", "url": str(self.story_png)}])
+
+    def test_story_video_is_a_video_item(self):
+        _, payload = self.story_dry(self.story_clip)
+        self.assertEqual(payload["mediaItems"][0]["type"], "video")
+        self.assertEqual(payload["platforms"][0]["platformSpecificData"], {"contentType": "story"})
+
+    def test_story_drops_the_caption_with_a_warning(self):
+        proc, payload = self.story_dry(self.story_png, "--caption", "nobody will see this")
+        self.assertEqual(payload["content"], "")
+        self.assertIn("no caption", proc.stderr)
+
+    def test_story_2x_render_is_not_caught_by_the_4k_video_gate(self):
+        self.story_dry(self.story_2x)
+
+    def test_story_off_ratio_media_warns_but_posts(self):
+        proc, _ = self.story_dry(self.wide_jpg)
+        self.assertIn("1920x1080", proc.stderr)
+
+    def test_story_with_other_platforms_is_refused(self):
+        proc = self.run_script(self.story_png, "--ig-story", "--platforms", "instagram,tiktok")
+        self.assert_refused_before_any_network(proc, "story only")
+
+    def test_story_with_collaborators_is_refused(self):
+        proc = self.run_script(self.story_png, "--ig-story", "--ig-collaborators", "somebrand")
+        self.assert_refused_before_any_network(proc, "collaborators")
+
+    def test_story_video_over_60s_is_refused(self):
+        proc = self.run_script(self.long_clip, "--ig-story")
+        self.assert_refused_before_any_network(proc, "60 seconds")
+
+    def test_story_video_over_100mb_is_refused(self):
+        proc = self.run_script(self.big_story, "--ig-story")
+        self.assert_refused_before_any_network(proc, "100 mb")
+
+    def test_story_unsupported_format_is_refused(self):
+        proc = self.run_script(self.heic, "--ig-story")
+        self.assert_refused_before_any_network(proc, ".heic")
+
+    def test_story_image_uploads_and_posts(self):
+        proc = self.run_script(self.story_png, "--ig-story")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        presign = [json.loads(b) for m, p, b in MockZernio.state["requests"] if p == "/media/presign"][0]
+        self.assertEqual(presign["contentType"], "image/png")
+        payload = MockZernio.state["payloads"][0]
+        self.assertTrue(payload["publishNow"])
+        self.assertEqual(payload["mediaItems"][0]["type"], "image")
+        self.assertEqual([t["platform"] for t in payload["platforms"]], ["instagram"])
+        self.assertEqual(payload["platforms"][0]["platformSpecificData"], {"contentType": "story"})
+        self.assertEqual(self.json_out(proc)["platforms"], ["instagram"])
+
+    def test_story_can_be_scheduled(self):
+        due = self.local_due(days=1)
+        proc = self.run_script(self.story_clip, "--ig-story", "--mode", "customScheduled", "--due-at", due)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        payload = MockZernio.state["payloads"][0]
+        self.assertEqual(payload["scheduledFor"], due)
+        self.assertEqual(payload["platforms"][0]["platformSpecificData"], {"contentType": "story"})
+
+    def test_reel_payload_carries_no_story_flag(self):
+        proc = self.run_script(self.vert, "--caption", "x", "--platforms", "instagram", "--dry-run")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertNotIn("platformSpecificData", self.json_out(proc)["payload"]["platforms"][0])
 
     # --- env ------------------------------------------------------------
 

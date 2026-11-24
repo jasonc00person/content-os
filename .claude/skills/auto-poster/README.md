@@ -56,6 +56,8 @@ On Linux, install the equivalents via your package manager (`apt install ffmpeg 
 
 The posting script prints a JSON result to stdout with the Zernio post ID, publish status, and per-platform URLs and errors. For `customScheduled` mode, include a `--due-at` time in ISO format (e.g. `2026-05-18T12:00:00`) plus a timezone (`--timezone America/New_York` style, or `ZERNIO_TIMEZONE` in `.env`).
 
+To post to the Instagram Story instead of as a Reel, say "post this to my story" (the script's `--ig-story`): one 9:16 JPEG/PNG image, or one MP4/MOV video of 3 to 60 seconds and up to 100 MB. It goes to Instagram only, with no caption; Instagram's API has no link or poll stickers, so a Story that needs one still goes up from the phone.
+
 ## Known gotchas
 
 - Threads captions silently fail over 500 characters: post a trimmed Threads version in its own call.

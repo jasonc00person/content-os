@@ -259,9 +259,15 @@ def platform_targets(platforms, require_accounts):
     return targets
 
 
-def media_item(media_url):
-    path = Path(urlparse(media_url).path)
-    guessed = guess_content_type(path)
+def source_suffix(source):
+    return Path(urlparse(source).path if is_url(source) else source).suffix.lower()
+
+
+def media_item(media_url, source=None):
+    # The source's own extension decides image vs video: an uploaded file's
+    # public URL is Zernio's to name and need not keep it.
+    suffix = (source and source_suffix(source)) or source_suffix(media_url)
+    guessed = guess_content_type(Path("x" + suffix))
     media_type = "image" if guessed.startswith("image/") else "video"
     return {"type": media_type, "url": media_url}
 
@@ -269,8 +275,9 @@ def media_item(media_url):
 SHORT_MAX_SECONDS = 180
 
 
-def probe_media(source):
-    """Return displayed (width, height, duration_seconds) via ffprobe, or None if it can't be read."""
+def probe_media(source, need_duration=True):
+    """Return displayed (width, height, duration_seconds) via ffprobe, or None if it can't be read.
+    need_duration=False is for stills, where ffprobe reports no (or a one-frame) duration."""
     try:
         out = run(
             [
@@ -283,7 +290,7 @@ def probe_media(source):
         stream = (data.get("streams") or [{}])[0]
         width, height = int(stream.get("width") or 0), int(stream.get("height") or 0)
         duration = float((data.get("format") or {}).get("duration") or 0)
-        if not (width and height and duration):
+        if not (width and height and (duration or not need_duration)):
             return None
         # Phone clips store landscape pixels plus a rotation flag and display
         # vertical; YouTube classifies on the displayed shape.
@@ -407,6 +414,55 @@ def check_instagram_size(platforms, source):
         )
 
 
+# Instagram Stories (docs.zernio.com/platforms/instagram/media): one JPEG/PNG, or
+# one MP4/MOV of 3-60 s and up to 100 MB, 9:16.
+STORY_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}
+STORY_VIDEO_SUFFIXES = {".mp4", ".mov"}
+STORY_MAX_BYTES = 100 * 1000 * 1000
+STORY_MIN_SECONDS, STORY_MAX_SECONDS = 3, 60
+
+
+def check_story_media(source):
+    """Gate one file for an Instagram Story; returns "image" or "video"."""
+    suffix = source_suffix(source)
+    if suffix in STORY_IMAGE_SUFFIXES:
+        kind = "image"
+    elif suffix in STORY_VIDEO_SUFFIXES:
+        kind = "video"
+    else:
+        raise RuntimeError(
+            f"an Instagram Story takes a JPEG or PNG image, or an MP4 or MOV video, not {suffix or 'a file with no extension'}. "
+            "Convert it first (a HEIC photo: sips -s format jpeg IN.heic --out OUT.jpg)."
+        )
+    if not is_url(source) and not Path(source).expanduser().is_file():
+        raise FileNotFoundError(f"Story media not found: {source}")
+    shape = probe_media(source, need_duration=kind == "video")
+    if kind == "video":
+        if not is_url(source):
+            size = Path(source).expanduser().stat().st_size
+            if size > STORY_MAX_BYTES:
+                raise RuntimeError(
+                    f"{size / 1e6:.0f} MB: an Instagram Story video is capped at 100 MB. Re-encode it smaller, "
+                    f"then post the new file:\n  {RESCALE_1080}"
+                )
+        if shape is None:
+            print("warning: ffprobe could not read the Story video, so its length was not checked "
+                  f"(a Story must be {STORY_MIN_SECONDS}-{STORY_MAX_SECONDS} s)", file=sys.stderr)
+        elif not STORY_MIN_SECONDS <= shape[2] <= STORY_MAX_SECONDS:
+            raise RuntimeError(
+                f"{shape[2]:.1f} s: an Instagram Story video must be {STORY_MIN_SECONDS} to {STORY_MAX_SECONDS} seconds "
+                "(the API does not split a longer one into several Stories). Trim it, or cut it into "
+                "clips of 60 s or less and post each one."
+            )
+    if shape and abs(shape[0] / shape[1] - 9 / 16) > 0.02:
+        print(
+            f"warning: Story media is {shape[0]}x{shape[1]}, not 9:16 (1080x1920). It will still post; "
+            "Instagram decides how it is fitted to the screen.",
+            file=sys.stderr,
+        )
+    return kind
+
+
 def check_not_already_posted(api_key, caption, platforms):
     """An interrupted run can still have posted, and a re-run re-uploads the file
     (new media URL), so Zernio's own 24h content-hash 409 misses the duplicate
@@ -435,7 +491,7 @@ def build_payload(args, platforms, media_url, caption, title):
     require_accounts = not args.allow_default_accounts
     payload = {
         "content": caption,
-        "mediaItems": [media_item(media_url)],
+        "mediaItems": [media_item(media_url, args.video)],
         "platforms": platform_targets(platforms, require_accounts),
     }
     if args.timezone:
@@ -470,6 +526,13 @@ def build_payload(args, platforms, media_url, caption, title):
         for target in payload["platforms"]:
             if target.get("platform") == "instagram":
                 target["platformSpecificData"] = {"collaborators": names[:3]}
+
+    if args.ig_story:
+        # contentType "story" is the whole switch (docs.zernio.com/platforms/instagram/posts);
+        # without it a single video publishes as a Reel and an image as a feed post.
+        for target in payload["platforms"]:
+            if target.get("platform") == "instagram":
+                target["platformSpecificData"] = {"contentType": "story"}
 
     if "tiktok" in platforms and args.tiktok_draft:
         # Zernio's TikTok app shares TikTok's rolling-24h direct-post cap across
@@ -725,8 +788,8 @@ def status_report(api_key, post_id):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Post a provided video directly to Zernio.")
-    parser.add_argument("video", nargs="?", help="Local video path or public video URL (omit only with --list-accounts)")
+    parser = argparse.ArgumentParser(description="Post a provided video (or, with --ig-story, an image or video) directly to Zernio.")
+    parser.add_argument("video", nargs="?", help="Local video path or public video URL; with --ig-story, a JPEG/PNG image or an MP4/MOV video (omit only with --list-accounts or --status)")
     parser.add_argument("--list-accounts", action="store_true", help="List the connected Zernio accounts (platform, id, display name) as paste-ready ZERNIO_ACCOUNT_<PLATFORM>= lines and exit; the API key is never printed")
     parser.add_argument("--status", nargs="?", const="", metavar="POST_ID", help="Check a post by id (did it go out?), or with no id list everything scheduled/in flight plus failures from the last 14 days, and exit. Exit 2 if any platform failed")
     parser.add_argument("--caption", default="", help="Caption text")
@@ -743,6 +806,7 @@ def main():
     parser.add_argument("--yt-title", help="YouTube title")
     parser.add_argument("--yt-visibility", choices=["public", "private", "unlisted"], help="YouTube visibility; default = Zernio's default (public)")
     parser.add_argument("--ig-collaborators", help="Comma-separated Instagram usernames to invite as collaborators on the Reel (up to 3, e.g. a sponsor's handle)")
+    parser.add_argument("--ig-story", action="store_true", help="Publish to the Instagram STORY instead of as a Reel: one 9:16 JPEG/PNG image, or one MP4/MOV video of 3-60 s and up to 100 MB. Instagram only (every other platform is left out), no caption, no stickers or links")
     parser.add_argument("--tiktok-draft", action="store_true", help="Deliver TikTok to the Creator Inbox as a draft instead of direct-publishing (the workaround when Zernio reports TikTok direct posting is at capacity)")
     parser.add_argument("--yt-long-form", action="store_true", help="Deliberately publish to YouTube as a long-form video. Without it, YouTube is dropped unless the file qualifies as a Short (vertical, <= 3 min)")
     parser.add_argument("--allow-default-accounts", action="store_true", help="Send platform names without explicit account IDs")
@@ -781,9 +845,24 @@ def main():
             )
 
     api_key = require_env("ZERNIO_API_KEY")
-    platforms = parse_platforms(args.platforms) if args.platforms else configured_platforms()
-    platforms = youtube_gate(platforms, args.video, args.yt_long_form)
     caption = caption_from_args(args)
+    if args.ig_story:
+        # A Story is its own Instagram-only post. Never let the default "every
+        # account" fan-out send the same file out as a Reel, a Short, a TikTok...
+        if args.platforms and parse_platforms(args.platforms) != ["instagram"]:
+            raise RuntimeError(
+                "--ig-story posts to the Instagram Story only: drop --platforms (or pass --platforms instagram) "
+                "and post to the other platforms in a separate call"
+            )
+        if args.ig_collaborators:
+            raise RuntimeError("Instagram Stories take no collaborators: drop --ig-collaborators")
+        platforms = ["instagram"]
+        if caption:
+            print("warning: Instagram Stories show no caption, so the caption is not sent", file=sys.stderr)
+            caption = ""
+    else:
+        platforms = parse_platforms(args.platforms) if args.platforms else configured_platforms()
+        platforms = youtube_gate(platforms, args.video, args.yt_long_form)
     args.threads_caption = (args.threads_caption or "").strip() or None
     title = yt_title_from_args(args, args.video, caption)
 
@@ -794,7 +873,10 @@ def main():
         due = resolve_due(args.due_at, args.timezone)
         check_schedule(due, uploading=not is_url(args.video))
     check_caption_limits(platforms, caption, args.threads_caption)
-    check_instagram_size(platforms, args.video)
+    story_kind = check_story_media(args.video) if args.ig_story else None
+    if story_kind != "image":
+        # A still is resized by Instagram; the 4K/300 MB hang is a video problem.
+        check_instagram_size(platforms, args.video)
 
     if args.dry_run:
         # Zero network side effects: no presign, no upload, no reachability

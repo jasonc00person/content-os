@@ -19,11 +19,12 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-PROJECT = Path.home() / "Projects" / "dm-setter"
-URL = "https://dm-setter.jason-80a.workers.dev"
+# The project folder was renamed dm-setter -> fewchat on 2026-11-23 (the Worker and D1 database are still "dm-setter").
+PROJECT = next((p for p in (Path.home() / "Projects" / n for n in ("fewchat", "dm-setter")) if p.is_dir()), Path.home() / "Projects" / "fewchat")
+URL = "https://fewchat.jason-80a.workers.dev"  # renamed from dm-setter.jason-80a.workers.dev on 2026-11-23; the old host only redirects
 DB = "dm-setter"
 NEXT_POST = "next"  # DM Setter's Next Post or Reel post id (src/comments.ts NEXT_POST)
-SPEC_KEYS = ("keyword", "name", "tag", "card", "links", "opener")
+SPEC_KEYS = ("keyword", "name", "tag", "card", "links")
 
 
 def die(msg):
@@ -73,6 +74,9 @@ def admin(path, body=None):
             text = r.read().decode()
     except urllib.error.HTTPError as e:
         if 300 <= e.code < 400:
+            loc = e.headers.get("Location") or ""
+            if loc.startswith("http") and not loc.startswith(URL):  # the app moved: nothing was written
+                die(f"{path} redirected to another host ({loc}); update URL in dmflow.py")
             return {"ok": True}
         text = e.read().decode()
         try:
@@ -99,7 +103,7 @@ def checked(graph):
 
 
 def walk(g):
-    """The promo shape: When... -> card (tap button) -> tag action -> links -> pause -> opener."""
+    """The promo shape: When... -> card (tap button) -> tag action -> links, and nothing after the links."""
     nodes = {n["id"]: n for n in g["nodes"]}
 
     def nxt(nid, port="next"):
@@ -109,12 +113,24 @@ def walk(g):
     btn = card and next((b for bub in card["data"].get("bubbles", []) for b in bub["buttons"] if "url" not in b), None)
     tag = btn and nxt(card["id"], btn["id"])
     links = tag and nxt(tag["id"])
-    pause = links and nxt(links["id"])
-    opener = pause and nxt(pause["id"])
-    shape = [n and n["kind"] for n in (card, tag, links, pause, opener)]
-    if shape != ["message", "action", "message", "delay", "message"]:
-        die(f"template isn't the promo shape (card, tag, links, pause, opener); found {shape}. Pick another with --from.")
-    return card, tag, links, pause, opener
+    shape = [n and n["kind"] for n in (card, tag, links)]
+    if shape != ["message", "action", "message"]:
+        die(f"template isn't the promo shape (card, tag, links); found {shape}. Pick another with --from.")
+    return card, tag, links
+
+
+def drop_after(g, node):
+    """Remove every step that hangs off `node` (an old template's pause + follow-up question). Returns how many went."""
+    gone, todo = set(), [e["to"] for e in g["edges"] if e["from"] == node["id"]]
+    while todo:
+        nid = todo.pop()
+        if nid in gone:
+            continue
+        gone.add(nid)
+        todo += [e["to"] for e in g["edges"] if e["from"] == nid]
+    g["nodes"] = [n for n in g["nodes"] if n["id"] not in gone]
+    g["edges"] = [e for e in g["edges"] if e["from"] not in gone and e["to"] not in gone]
+    return len(gone)
 
 
 def where(media_id):
@@ -135,13 +151,13 @@ def report(r):
         return
     t = g["trigger"]
     print(f"  draft trigger: {t['source']} · keyword {t['keyword']} · post {where(t['media_id'])}")
-    card, tag, links, pause, opener = walk(g)
+    card, tag, links = walk(g)
     btn = next(b for b in card["data"]["bubbles"][0]["buttons"] if "url" not in b)
     print(f"\n[card] button \"{btn['title']}\"\n{text_of(card)}")
     print(f"\n[tag] {', '.join(a['value'] for a in tag['data']['actions'] if a['type'] == 'add_tag')}")
     print(f"\n[links]\n{text_of(links)}")
-    print(f"\n[pause] {pause['data']['seconds']}s")
-    print(f"\n[opener]\n{text_of(opener)}")
+    after = sum(1 for e in g["edges"] if e["from"] == links["id"])
+    print("\n[end] the links are the last message" if not after else f"\n[!] {after} step(s) still hang off the links message")
     print(f"\n[public replies] {' | '.join((t['public_reply'] or '').splitlines())}")
     print(f"\neditor: {URL}/admin/flows/{r['id']}")
 
@@ -159,7 +175,7 @@ def cmd_create(a):
     missing = [k for k in SPEC_KEYS if not str(spec.get(k, "")).strip()]
     if missing:
         die(f"spec is missing {missing}")
-    for k in ("card", "links", "opener", "name"):
+    for k in ("card", "links", "name"):
         if "—" in spec[k]:
             die(f"spec.{k} has an em dash; it ships under Jason's name")
         if "PLACEHOLDER" in spec[k] or "<<" in spec[k]:
@@ -188,7 +204,8 @@ def cmd_create(a):
     g["trigger"]["media_id"] = NEXT_POST  # waits from `arm` on; a draft never locks
     if spec.get("public_reply"):
         g["trigger"]["public_reply"] = spec["public_reply"]
-    card, tag, links, pause, opener = walk(g)
+    card, tag, links = walk(g)
+    drop_after(g, links)  # no follow-up question: the automation ends on the links (Jason, 2026-11-23)
     card["data"]["bubbles"][0]["text"] = spec["card"]
     card["data"]["bubbles"] = card["data"]["bubbles"][:1]
     acts = tag["data"]["actions"]
@@ -198,13 +215,12 @@ def cmd_create(a):
     else:
         acts.insert(0, {"type": "add_tag", "value": spec["tag"]})
     links["data"] = {"bubbles": [{"text": spec["links"], "buttons": []}], "quick_replies": []}
-    opener["data"]["bubbles"] = [{"text": spec["opener"], "buttons": []}]
 
     clean, problems = checked(g)
     if problems:
         die(f"draft wouldn't publish: {problems}")
     kept = walk(clean)
-    for mine, theirs in ((card, kept[0]), (links, kept[2]), (opener, kept[4])):
+    for mine, theirs in ((card, kept[0]), (links, kept[2])):
         if text_of(mine) != text_of(theirs):
             die(f"the validator clipped a message (Instagram limits): {text_of(mine)[:60]}...")
 
@@ -217,9 +233,9 @@ def cmd_create(a):
 
     r = row(after)
     g2 = json.loads(r["draft"])
-    c2, t2, l2, _, o2 = walk(g2)
+    c2, t2, l2 = walk(g2)
     if (r["name"], g2["trigger"]["keyword"], g2["trigger"]["media_id"], r["enabled"]) != (spec["name"], spec["keyword"], NEXT_POST, 0) \
-            or text_of(c2) != spec["card"] or text_of(l2) != spec["links"] or text_of(o2) != spec["opener"]:
+            or text_of(c2) != spec["card"] or text_of(l2) != spec["links"] or any(e["from"] == l2["id"] for e in g2["edges"]):
         die(f"read-back doesn't match the spec; check #{after} in the editor")
     print("[dmflow] saved as a DRAFT (not live, sends nothing)\n")
     report(r)

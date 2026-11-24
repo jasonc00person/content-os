@@ -1,6 +1,6 @@
 ---
 name: auto-poster
-description: "Post or schedule a provided video directly through Zernio. Input is a local video path or public video URL. If no caption is provided, transcribe the video with faster-whisper (tiny.en by default) and generate a caption from that transcript. No Notion lookup or browser download. Triggers: post this video, post /path/to/video.mp4, schedule this video, queue this video, publish reel, post to instagram, post to zernio."
+description: "Post or schedule a provided video directly through Zernio. Input is a local video path or public video URL. If no caption is provided, transcribe the video with faster-whisper (tiny.en by default) and generate a caption from that transcript. Also posts one image or short video to the Instagram Story (--ig-story). No Notion lookup or browser download. Triggers: post this video, post /path/to/video.mp4, schedule this video, queue this video, publish reel, post to instagram, post to zernio, post to my story, post this to my story, instagram story, story post, schedule a story."
 ---
 
 # Auto Poster
@@ -52,6 +52,7 @@ Optional:
 - Mode: default `shareNow`.
 - Schedule time for `customScheduled`.
 - YouTube title. Default is the filename or caption first line.
+- Instagram Story instead of a Reel (`--ig-story`): the input may then be a JPEG/PNG image too. See "Instagram Story".
 - YouTube visibility (`--yt-visibility public|private|unlisted`). Omitted = Zernio's default, public. A long-form upload goes up `private` so Jason can finish it in Studio. Zernio's presigned upload caps files at 5 GB, so re-encode a bigger export before posting (4K at 40 Mbps is plenty for YouTube).
 
 ## Prerequisites
@@ -157,6 +158,25 @@ python3 .claude/skills/auto-poster/scripts/post_to_zernio.py \
 
 To see the exact payload with zero network calls (no upload, no verify, no post), add `--dry-run`; the local path stands in for the media URL.
 
+## Instagram Story
+
+`--ig-story` publishes the file to the Instagram Story instead of as a Reel (added 2026-11-23, and run live the same day: three 10-second 1080x1920 videos each published in under a minute; the payload is Zernio's documented `platformSpecificData.contentType: "story"` on the Instagram target, docs.zernio.com/platforms/instagram/posts):
+
+```bash
+python3 .claude/skills/auto-poster/scripts/post_to_zernio.py \
+  "/absolute/path/to/story.png" \
+  --ig-story
+```
+
+- **One file per call.** A 9:16 (1080x1920) JPEG or PNG, or an MP4/MOV of 3 to 60 seconds and up to 100 MB. A second slide is a second call; the API does not split a long video into several Stories, so cut it into clips of 60 s or less first.
+- **Instagram only.** The Story goes to the Instagram account and nowhere else, even though the default is every account in `.env`. `--platforms` with anything besides `instagram` is refused: post the Reel and the other platforms in their own call.
+- **No caption, no stickers.** Stories show no caption, so `--caption` is dropped with a warning and no caption is generated (skip the transcriber). Instagram's API has no link sticker, poll, question, countdown, music or mention sticker: a Story that needs a link still goes up from the phone. Text has to be baked into the image or video. `--ig-collaborators` is refused.
+- **Modes work as usual**: `shareNow`, `customScheduled` (same past-time and 6-day gates), `draft`, `--dry-run`. A Story disappears 24 hours after it publishes.
+- **Gates, before any upload**: a format other than JPEG/PNG/MP4/MOV, a video over 100 MB, or a video outside 3 to 60 seconds is refused. Media that is not 9:16 only warns. A 2x carousel-style render (2160x3840 PNG) passes: the 4K gate is for video.
+- **No re-run guard.** The duplicate check keys on the caption and a Story has none, so after an interrupted run check `--status` before running it again.
+- **Notion.** A Story is not a pipeline video: do not flip any Notion page to `Posted` for a Story-only post.
+- **A "DM me KEYWORD" Story** still needs its DM automation set up separately; this only puts the Story up.
+
 ## Transcription (faster-whisper)
 
 `scripts/transcribe_for_caption.sh` uses the one transcription engine every skill in this repo shares: faster-whisper in the persistent venv at `~/.cache/content-os/whisper-venv` (built by `uv` on first use or by `./setup.sh`; `CONTENT_OS_WHISPER_VENV` overrides the location). Model defaults to `tiny.en` (fast, plenty for a caption); override with `AUTO_POSTER_WHISPER_MODEL=base.en` (or `small.en`) for more accuracy at a few seconds more per run.
@@ -214,7 +234,8 @@ For `customScheduled`, `--due-at` is required, and so is a timezone (`--timezone
 The script sends:
 
 - Caption as top-level `content`.
-- Video as `mediaItems: [{ type: "video", url }]`.
+- Video as `mediaItems: [{ type: "video", url }]` (`type: "image"` for a Story image).
+- `platformSpecificData: { contentType: "story" }` on the Instagram target with `--ig-story`.
 - Platforms as `{ platform, accountId }` targets from `.env`.
 - YouTube title as top-level `title` when posting to YouTube.
 
@@ -263,6 +284,7 @@ Flags for edge cases:
 - `--max-retries N` — safe create retries (default 1); each is reconcile-guarded so it can't duplicate.
 - `--status [POST_ID]`: see Execution Rules step 10.
 - `--threads-caption TEXT`: the under-500-character Threads version (Caption Rules).
+- `--ig-story`: post to the Instagram Story instead of as a Reel (see "Instagram Story").
 - `--ig-collaborators a,b`: invite up to 3 Instagram usernames as collaborators on the Reel (a sponsor's handle). The invite goes out at publish and stays pending until they accept; a rejected username is dropped without failing the post (read `droppedCollaborators` on the post).
 
 Regression tests: `python3 .claude/skills/auto-poster/tests/test_post_to_zernio.py` runs every gate and failure path against a local mock Zernio (no real account touched, about 10s). Run it after any change to the script.

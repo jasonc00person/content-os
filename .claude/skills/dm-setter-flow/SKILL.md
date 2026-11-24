@@ -1,6 +1,6 @@
 ---
 name: dm-setter-flow
-description: "Jason's own comment-keyword DM automation for a SHORT-FORM video, built in DM Setter (his custom Instagram DM software in ~/Projects/dm-setter, which replaced Manychat's comment-to-DM for his account). Reads the keyword from the spoken CTA in the final export, finds and checks the resource links the video promises, duplicates the newest promo automation as a DRAFT with the new keyword, card, tag, links and opener, then right before the reel posts publishes it on Next Post or Reel so it locks onto that reel. Short form only. Jason-only: never shipped to clients (they use manychat-flow). Run before auto-poster. Triggers: set up the dm automation, dm automation for this reel, comment keyword automation, keyword cta flow, set up the dm flow, dm setter flow, dm setter automation, automation for this post, make the automation, arm the automation, put the automation live, publish the dm automation."
+description: "Jason's own comment-keyword DM automation for a SHORT-FORM video, built in DM Setter (his custom Instagram DM software in ~/Projects/dm-setter, which replaced Manychat's comment-to-DM for his account). Reads the keyword from the spoken CTA in the final export, finds and checks the resource links the video promises, duplicates the newest promo automation as a DRAFT with the new keyword, card, tag and links (no follow-up question), then right before the reel posts publishes it on Next Post or Reel so it locks onto that reel. Short form only. Jason-only: never shipped to clients (they use manychat-flow). Run before auto-poster. Triggers: set up the dm automation, dm automation for this reel, comment keyword automation, keyword cta flow, set up the dm flow, dm setter flow, dm setter automation, automation for this post, make the automation, arm the automation, put the automation live, publish the dm automation."
 ---
 
 # DM Setter Flow
@@ -57,19 +57,17 @@ python3 .claude/skills/dm-setter-flow/scripts/dmflow.py arm <id>          # publ
   "name": "THUMBNAIL: AI YouTube thumbnails in Krea",
   "tag": "krea ai thumbnails guide",
   "card": "yooooo what up it's Jason 👋\n\nJust tap the button below to get my FREE step-by-step AI thumbnail guide: the exact Krea + Canva process and every prompt ⤵️",
-  "links": "here's the FREE AI thumbnail guide 🎁 the full Krea + Canva process + every prompt\nhttps://creator-economy.notion.site/AI-YouTube-Thumbnails-in-Krea-3fbf65855e6b8108925ed44c62ae3b45",
-  "opener": "yo also curious, are you making your own thumbnails rn or still paying a designer? 👀"
+  "links": "here's the FREE AI thumbnail guide 🎁 the full Krea + Canva process + every prompt\nhttps://creator-economy.notion.site/AI-YouTube-Thumbnails-in-Krea-3fbf65855e6b8108925ed44c62ae3b45"
 }
 ```
 Optional `"public_reply"` (one per line, picked at random); left out, the template's three stay.
 
-The shape it fills (every live promo since 2026-10-29): **card** (first message, the private reply, with the "Send the Link! 🔗" tap button) → tap → **tag** → **links** → 3 s pause → **opener** (typed, the setter takes the reply from there). There is no Skool message or 1h follow-up in this shape any more; the AI setter does that job.
+The shape it fills: **card** (first message, the private reply, with the "Send the Link! 🔗" tap button) → tap → **tag** → **links**, and it ends there. **No follow-up question, ever** (Jason, 2026-11-23: "deliver them the lead magnet and then just leave it there. I never respond to any of those."). The AI setter is retired until further notice, so nothing answers a reply; a question at the end only leaves people on read. The pause + "yo also curious..." opener was removed from all 26 live automations that had one on 2026-11-23 (their old graphs are in `~/Projects/fewchat/docs/backups/automations-before-opener-removal_2026-11-23.json` (the project folder was renamed from `dm-setter` to `fewchat` on 2026-11-23)), and `create` drops anything an older template still has after its links.
 
 Copy rules:
 - Name = `KEYWORD: topic`, like the rest of the list. Tag = lowercase topic.
 - Card keeps the greeting word for word ("yooooo what up it's Jason 👋"), then one line naming exactly what the video promised, ⤵️ at the end.
 - Links: one labelled line per link, label ends in an emoji, URL on its own line under it.
-- Opener: one casual question about the lead's own situation, tied to the video's hook, 👀 at the end. Not a pitch.
 - Ships under Jason's name: **no em dashes** (the script refuses them). Say only what the video promised. No new offers, no prices.
 
 ## 3. Build the draft
@@ -77,7 +75,7 @@ Copy rules:
 ```bash
 python3 .claude/skills/dm-setter-flow/scripts/dmflow.py create /abs/path/spec.json
 ```
-It duplicates the newest live promo (`--from <id>` to pick another), checks its shape, rewrites keyword, card, tag, links and opener, sets the post to Next Post or Reel, validates, saves the draft, renames it, and reads every field back. The result is DRAFT: `enabled 0`, never published, nothing sends, and a draft never locks onto a post. Confirm the row in the console's Automations list (`/admin/automations`) reads DRAFT with the new keyword.
+It duplicates the newest live promo (`--from <id>` to pick another), checks its shape, rewrites keyword, card, tag and links, sets the post to Next Post or Reel, validates, saves the draft, renames it, and reads every field back. The result is DRAFT: `enabled 0`, never published, nothing sends, and a draft never locks onto a post. Confirm the row in the console's Automations list (`/admin/automations`) reads DRAFT with the new keyword.
 
 To try it on a phone before it goes live: `test <id>`, then DM the code to the account within 15 minutes. The run uses a hidden copy, so stats stay clean.
 
@@ -97,4 +95,4 @@ It refuses if an any-post automation already answers the same word, publishes on
 ## Hand-off
 
 - Arm, then run `auto-poster` for the reel straight away (caption opens and closes with `Comment "KEYWORD"`). Nothing else goes up on Instagram in between. For a scheduled post, arm it as soon as the post is scheduled and keep the IG queue clear until it goes out.
-- Report: automation number + name, keyword, every link sent, the tag, the opener, and DRAFT, LIVE waiting on next post, or locked (with the post id).
+- Report: automation number + name, keyword, every link sent, the tag, and DRAFT, LIVE waiting on next post, or locked (with the post id).

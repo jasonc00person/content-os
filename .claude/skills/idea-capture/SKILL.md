@@ -1,6 +1,6 @@
 ---
 name: idea-capture
-description: "Turns a video link (YouTube, Instagram reel, TikTok, any yt-dlp URL) into a fully formatted Idea page in the Notion content DB: page title = the video's title, properties filled (Status Idea, Format from duration, Source URL), thumbnail as cover + inline image, and a toggle-heading body with the hook, chapter-by-chapter script structure, why it works, a twist for Jason, and the full transcript. Triggers: add this idea to notion, capture this idea, save this to notion, idea capture, add this video as an idea, notion idea from this link, log this idea."
+description: "Turns a video link (YouTube, Instagram reel, TikTok, any yt-dlp URL) into a fully formatted Idea page in the Notion content DB: page title = the video's title for long-form, the spoken hook for short-form, page icon = the Instagram logo (short-form) or YouTube logo (long-form), properties filled (Status Idea, Format from duration, Source URL), thumbnail as cover + inline image, and a toggle-heading body with the hook, chapter-by-chapter script structure, why it works, a twist for Jason, and the full transcript. Triggers: add this idea to notion, capture this idea, save this to notion, idea capture, add this video as an idea, notion idea from this link, log this idea."
 ---
 
 # Idea Capture — link → formatted Notion Idea page
@@ -14,8 +14,10 @@ yt-dlp --dump-json --skip-download "<url>" 2>/dev/null \
   | jq '{title, channel, uploader, view_count, like_count, duration, upload_date, thumbnail, description}'
 ```
 
-- **Title** = `title` verbatim (this becomes the Notion page title; never rewrite it).
-- **Format** = `Long-form` if `duration` > 180s, else `Short-form`.
+- **Format** = `Long-form` if `duration` > 180s, else `Short-form`. Instagram reels come back with `duration: null`: read the `Duration:` line in the transcript file's header (Step 2) instead.
+- **Title** (the Notion page title) depends on Format:
+  - **Long-form** = `title` verbatim. Never rewrite it.
+  - **Short-form** = the spoken hook, set after Step 2. IG and TikTok titles come back as "Video by <handle>", which tells Jason nothing. Take the transcript's opening sentence word for word, through its first full stop. Fix only caption garble of proper nouns and slash-codes ("/identitylog" → "/identitylock", checked against the caption). If the sentence runs past ~120 characters, stop at the end of the clause that carries the promise. A reel with no speech (music plus on-screen text) uses the on-screen hook from the first frame. Never "Video by ...", never a paraphrase.
 - **Chapters**: parse `^\d+:\d+ ` lines out of `description` if present. They become the spine of the script-structure breakdown. No chapters → you segment the transcript yourself into 5-9 beats.
 - **Thumbnail**: use `thumbnail` as-is for YouTube (`maxresdefault.jpg`). For IG/TikTok the yt-dlp thumbnail URL is short-lived; still use it (Notion caches external covers on first render).
 
@@ -41,7 +43,9 @@ A hit means the idea already exists: say so with the link and stop. Don't create
 
 Parent: `{"type":"data_source_id","data_source_id":"21bf6585-5e6b-81c2-b536-000b0adc0835"}` (schema in `notion-pipeline.md`).
 
-Properties: `Title` (verbatim), `Status: Idea`, `Format`, `Source URL`. **Leave `Type` blank**, Jason tags funnel placement himself. `icon: 💡`, `cover: <thumbnail url>`.
+Properties: `Title` (per Step 1: video title for long-form, spoken hook for short-form), `Status: Idea`, `Format`, `Source URL`. **Leave `Type` blank**, Jason tags funnel placement himself. `cover: <thumbnail url>`.
+
+`icon` follows Format: `:instagram_icon:` for Short-form, `:youtube:` for Long-form (the workspace's own custom emojis, the same ones the older pages use). If the workspace has no custom emoji by that name (the create errors, or the read-back shows a different icon), pass the logo PNG instead: `https://cdn-icons-png.flaticon.com/512/2111/2111463.png` (Instagram) or `https://cdn-icons-png.flaticon.com/512/1384/1384060.png` (YouTube).
 
 Body, in this exact order (Notion-flavored markdown; toggle headings are `## Text {toggle="true"}` with tab-indented children; quotes use `<br>` for line breaks, never raw newlines):
 
@@ -67,6 +71,7 @@ One line: the page link + title + Format. Nothing else. The Notion status is alr
 ## Gotchas
 
 - `notion-create-pages` with `cover` wants a raw https URL, not `{{...}}` wrapped.
+- Read the page back after the create (`notion-fetch`). The MCP has stored `## Heading {toggle="true"}` as literal text before; if the stored markdown shows `\{toggle`, rewrite the body with `ntn api /v1/pages/<id>/markdown -X PATCH ... </dev/null`, which makes real toggles.
 - Toggle-heading children MUST be tab-indented or they render outside the toggle.
 - A `>` quote breaks into separate blocks on every raw newline; use `<br>`.
 - Special chars outside code spans need escaping (`\[`, `\*`, `\$` in prose). Inside code blocks, don't escape.
