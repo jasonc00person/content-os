@@ -19,8 +19,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# The project folder was renamed dm-setter -> fewchat on 2026-11-23 (the Worker and D1 database are still "dm-setter").
-PROJECT = next((p for p in (Path.home() / "Projects" / n for n in ("fewchat", "dm-setter")) if p.is_dir()), Path.home() / "Projects" / "fewchat")
+# The project folder was renamed dm-setter -> fewchat on 2026-11-23, then -> jason-fewchat (the Worker and D1 database are still "dm-setter").
+PROJECT = next((p for p in (Path.home() / "Projects" / n for n in ("jason-fewchat", "fewchat", "dm-setter")) if p.is_dir()), Path.home() / "Projects" / "fewchat")
 URL = "https://fewchat.jason-80a.workers.dev"  # renamed from dm-setter.jason-80a.workers.dev on 2026-11-23; the old host only redirects
 DB = "dm-setter"
 NEXT_POST = "next"  # DM Setter's Next Post or Reel post id (src/comments.ts NEXT_POST)
