@@ -1,6 +1,6 @@
 ---
 name: auto-poster
-description: "Post or schedule a provided video directly through Zernio. Input is a local video path or public video URL. If no caption is provided, transcribe the video with faster-whisper (tiny.en by default) and generate a caption from that transcript. Also posts one image or short video to the Instagram Story (--ig-story). No Notion lookup or browser download. Triggers: post this video, post /path/to/video.mp4, schedule this video, queue this video, publish reel, post to instagram, post to zernio, post to my story, post this to my story, instagram story, story post, schedule a story."
+description: "Post or schedule a provided video directly through Zernio. Input is a local video path or public video URL. If no caption is provided, transcribe the video with faster-whisper (tiny.en by default) and generate a caption from that transcript. Also posts Instagram Stories (--ig-story): one image or short video, or several as a set that goes up in order. No Notion lookup or browser download. Triggers: post this video, post /path/to/video.mp4, schedule this video, queue this video, publish reel, post to instagram, post to zernio, post to my story, post this to my story, instagram story, story post, schedule a story."
 ---
 
 # Auto Poster
@@ -168,11 +168,15 @@ python3 .claude/skills/auto-poster/scripts/post_to_zernio.py \
   --ig-story
 ```
 
-- **One file per call.** A 9:16 (1080x1920) JPEG or PNG, or an MP4/MOV of 3 to 60 seconds and up to 100 MB. A second slide is a second call; the API does not split a long video into several Stories, so cut it into clips of 60 s or less first.
+- **The media.** A 9:16 (1080x1920) JPEG or PNG, or an MP4/MOV of 3 to 60 seconds and up to 100 MB. The API does not split a long video into several Stories, so cut it into clips of 60 s or less first.
+- **Several Stories that go in an order are ONE call, a set:** list the files in order, `post_to_zernio.py first.mp4 second.mp4 third.mp4 --ig-story`. Never one call per Story with times a minute apart. Zernio publishes each Story post on its own, and Instagram takes anywhere from under a minute to 7+ to process a video, so they land in whatever order processing finishes: on 2026-11-27 the three Black Friday launch Stories, scheduled 9:00, 9:01 and 9:02, went live 9:04, 9:05 and 9:06 in REVERSE, and two had to be deleted and reposted. A set posts each Story only after the one before it is live on Instagram (up to 15 min each). If one fails, is still processing, or the run errors or is killed midway, it stops and prints what posted and what did not, so nothing lands ahead of it and nothing is posted twice: post only the rest, never the whole set again.
+- **Run every Story call in the background.** A Story call waits until the Story is live (up to 15 min each), so a set, or even one video Story, outlasts the Bash tool's 10-minute foreground limit. Launch it with `run_in_background`, or detached with a log for a held set, and read its JSON when it exits.
+- **A set at a time:** add `--mode customScheduled --due-at <time>`. Zernio can't schedule a set in order, so the script uploads everything now, then holds the set itself and posts it in order at that time. The process must stay alive until then, so run it in the background (`nohup python3 ... > /absolute/path/story-set.log 2>&1 &`), read the log for the `holding N Stories until ...` line, and check `--status` after the time. A set takes `shareNow` or `customScheduled` only. The hold lives on this machine, so it needs the machine on at that time.
+- **The 30-minute guard:** a Story, or a set over its whole run, is refused while another Story is scheduled or still processing in Zernio within 30 minutes of it (it names the post id to delete if that one is being replaced), or while a set held or posting on this machine is within 30 minutes (it names the process to stop). A set held on another Mac is invisible to it. Back-to-back single calls are safe anyway: a Story call waits until the Story is live before it returns.
 - **Instagram only.** The Story goes to the Instagram account and nowhere else, even though the default is every account in `.env`. `--platforms` with anything besides `instagram` is refused: post the Reel and the other platforms in their own call.
 - **No caption, no stickers.** Stories show no caption, so `--caption` is dropped with a warning and no caption is generated (skip the transcriber). Instagram's API has no link sticker, poll, question, countdown, music or mention sticker: a Story that needs a link still goes up from the phone. Text has to be baked into the image or video. `--ig-collaborators` is refused.
-- **Modes work as usual**: `shareNow`, `customScheduled` (same past-time and 6-day gates), `draft`, `--dry-run`. A Story disappears 24 hours after it publishes.
-- **Gates, before any upload**: a format other than JPEG/PNG/MP4/MOV, a video over 100 MB, or a video outside 3 to 60 seconds is refused. Media that is not 9:16 only warns. A 2x carousel-style render (2160x3840 PNG) passes: the 4K gate is for video.
+- **Modes work as usual** for a single Story: `shareNow`, `customScheduled` (same past-time and 6-day gates), `draft`, `--dry-run`. A Story disappears 24 hours after it publishes.
+- **Gates, before any upload** (on every file of a set): a format other than JPEG/PNG/MP4/MOV, a video over 100 MB, or a video outside 3 to 60 seconds is refused. Media that is not 9:16 only warns. A 2x carousel-style render (2160x3840 PNG) passes: the 4K gate is for video.
 - **No re-run guard.** The duplicate check keys on the caption and a Story has none, so after an interrupted run check `--status` before running it again.
 - **Notion.** A Story is not a pipeline video: do not flip any Notion page to `Posted` for a Story-only post.
 - **A "DM me KEYWORD" Story** still needs its DM automation set up separately; this only puts the Story up.
@@ -278,7 +282,7 @@ The helper is hardened against the failure modes that bit us in real runs. You n
 
 Flags for edge cases:
 
-- `--wait-seconds N` — `shareNow` only: poll the created post by id until every platform reaches a terminal state (published/failed/cancelled), up to N seconds. Good for an accurate final report. Ignored for scheduled/queued/draft posts, which never reach a terminal state.
+- `--wait-seconds N` — `shareNow` only: poll the created post by id until every platform reaches a terminal state (published/failed/cancelled), up to N seconds. A Story always waits, up to at least 900 seconds. Good for an accurate final report. Ignored for scheduled/queued/draft posts, which never reach a terminal state.
 - `--dry-run`: print the payload and exit with zero network calls (no upload, no verify, no post).
 - `--skip-verify` — skip the media reachability check entirely.
 - `--max-retries N` — safe create retries (default 1); each is reconcile-guarded so it can't duplicate.

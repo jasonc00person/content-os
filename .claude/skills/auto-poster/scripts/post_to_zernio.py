@@ -4,6 +4,7 @@ import json
 import mimetypes
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -420,6 +421,13 @@ STORY_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}
 STORY_VIDEO_SUFFIXES = {".mp4", ".mov"}
 STORY_MAX_BYTES = 100 * 1000 * 1000
 STORY_MIN_SECONDS, STORY_MAX_SECONDS = 3, 60
+# Zernio publishes every Story post on its own, and Instagram takes anywhere from
+# under a minute to 7+ to process a video, so Stories set close together land in
+# whatever order processing finishes (2026-11-27: three Black Friday Stories
+# scheduled 9:00/9:01/9:02 went up 9:04/9:05/9:06 in REVERSE). A Story post waits
+# until it is live, and none may be set within STORY_GAP of another in flight.
+STORY_WAIT_SECONDS = 900
+STORY_GAP = timedelta(minutes=30)
 
 
 def check_story_media(source):
@@ -719,6 +727,181 @@ def wait_for_terminal(api_key, post, max_seconds, delay=5):
     return latest
 
 
+def _parse_ts(value):
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+# Story sets this machine is holding or posting. Zernio never sees a held set
+# before its time, so the neighbor guard reads this file too.
+HELD_SETS = Path.home() / ".cache" / "auto-poster" / "held-story-sets.json"
+
+
+def _pid_alive(pid):
+    if os.name != "posix":
+        return True  # Windows os.kill(pid, 0) would send Ctrl+C; let the window's end expire it instead
+    try:
+        os.kill(pid, 0)
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+def held_sets():
+    try:
+        sets = json.loads(HELD_SETS.read_text())
+    except (OSError, ValueError):
+        return []
+    now = datetime.now(timezone.utc)
+    return [s for s in sets if _pid_alive(s.get("pid", 0)) and (_parse_ts(s.get("end", "")) or now) > now]
+
+
+def save_held_sets(sets):
+    HELD_SETS.parent.mkdir(parents=True, exist_ok=True)
+    HELD_SETS.write_text(json.dumps(sets, indent=2))
+
+
+def _near(a_start, a_end, b_start, b_end):
+    return b_start - STORY_GAP < a_end and a_start < b_end + STORY_GAP
+
+
+def check_story_neighbors(api_key, start, end=None):
+    """Refuse a Story, or a set running start..end, when another Story is
+    scheduled, still processing, or held in a set on this machine within
+    STORY_GAP of it: Zernio can't keep them in order (see STORY_GAP)."""
+    end = end or start
+    advice = (
+        "Zernio publishes each Story on its own and Instagram's processing time varies, so they can land in the wrong "
+        "order (2026-11-27: three set a minute apart went up backwards). Post Stories that belong together as ONE set, "
+        "in order: --ig-story first second third (add --mode customScheduled --due-at to hold them until a time)."
+    )
+    for held in held_sets():
+        h_start, h_end = _parse_ts(held.get("start", "")), _parse_ts(held.get("end", ""))
+        if h_start and h_end and _near(start, end, h_start, h_end):
+            raise RuntimeError(
+                f"a Story set ({', '.join(held.get('files', []))}) is held on this machine for "
+                f"{h_start.astimezone():%a %H:%M %Z} by process {held.get('pid')}, within 30 minutes of this. {advice} "
+                f"To drop that set, stop process {held.get('pid')}."
+            )
+    for post in list_recent_posts(api_key, limit=100):
+        ig = next(
+            (pf for pf in post.get("platforms", [])
+             if pf.get("platform") == "instagram"
+             and (pf.get("platformSpecificData") or {}).get("contentType") == "story"),
+            None,
+        )
+        if not ig or post.get("status") == "draft" or (ig.get("status") or "").lower() in TERMINAL_STATUSES:
+            continue
+        other = _parse_ts(post.get("scheduledFor") or post.get("createdAt") or "")
+        if other and _near(start, end, other, other):
+            post_id = post.get("_id") or post.get("id")
+            raise RuntimeError(
+                f"another Instagram Story (post {post_id}) is {post.get('status')} for "
+                f"{other.astimezone():%a %H:%M %Z}, within 30 minutes of this. {advice} "
+                f"To replace that one, DELETE /posts/{post_id} first."
+            )
+
+
+def _interrupt(signum, frame):
+    raise KeyboardInterrupt(f"stopped by signal {signum}")
+
+
+def post_story_set(args, api_key, files):
+    """Several Stories, published in the order given: each one is posted only
+    after the one before it is live on Instagram, the only ordering that holds
+    (see STORY_GAP). With customScheduled the script itself holds the set until
+    --due-at; Zernio never sees the later ones early."""
+    if args.mode not in ("shareNow", "customScheduled"):
+        raise RuntimeError(
+            f"a Story set posts now or at --due-at; --mode {args.mode} would hand each Story to Zernio on its own, "
+            "where they can publish out of order"
+        )
+    due = None
+    if args.mode == "customScheduled":
+        due = resolve_due(args.due_at, args.timezone)
+        check_schedule(due, uploading=any(not is_url(f) for f in files))
+    for f in files:  # every file passes its gates before anything uploads
+        if check_story_media(f) == "video":
+            check_instagram_size(["instagram"], f)
+    when = due.strftime("%a %Y-%m-%d %H:%M %Z") if due else None
+
+    def now_args(f):
+        return argparse.Namespace(**{**vars(args), "mode": "shareNow", "video": f})
+
+    if args.dry_run:
+        stories = [
+            {"order": i, "media": f, "payload": build_payload(now_args(f), ["instagram"], f, "", None)}
+            for i, f in enumerate(files, 1)
+        ]
+        print(json.dumps({"scheduled_local": when, "stories": stories}, indent=2))
+        return
+
+    if hasattr(os, "setsid"):
+        try:
+            os.setsid()  # own process group: a kill aimed at the chat's other background jobs must not stop a set midway
+        except OSError:
+            pass
+    signal.signal(signal.SIGTERM, _interrupt)
+    start = due or datetime.now(timezone.utc)
+    end = start + timedelta(seconds=len(files) * STORY_WAIT_SECONDS)
+    check_story_neighbors(api_key, start, end)
+    save_held_sets(held_sets() + [{"pid": os.getpid(), "start": start.isoformat(), "end": end.isoformat(),
+                                   "files": [Path(f).name for f in files]}])
+    results = []
+
+    def stop(i, why, post_id=None):
+        # Always leave a record: a re-run of the whole set would post the live ones again.
+        print(json.dumps({"scheduled_local": when, "stories": results}, indent=2))
+        check = f"Check it with --status {post_id}" if post_id else "Check --status for it (it may have posted)"
+        print(
+            f"error: Story {i} ({Path(files[i - 1]).name}) {why}. Stopped there so nothing lands ahead of it. "
+            f"Posted: {', '.join(Path(r['media']).name for r in results if r['live']) or 'none'}. Not posted: "
+            + (", ".join(Path(x).name for x in files[i:]) or "nothing after it")
+            + f". {check}; once it is live (or deleted), post the rest as a set.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    i = 0
+    try:
+        urls = [f if is_url(f) else upload_to_zernio(api_key, f) for f in files]
+        if not args.skip_verify:
+            for f, url in zip(files, urls):
+                verify_url(url, required=is_url(f))
+        if due:
+            print(
+                f"holding {len(files)} Stories until {when}, then posting them in order: "
+                "keep this process running until then",
+                file=sys.stderr, flush=True,
+            )
+            while (left := (due - datetime.now(timezone.utc)).total_seconds()) > 0:
+                time.sleep(min(left, 30))  # wall clock, so a Mac that slept still posts the moment it wakes
+        for i, (f, url) in enumerate(zip(files, urls), 1):
+            payload = build_payload(now_args(f), ["instagram"], url, "", None)
+            post, source = create_post_resilient(
+                api_key, payload, "", Path(urlparse(url).path).name, max_retries=args.max_retries
+            )
+            post = wait_for_terminal(api_key, post, max(args.wait_seconds, STORY_WAIT_SECONDS))
+            summary = summarize_post(post)
+            ig = next((p for p in summary.get("platforms", []) if p.get("platform") == "instagram"), {})
+            live = (ig.get("status") or "").lower() in ("published", "posted")
+            results.append({"order": i, "media": f, "live": live, "source": source, "result": summary})
+            if not live:
+                stop(i, f"is {ig.get('status') or 'unknown'}" + (f": {ig['error']}" if ig.get("error") else ""),
+                     summary.get("post_id"))
+    except (Exception, KeyboardInterrupt) as exc:
+        if not i:
+            raise  # nothing was posted
+        stop(i, f"did not finish ({type(exc).__name__}: {exc})")
+    finally:
+        save_held_sets([s for s in held_sets() if s.get("pid") != os.getpid()])
+    print(json.dumps({"scheduled_local": when, "stories": results}, indent=2))
+
+
 def list_accounts(api_key):
     # The one hardened way to get ZERNIO_ACCOUNT_<PLATFORM> ids: prints
     # platform + id + display name as paste-ready .env lines. Never prints the key.
@@ -789,7 +972,7 @@ def status_report(api_key, post_id):
 
 def main():
     parser = argparse.ArgumentParser(description="Post a provided video (or, with --ig-story, an image or video) directly to Zernio.")
-    parser.add_argument("video", nargs="?", help="Local video path or public video URL; with --ig-story, a JPEG/PNG image or an MP4/MOV video (omit only with --list-accounts or --status)")
+    parser.add_argument("media", nargs="*", help="Local video path or public video URL; with --ig-story, a JPEG/PNG image or an MP4/MOV video, or several to post as one Story set in that order (omit only with --list-accounts or --status)")
     parser.add_argument("--list-accounts", action="store_true", help="List the connected Zernio accounts (platform, id, display name) as paste-ready ZERNIO_ACCOUNT_<PLATFORM>= lines and exit; the API key is never printed")
     parser.add_argument("--status", nargs="?", const="", metavar="POST_ID", help="Check a post by id (did it go out?), or with no id list everything scheduled/in flight plus failures from the last 14 days, and exit. Exit 2 if any platform failed")
     parser.add_argument("--caption", default="", help="Caption text")
@@ -806,7 +989,7 @@ def main():
     parser.add_argument("--yt-title", help="YouTube title")
     parser.add_argument("--yt-visibility", choices=["public", "private", "unlisted"], help="YouTube visibility; default = Zernio's default (public)")
     parser.add_argument("--ig-collaborators", help="Comma-separated Instagram usernames to invite as collaborators on the Reel (up to 3, e.g. a sponsor's handle)")
-    parser.add_argument("--ig-story", action="store_true", help="Publish to the Instagram STORY instead of as a Reel: one 9:16 JPEG/PNG image, or one MP4/MOV video of 3-60 s and up to 100 MB. Instagram only (every other platform is left out), no caption, no stickers or links")
+    parser.add_argument("--ig-story", action="store_true", help="Publish to the Instagram STORY instead of as a Reel: 9:16 JPEG/PNG images or MP4/MOV videos of 3-60 s and up to 100 MB. Several files = one set, each posted only after the one before it is live. Instagram only (every other platform is left out), no caption, no stickers or links")
     parser.add_argument("--tiktok-draft", action="store_true", help="Deliver TikTok to the Creator Inbox as a draft instead of direct-publishing (the workaround when Zernio reports TikTok direct posting is at capacity)")
     parser.add_argument("--yt-long-form", action="store_true", help="Deliberately publish to YouTube as a long-form video. Without it, YouTube is dropped unless the file qualifies as a Short (vertical, <= 3 min)")
     parser.add_argument("--allow-default-accounts", action="store_true", help="Send platform names without explicit account IDs")
@@ -816,6 +999,9 @@ def main():
     parser.add_argument("--max-retries", type=int, default=1, help="Safe create retries; each is guarded by reconciliation so timeouts never duplicate")
     parser.add_argument("--env-file", default=str(Path(__file__).resolve().parent.parent / ".env"))
     args = parser.parse_args()
+    if len(args.media) > 1 and not args.ig_story:
+        parser.error("several files only go together as an Instagram Story set (--ig-story)")
+    args.video = args.media[0] if args.media else None
 
     load_env(args.env_file)
 
@@ -860,6 +1046,9 @@ def main():
         if caption:
             print("warning: Instagram Stories show no caption, so the caption is not sent", file=sys.stderr)
             caption = ""
+        if len(args.media) > 1:
+            post_story_set(args, api_key, args.media)
+            return
     else:
         platforms = parse_platforms(args.platforms) if args.platforms else configured_platforms()
         platforms = youtube_gate(platforms, args.video, args.yt_long_form)
@@ -896,6 +1085,8 @@ def main():
         return
 
     check_not_already_posted(api_key, caption, platforms)
+    if args.ig_story and args.mode != "draft":
+        check_story_neighbors(api_key, due or datetime.now(timezone.utc))
     media_url = args.video if is_url(args.video) else upload_to_zernio(api_key, args.video)
     media_basename = Path(urlparse(media_url).path).name
 
@@ -912,7 +1103,10 @@ def main():
     if args.mode == "shareNow":
         # Only shareNow reaches a terminal per-platform state; scheduled, queued,
         # and draft posts would sit in a pending state until the full timeout.
-        post = wait_for_terminal(api_key, post, args.wait_seconds)
+        # A Story always waits until it is live, so back-to-back Story calls land in order.
+        post = wait_for_terminal(
+            api_key, post, max(args.wait_seconds, STORY_WAIT_SECONDS) if args.ig_story else args.wait_seconds
+        )
 
     result = summarize_post(post)
     problems = failed_platforms(result)

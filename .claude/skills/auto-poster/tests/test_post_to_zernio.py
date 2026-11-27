@@ -8,6 +8,7 @@ Needs python3, curl, ffmpeg/ffprobe. Run from anywhere:
     python3 .claude/skills/auto-poster/tests/test_post_to_zernio.py
 """
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -68,6 +69,9 @@ class MockZernio(BaseHTTPRequestHandler):
             if self.state.get("publish_on_get") and post:
                 for pf in post["platforms"]:
                     pf["status"] = "published"
+            if self.state.get("fail_on_get") and post:
+                for pf in post["platforms"]:
+                    pf.update(status="failed", errorMessage="Media processing failed")
             return self._send(200, {"post": post}) if post else self._send(404, {"error": "not found"})
         self._send(404, {"error": "no route"})
 
@@ -82,6 +86,8 @@ class MockZernio(BaseHTTPRequestHandler):
             return self._send(404, {"error": "no route"})
 
         payload = json.loads(body)
+        if len(self.state["payloads"]) >= self.state.get("refuse_creates_after", 10**9):
+            return self._send(429, {"error": "Too many requests"})
         self.state["payloads"].append(payload)
         mode = self.state.get("create", "ok")
         post_id = f"{len(self.state['posts']) + 1:024x}"
@@ -101,7 +107,8 @@ class MockZernio(BaseHTTPRequestHandler):
             "status": "published" if live else "scheduled",
             "mediaItems": payload.get("mediaItems", []),
             "platforms": [
-                {"platform": t["platform"], "status": ("published" if live and mode != "pending" else "pending")}
+                {"platform": t["platform"], "status": ("published" if live and mode != "pending" else "pending"),
+                 **({"platformSpecificData": t["platformSpecificData"]} if "platformSpecificData" in t else {})}
                 for t in payload["platforms"]
             ],
         }
@@ -183,10 +190,13 @@ class AutoPosterTests(unittest.TestCase):
 
     def setUp(self):
         MockZernio.state = {"requests": [], "payloads": [], "posts": {}}
+        (self.tmp / ".cache" / "auto-poster" / "held-story-sets.json").unlink(missing_ok=True)
 
     def run_script(self, *args, env_file=None):
         cmd = [sys.executable, str(SCRIPT), *map(str, args), "--env-file", str(env_file or self.env)]
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        # HOME in the temp dir: the held-story-set registry must never touch the real ~/.cache.
+        env = {**os.environ, "HOME": str(self.tmp)}
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=120, env=env)
 
     def json_out(self, proc):
         return json.loads(proc.stdout)
@@ -425,6 +435,138 @@ class AutoPosterTests(unittest.TestCase):
         payload = MockZernio.state["payloads"][0]
         self.assertEqual(payload["scheduledFor"], due)
         self.assertEqual(payload["platforms"][0]["platformSpecificData"], {"contentType": "story"})
+
+    # --- story sets: order -------------------------------------------------
+
+    def creates(self):
+        return [p for m, p, b in MockZernio.state["requests"] if m == "POST" and p == "/posts"]
+
+    def seed_story(self, status, due):
+        """A Story post already in Zernio, scheduled or in flight, at `due`."""
+        utc = due.astimezone(ZoneInfo("UTC")).isoformat().replace("+00:00", "Z")
+        MockZernio.state["posts"]["f" * 24] = {
+            "_id": "f" * 24, "content": "", "createdAt": utc, "scheduledFor": utc, "status": status,
+            "mediaItems": [], "platforms": [{"platform": "instagram", "status": "pending",
+                                             "platformSpecificData": {"contentType": "story"}}],
+        }
+
+    def test_story_set_posts_each_story_only_after_the_one_before_is_live(self):
+        # 2026-11-27: three Stories scheduled a minute apart went up in reverse.
+        MockZernio.state.update(create="pending", publish_on_get=True)
+        files = [self.story_png, self.story_clip, self.story_2x]
+        proc = self.run_script(*files, "--ig-story")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        stories = self.json_out(proc)["stories"]
+        self.assertEqual([s["media"] for s in stories], [str(f) for f in files])
+        self.assertTrue(all(s["result"]["platforms"][0]["status"] == "published" for s in stories))
+        # Every create after the first comes after a poll that saw the previous one live.
+        reqs = [(m, p) for m, p, b in MockZernio.state["requests"]]
+        posts = [i for i, r in enumerate(reqs) if r == ("POST", "/posts")]
+        self.assertEqual(len(posts), 3)
+        for n, (prev, nxt) in enumerate(zip(posts, posts[1:]), 1):
+            self.assertIn(("GET", f"/posts/{n:024x}"), reqs[prev:nxt])
+        media = [p["mediaItems"][0]["url"].rsplit("/", 1)[-1] for p in MockZernio.state["payloads"]]
+        self.assertEqual(media, [f.name for f in files])
+        self.assertTrue(all(p["publishNow"] for p in MockZernio.state["payloads"]))
+
+    def test_story_set_stops_at_a_story_that_fails(self):
+        MockZernio.state.update(create="pending", fail_on_get=True)
+        proc = self.run_script(self.story_png, self.story_clip, self.story_2x, "--ig-story")
+        self.assertEqual(proc.returncode, 2, proc.stdout)
+        self.assertEqual(len(self.creates()), 1, "nothing may post after a failed Story")
+        self.assertIn("Media processing failed", proc.stderr)
+        self.assertIn(f"{self.story_clip.name}, {self.story_2x.name}", proc.stderr)
+
+    def test_story_set_that_errors_midway_still_says_what_posted(self):
+        # A re-run of the whole set would post the live ones again, so the record must survive an error.
+        MockZernio.state.update(create="pending", publish_on_get=True, refuse_creates_after=1)
+        proc = self.run_script(self.story_png, self.story_clip, self.story_2x, "--ig-story")
+        self.assertEqual(proc.returncode, 2, proc.stderr)
+        stories = self.json_out(proc)["stories"]
+        self.assertEqual([(s["order"], s["live"]) for s in stories], [(1, True)])
+        self.assertIn(f"Posted: {self.story_png.name}", proc.stderr)
+        self.assertIn(f"Not posted: {self.story_2x.name}", proc.stderr)
+        self.assertIn("may have posted", proc.stderr)
+        held = self.tmp / ".cache" / "auto-poster" / "held-story-sets.json"
+        self.assertEqual(json.loads(held.read_text()), [], "a finished set must leave the registry")
+
+    def test_story_near_a_held_set_is_refused(self):
+        # A held set lives only in its process until its time, so Zernio can't show it to the guard.
+        due = datetime.now(ZoneInfo(TZ)).replace(second=0, microsecond=0) + timedelta(days=1)
+        held = self.tmp / ".cache" / "auto-poster" / "held-story-sets.json"
+        held.parent.mkdir(parents=True, exist_ok=True)
+        held.write_text(json.dumps([{"pid": os.getpid(), "start": due.isoformat(),
+                                     "end": (due + timedelta(minutes=45)).isoformat(), "files": ["a.mp4", "b.mp4"]}]))
+        proc = self.run_script(self.story_clip, "--ig-story", "--mode", "customScheduled",
+                               "--due-at", (due + timedelta(minutes=50)).strftime("%Y-%m-%dT%H:%M:00"))
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("held on this machine", proc.stderr)
+        self.assertEqual(self.creates(), [])
+        # A held set whose process is gone no longer blocks anything.
+        held.write_text(json.dumps([{"pid": 999999, "start": due.isoformat(),
+                                     "end": (due + timedelta(minutes=45)).isoformat(), "files": ["a.mp4"]}]))
+        proc = self.run_script(self.story_clip, "--ig-story", "--mode", "customScheduled",
+                               "--due-at", (due + timedelta(minutes=50)).strftime("%Y-%m-%dT%H:%M:00"))
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_story_set_checks_every_file_before_uploading(self):
+        proc = self.run_script(self.story_png, self.long_clip, "--ig-story")
+        self.assert_refused_before_any_network(proc, "60 seconds")
+
+    def test_story_set_dry_run_lists_the_order_without_network(self):
+        due = self.local_due(days=1)
+        proc = self.run_script(self.story_png, self.story_clip, "--ig-story", "--dry-run",
+                               "--mode", "customScheduled", "--due-at", due)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        out = self.json_out(proc)
+        self.assertTrue(out["scheduled_local"])
+        self.assertEqual([s["order"] for s in out["stories"]], [1, 2])
+        # Held locally, so each one goes to Zernio as publish-now at the due time.
+        self.assertTrue(all(s["payload"].get("publishNow") for s in out["stories"]))
+        self.assertTrue(all("scheduledFor" not in s["payload"] for s in out["stories"]))
+        self.assertEqual(MockZernio.state["requests"], [])
+
+    def test_story_set_refuses_queue_and_draft(self):
+        for mode in ("addToQueue", "draft"):
+            MockZernio.state["requests"] = []
+            proc = self.run_script(self.story_png, self.story_clip, "--ig-story", "--mode", mode)
+            self.assert_refused_before_any_network(proc, "out of order")
+
+    def test_several_files_need_ig_story(self):
+        proc = self.run_script(self.vert, self.vert, "--caption", "x")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertIn("--ig-story", proc.stderr)
+        self.assertEqual(MockZernio.state["requests"], [])
+
+    def test_story_scheduled_near_another_story_is_refused(self):
+        due = datetime.now(ZoneInfo(TZ)).replace(second=0, microsecond=0) + timedelta(days=1)
+        self.seed_story("scheduled", due + timedelta(minutes=1))
+        proc = self.run_script(self.story_clip, "--ig-story", "--mode", "customScheduled",
+                               "--due-at", due.strftime("%Y-%m-%dT%H:%M:00"))
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("one set", proc.stderr.lower())
+        self.assertEqual(self.creates(), [])
+        self.assertFalse([p for m, p, b in MockZernio.state["requests"] if p == "/media/presign"])
+
+    def test_story_while_another_is_processing_is_refused(self):
+        self.seed_story("publishing", datetime.now(ZoneInfo("UTC")) - timedelta(minutes=2))
+        proc = self.run_script(self.story_png, "--ig-story")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertEqual(self.creates(), [])
+
+    def test_story_45_minutes_from_another_is_allowed(self):
+        due = datetime.now(ZoneInfo(TZ)).replace(second=0, microsecond=0) + timedelta(days=1)
+        self.seed_story("scheduled", due + timedelta(minutes=45))
+        proc = self.run_script(self.story_clip, "--ig-story", "--mode", "customScheduled",
+                               "--due-at", due.strftime("%Y-%m-%dT%H:%M:00"))
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_single_story_waits_until_live(self):
+        # Without this, two back-to-back Story calls race each other at Instagram.
+        MockZernio.state.update(create="pending", publish_on_get=True)
+        proc = self.run_script(self.story_png, "--ig-story")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(self.json_out(proc)["result"]["platforms"][0]["status"], "published")
 
     def test_reel_payload_carries_no_story_flag(self):
         proc = self.run_script(self.vert, "--caption", "x", "--platforms", "instagram", "--dry-run")
