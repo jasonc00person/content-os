@@ -12,6 +12,12 @@ earlier version merges cleanly).
 Versions shipped before updates existed carry no VERSION file; their fingerprints are recorded under
 the ship date: 2026.09.11, 2026.09.23, 2026.09.26, 2026.09.29.
 
+## 2026.11.27
+
+- Post several Instagram Stories at once and they go up in the order you list them. Each one waits until the one before it is live
+- A set of Stories can also wait for a time you pick, then post in order (keep your computer on until then)
+- A Story set to go up within 30 minutes of another one is stopped before anything posts, because Instagram can put them out of order
+
 ## 2026.11.22
 
 - Transcribing is much faster. A 20 minute reel now takes about 15 seconds on a newer Mac, down from over 2 minutes

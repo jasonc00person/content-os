@@ -54,6 +54,7 @@ rsync -a \
   --exclude='.claude/.DS_Store' \
   --exclude='/packaging/' \
   --exclude='/backbone' \
+  --exclude='/business.md' \
   --exclude='/assets/' \
   --exclude='/research/' \
   --exclude='/transcripts/' \
